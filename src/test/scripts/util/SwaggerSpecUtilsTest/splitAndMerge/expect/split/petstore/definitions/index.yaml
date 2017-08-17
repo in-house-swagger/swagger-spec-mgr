@@ -1,0 +1,12 @@
+Order:
+  $ref: "./Order/index.yaml"
+Category:
+  $ref: "./Category/index.yaml"
+User:
+  $ref: "./User/index.yaml"
+Tag:
+  $ref: "./Tag/index.yaml"
+Pet:
+  $ref: "./Pet/index.yaml"
+ApiResponse:
+  $ref: "./ApiResponse/index.yaml"

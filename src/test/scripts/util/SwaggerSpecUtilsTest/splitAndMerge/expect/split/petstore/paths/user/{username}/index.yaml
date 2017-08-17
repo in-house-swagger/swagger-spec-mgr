@@ -1,0 +1,6 @@
+get:
+  $ref: "./get/index.yaml"
+put:
+  $ref: "./put/index.yaml"
+delete:
+  $ref: "./delete/index.yaml"

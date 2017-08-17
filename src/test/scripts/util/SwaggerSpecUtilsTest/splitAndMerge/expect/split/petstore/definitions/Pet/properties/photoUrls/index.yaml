@@ -1,0 +1,5 @@
+type: "array"
+xml:
+  $ref: "./xml/index.yaml"
+items:
+  $ref: "./items/index.yaml"

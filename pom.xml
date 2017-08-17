@@ -1,0 +1,231 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>me.suwash.swagger</groupId>
+    <artifactId>swagger-spec-mgr</artifactId>
+    <packaging>jar</packaging>
+    <name>swagger-spec-mgr</name>
+    <version>1.0.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.7.RELEASE</version>
+    </parent>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <springfox-version>2.6.1</springfox-version>
+
+        <dirname.assembly.work>${project.artifactId}_${project.version}</dirname.assembly.work>
+        <dir.assembly.work>${project.build.directory}/${dirname.assembly.work}</dir.assembly.work>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>me.suwash</id>
+            <name>me.suwash Repository</name>
+            <url>https://github.com/suwa-sh/mvn-repo/raw/master/</url>
+        </repository>
+    </repositories>
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <target.env>local</target.env>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>ST</id>
+            <properties>
+                <target.env>ST</target.env>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>product</id>
+            <properties>
+                <target.env>product</target.env>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--SpringFox dependencies -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <!-- Bean Validation API support -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>1.5.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.suwash.commons</groupId>
+            <artifactId>util</artifactId>
+            <version>[1.0.0,)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.suwash.commons</groupId>
+            <artifactId>test</artifactId>
+            <version>[1.0.0,)</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- 実行ファイル -->
+                                <mkdir dir="${dir.assembly.work}/lib" />
+                                <copy todir="${dir.assembly.work}/lib">
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="${project.artifactId}-${project.version}.jar" />
+                                    </fileset>
+                                </copy>
+                                <!-- 実行スクリプト -->
+                                <mkdir dir="${dir.assembly.work}/bin" />
+                                <copy todir="${dir.assembly.work}/bin"
+                                    overwrite="yes" encoding="UTF-8">
+                                    <fileset dir="${project.build.scriptSourceDirectory}/bin">
+                                        <include name="**/**" />
+                                    </fileset>
+                                    <filterset filtersfile="build/env/${target.env}/filter.properties" />
+                                </copy>
+                                <!-- 設定ファイル -->
+                                <mkdir dir="${dir.assembly.work}/config" />
+                                <copy todir="${dir.assembly.work}/config"
+                                    overwrite="yes" encoding="UTF-8">
+                                    <fileset dir="${project.build.scriptSourceDirectory}/config">
+                                        <include name="**/**" />
+                                    </fileset>
+                                    <filterset filtersfile="build/env/${target.env}/filter.properties" />
+                                </copy>
+                                <!-- 不要ファイルの削除 -->
+                                <delete>
+                                    <fileset dir="${dir.assembly.work}">
+                                        <include name="**/.gitkeep" />
+                                    </fileset>
+                                </delete>
+                                <!-- readmeファイル -->
+                                <copy todir="${dir.assembly.work}"
+                                    overwrite="yes" encoding="UTF-8">
+                                    <fileset dir=".">
+                                        <include name="README.md" />
+                                    </fileset>
+                                </copy>
+                                <!-- バージョンファイル -->
+                                <echo message="${project.version}_${target.env}"
+                                    file="${dir.assembly.work}/version.txt"
+                                    encoding="UTF-8" />
+                                <!-- 配布用アーカイブ -->
+                                <tar
+                                    destfile="${project.build.directory}/${project.artifactId}_${project.version}_${target.env}.tar.gz"
+                                    compression="gzip">
+                                    <tarfileset dir="${project.build.directory}" mode="755">
+                                      <include name="${dirname.assembly.work}/bin/**" />
+                                    </tarfileset>
+                                    <tarfileset dir="${project.build.directory}">
+                                      <include name="${dirname.assembly.work}/**" />
+                                      <exclude name="${dirname.assembly.work}/bin/**" />
+                                    </tarfileset>
+                                </tar>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

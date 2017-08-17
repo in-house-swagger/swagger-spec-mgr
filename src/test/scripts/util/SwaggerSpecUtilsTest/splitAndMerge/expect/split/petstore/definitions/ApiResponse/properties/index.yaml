@@ -1,0 +1,6 @@
+code:
+  $ref: "./code/index.yaml"
+type:
+  $ref: "./type/index.yaml"
+message:
+  $ref: "./message/index.yaml"

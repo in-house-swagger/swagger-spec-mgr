@@ -1,0 +1,150 @@
+#!/bin/bash
+#===================================================================================================
+#
+# in-house-swagger server control
+#
+#===================================================================================================
+#---------------------------------------------------------------------------------------------------
+# 設定
+#---------------------------------------------------------------------------------------------------
+dir_script="$(dirname $0)"
+cd "$(cd ${dir_script}; pwd)" || exit 6
+
+# 共通設定
+readonly DIR_BASE="$(cd ..; pwd)"
+. "./setenv"
+
+# loggingユーティリティ
+readonly PROGNAME="swagger-spec-mgr"
+readonly PATH_LOG="${DIR_LOG}/${PROGNAME}.log"
+. "${DIR_BIN_LIB}/logging_utils.sh"
+
+
+#---------------------------------------------------------------------------------------------------
+# 関数定義
+#---------------------------------------------------------------------------------------------------
+function start() {
+    # 多重起動チェック
+    if [ -f ${PATH_PID} ]; then
+        log.error_teelog "other ${PROGNAME} process has already running. (PID-file:${PATH_PID} is exist.)"
+        return ${EXITCODE_ERROR}
+    fi
+
+    if [ "x${SPEC_MGR_OPT}" = "x" ]; then
+        SPEC_MGR_OPT="-Ddir.config=config -Dloader.path=config"
+    fi
+
+    if [ "x${SPEC_MGR_HEAP_SIZE}" = "x" ]; then
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -Xms256m -Xmx256m"
+    else
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -Xms${SPEC_MGR_HEAP_SIZE} -Xmx${SPEC_MGR_HEAP_SIZE}"
+    fi
+
+    if [ "x${SPEC_MGR_GC_LOG_FILE}" != "x" ]; then
+        DIR_GC_LOG=`dirname ${SPEC_MGR_GC_LOG_FILE}`
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+UseConcMarkSweepGC"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+CMSParallelRemarkEnabled"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+UseCMSInitiatingOccupancyOnly"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:CMSInitiatingOccupancyFraction=75"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+ScavengeBeforeFullGC"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+CMSScavengeBeforeRemark"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+PrintGCDetails"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+PrintGCTimeStamps"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+PrintGCDateStamps"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -Xloggc:${DIR_GC_LOG}"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+UseGCLogFileRotation"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:NumberOfGCLogFiles=5"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:GCLogFileSize=10M"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:+HeapDumpOnOutOfMemoryError"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:HeapDumpPath=${DIR_GC_LOG}/${PROGNAME}.hprof"
+        SPEC_MGR_OPT="${SPEC_MGR_OPT} -XX:ErrorFile=${DIR_GC_LOG}/${PROGNAME}_hs_err_pid_%p.log"
+    fi
+
+    # ディレクトリ作成
+    if [ ! -d "${DIR_DATA}" ]; then
+      mkdir -p "${DIR_DATA}"
+    fi
+    if [ ! -d "${DIR_LOG}" ]; then
+      mkdir -p "${DIR_LOG}"
+    fi
+
+    # バックグランド起動
+    cd "${DIR_BASE}"
+    ( nohup java ${SPEC_MGR_OPT} -server -jar ./lib/${PROGNAME}-*.jar >> ${PATH_LOG} 2>&1 < /dev/null ) &
+    cd - > /dev/null
+    PID=$!
+    echo ${PID} > ${PATH_PID}
+    # TODO graceful statup
+    log.info_teelog "start ${PROGNAME} process. PID=${PID}"
+
+    return ${EXITCODE_SUCCESS}
+}
+
+function stop() {
+    # 停止中チェック
+    if [ ! -f ${PATH_PID} ]; then
+        log.error_teelog "${PROGNAME} process is NOT running."
+        return ${EXITCODE_ERROR}
+    fi
+
+    # TODO graceful shutdown
+    # Process Kill
+    PID=`cat ${PATH_PID}`
+    PID_CHECK=`ps -ef | grep ${PID} | grep -v grep`
+    if [ "${PID_CHECK}" != "" ]; then
+        kill -s SIGTERM ${PID}
+    fi
+    log.info_teelog "stop ${PROGNAME} process. PID=${PID}" >> ${PATH_LOG}
+
+    # PIDファイルを削除
+    rm -f ${PATH_PID}
+
+    return 0
+}
+
+function show_status() {
+    # PIDファイルの存在確認
+    if [ -f ${PATH_PID} ]; then
+        # プロセスの存在確認
+        PID=`cat ${PATH_PID}`
+        PID_CHECK=`ps -ef | grep ${PID} | grep -v grep`
+        if [ "${PID_CHECK}" != "" ]; then
+            log.info_teelog "${PROGNAME} process is running."
+        else
+            # PIDファイルがあって、プロセスが存在しない場合
+            # PIDファイルを削除して、停止中扱い
+            log.warn_teelog "Since PID file was left without being removed , it was deleted ."
+            rm -f ${PATH_PID}
+            log.warn_teelog "${PROGNAME} process is NOT running."
+        fi
+    else
+        log.warn_teelog "${PROGNAME} process is NOT running."
+    fi
+
+    return ${EXITCODE_SUCCESS}
+}
+
+
+#---------------------------------------------------------------------------------------------------
+# 本処理
+#---------------------------------------------------------------------------------------------------
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    status)
+        show_status
+        ;;
+    *)
+        echo "Usage: $PROGNAME {start|stop|restart|status}"
+        exit ${EXITCODE_ERROR}
+        ;;
+esac
+exit $?

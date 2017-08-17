@@ -1,0 +1,5 @@
+sub1_string: "sub1.value"
+sub2_list-string:
+  $ref: "./sub2_list-string/index.yaml"
+sub3_object:
+  $ref: "./sub3_object/index.yaml"

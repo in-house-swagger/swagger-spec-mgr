@@ -1,0 +1,12 @@
+id:
+  $ref: "./id/index.yaml"
+category:
+  $ref: "./category/index.yaml"
+name:
+  $ref: "./name/index.yaml"
+photoUrls:
+  $ref: "./photoUrls/index.yaml"
+tags:
+  $ref: "./tags/index.yaml"
+status:
+  $ref: "./status/index.yaml"

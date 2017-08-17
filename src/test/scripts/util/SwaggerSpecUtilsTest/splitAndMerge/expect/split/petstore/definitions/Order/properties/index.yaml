@@ -1,0 +1,12 @@
+id:
+  $ref: "./id/index.yaml"
+petId:
+  $ref: "./petId/index.yaml"
+quantity:
+  $ref: "./quantity/index.yaml"
+shipDate:
+  $ref: "./shipDate/index.yaml"
+status:
+  $ref: "./status/index.yaml"
+complete:
+  $ref: "./complete/index.yaml"

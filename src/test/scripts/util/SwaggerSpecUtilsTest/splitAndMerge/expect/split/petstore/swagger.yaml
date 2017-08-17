@@ -1,0 +1,17 @@
+swagger: "2.0"
+info:
+  $ref: "./info/index.yaml"
+host: "petstore.swagger.io"
+basePath: "/v2"
+tags:
+  $ref: "./tags/index.yaml"
+schemes:
+  $ref: "./schemes/index.yaml"
+paths:
+  $ref: "./paths/index.yaml"
+securityDefinitions:
+  $ref: "./securityDefinitions/index.yaml"
+definitions:
+  $ref: "./definitions/index.yaml"
+externalDocs:
+  $ref: "./externalDocs/index.yaml"

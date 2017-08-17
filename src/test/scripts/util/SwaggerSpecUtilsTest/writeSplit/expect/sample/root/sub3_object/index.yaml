@@ -1,0 +1,10 @@
+sub3_1_string: "sub3_1.value"
+sub3_2_boolean: true
+sub3_3_num: 10.5
+sub3_4_date: "2017-01-01T00:00:01.000+0900"
+sub3_5_object:
+  $ref: "./sub3_5_object/index.yaml"
+sub3_6_list-num:
+  $ref: "./sub3_6_list-num/index.yaml"
+sub3_7_list-object:
+  $ref: "./sub3_7_list-object/index.yaml"

@@ -1,0 +1,16 @@
+id:
+  $ref: "./id/index.yaml"
+username:
+  $ref: "./username/index.yaml"
+firstName:
+  $ref: "./firstName/index.yaml"
+lastName:
+  $ref: "./lastName/index.yaml"
+email:
+  $ref: "./email/index.yaml"
+password:
+  $ref: "./password/index.yaml"
+phone:
+  $ref: "./phone/index.yaml"
+userStatus:
+  $ref: "./userStatus/index.yaml"

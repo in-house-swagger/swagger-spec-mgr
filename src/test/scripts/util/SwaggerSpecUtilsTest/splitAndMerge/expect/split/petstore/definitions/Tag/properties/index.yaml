@@ -1,0 +1,4 @@
+id:
+  $ref: "./id/index.yaml"
+name:
+  $ref: "./name/index.yaml"

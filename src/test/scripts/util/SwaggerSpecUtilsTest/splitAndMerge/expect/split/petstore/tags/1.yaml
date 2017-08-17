@@ -1,0 +1,5 @@
+name: "pet"
+description: "Everything about your Pets"
+externalDocs:
+  description: "Find out more about our store"
+  url: "http://swagger.io"

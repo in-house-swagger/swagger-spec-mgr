@@ -1,0 +1,5 @@
+type: "object"
+properties:
+  $ref: "./properties/index.yaml"
+xml:
+  $ref: "./xml/index.yaml"
