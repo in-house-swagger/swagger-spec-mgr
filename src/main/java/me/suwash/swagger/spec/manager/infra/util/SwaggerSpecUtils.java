@@ -15,7 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.suwash.swagger.spec.manager.infra.exception.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
+import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.util.FileUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,10 @@ public final class SwaggerSpecUtils {
     /** コンストラクタ非公開。 */
     private SwaggerSpecUtils() {}
 
+    private static Object[] array(final Object... args) {
+        return args;
+    }
+
     /**
      *
      * Specificationファイルを、Mapにparseします。
@@ -61,21 +66,13 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        if (StringUtils.isEmpty(inputDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "inputDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(specId)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "specId"
-            });
-        }
+        if (StringUtils.isEmpty(inputDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("inputDirPath"));
+        if (StringUtils.isEmpty(specId))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("specId"));
 
         final File inputFile = new File(inputDirPath + "/" + specId + "/" + FILENAME_MERGED);
-        if (!inputFile.exists()) {
-            return null;
-        }
+        if (!inputFile.exists()) return null;
 
         // -----------------------------------------------------------------------------------------
         // 本処理
@@ -83,9 +80,7 @@ public final class SwaggerSpecUtils {
         try {
             return yamlMapper.readValue(inputFile, Map.class);
         } catch (Exception e) {
-            throw new SpecMgrException("SpecMgr.10002", new Object[] {
-                inputFile, e.getMessage()
-            }, e);
+            throw new SpecMgrException(MessageConst.ERROR_FILE_TO_OBJECT, array(inputFile, e.getMessage()), e);
         }
     }
 
@@ -104,26 +99,24 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        if (value == null) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "value"
-            });
-        }
+        if (value == null)
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("value"));
 
         // -----------------------------------------------------------------------------------------
         // 本処理
         // -----------------------------------------------------------------------------------------
         try {
             // 文字列として書き出し
-            final String parsed = yamlMapper.writeValueAsString(value);
+            String parsed  = yamlMapper.writeValueAsString(value);
+
             // DOC_START_MARKERを削除
-            final String DOC_START_MARKER = "---\n";
-            return parsed.replaceFirst(DOC_START_MARKER, "");
+            final String DOC_START_MARKER = "^---";
+            return parsed
+                .replaceFirst(DOC_START_MARKER + "\n", StringUtils.EMPTY)
+                .replaceFirst(DOC_START_MARKER + " ", StringUtils.EMPTY);
 
         } catch (Exception e) {
-            throw new SpecMgrException("SpecMgr.10003", new Object[] {
-                e.getMessage()
-            }, e);
+            throw new SpecMgrException(MessageConst.ERROR_OBJECT_TO_STRING, array(e.getMessage()), e);
         }
     }
 
@@ -141,22 +134,12 @@ public final class SwaggerSpecUtils {
         // parentDirを作成
         final File outputFile = new File(outputFilePath);
         final File parentDir = outputFile.getParentFile();
-        if (!parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                throw new SpecMgrException("SpecMgr.02002", new Object[] {
-                    parentDir
-                });
-            }
-        }
+        if (!parentDir.exists() && !parentDir.mkdirs())
+            throw new SpecMgrException(MessageConst.DIR_CANT_CREATE, array(parentDir));
 
         // 出力ファイルを上書き
-        if (outputFile.exists()) {
-            if (!outputFile.delete()) {
-                throw new SpecMgrException("SpecMgr.03004", new Object[] {
-                    outputFile
-                });
-            }
-        }
+        if (outputFile.exists() && !outputFile.delete())
+            throw new SpecMgrException(MessageConst.FILE_CANT_DELETE, array(outputFile));
 
         // -----------------------------------------------------------------------------------------
         // 本処理
@@ -175,9 +158,7 @@ public final class SwaggerSpecUtils {
                 StandardOpenOption.CREATE);
 
         } catch (Exception e) {
-            throw new SpecMgrException("SpecMgr.03003", new Object[] {
-                outputFile
-            }, e);
+            throw new SpecMgrException(MessageConst.FILE_CANT_WRITE, array(outputFile), e);
         }
     }
 
@@ -212,23 +193,13 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        log.debug("writeSplit: " + outputDirPath + "/" + specId);
+        if (value == null)
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("value"));
+        if (StringUtils.isEmpty(outputDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("outputDirPath"));
+        if (StringUtils.isEmpty(specId))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("specId"));
 
-        if (value == null) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "value"
-            });
-        }
-        if (StringUtils.isEmpty(outputDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "outputDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(specId)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "specId"
-            });
-        }
         List<Pattern> effectiveIgnorePatternList = new ArrayList<>();
         if (ignoreRegexList != null) {
             for (final String curIgnoreRegex : ignoreRegexList) {
@@ -242,7 +213,6 @@ public final class SwaggerSpecUtils {
 
                 Pattern curPattern = Pattern.compile(curEffectiveIgnoreRegex);
                 effectiveIgnorePatternList.add(curPattern);
-
             }
         }
 
@@ -310,10 +280,11 @@ public final class SwaggerSpecUtils {
                     // --------------------------------------------------
                     // value = Map or List の場合
                     // --------------------------------------------------
-                    final String curWriteDirPath = outputDirPath + "/" + curTargetKey.replaceFirst("^/", "");
+                    String curWriteDirPath = outputDirPath + "/" + curTargetKey.replaceFirst("^/", "");
                     if (isSplit(ignorePatternList, curWriteDirPath)) {
                         // valueで再帰呼び出し
-                        final String curWrittenFilePath = recursiveSplit(curTargetValue, curWriteDirPath, FILENAME_SPLIT_MAP, ignorePatternList);
+                        String curWrittenFilePath = recursiveSplit(curTargetValue, curWriteDirPath, FILENAME_SPLIT_MAP, ignorePatternList);
+
                         // 置換後mapに、jsonRefのentryを追加
                         replacedMap.put(curTargetKey, getRefMap(curWrittenFilePath, outputDirPath));
                     } else {
@@ -376,9 +347,7 @@ public final class SwaggerSpecUtils {
             // target = その他の型 の場合
             // -------------------------------------------------------------------------------------
             // エラー
-            throw new SpecMgrException("SpecMgr.00003", new Object[] {
-                target.getClass().getName()
-            });
+            throw new SpecMgrException(MessageConst.ILLEGAL_ARGS, array(target.getClass().getName()));
 
         }
 
@@ -397,9 +366,7 @@ public final class SwaggerSpecUtils {
         // 除外パス正規表現リストのパスで始まる場合、除外
         for (final Pattern curPattern : ignorePatternList) {
             final Matcher matcher = curPattern.matcher(targetPath);
-            if (matcher.matches()) {
-                return false;
-            }
+            if (matcher.matches()) return false;
         }
         return true;
     }
@@ -417,38 +384,21 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        log.debug("writeMerged: " + outputDirPath + "/" + specId);
-
-        if (StringUtils.isEmpty(inputDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "inputDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(outputDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "outputDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(specId)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "specId"
-            });
-        }
+        if (StringUtils.isEmpty(inputDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("inputDirPath"));
+        if (StringUtils.isEmpty(outputDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("outputDirPath"));
+        if (StringUtils.isEmpty(specId))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("specId"));
 
         final File inputDir = new File(inputDirPath);
-        if (!inputDir.exists()) {
-            throw new SpecMgrException("SpecMgr.02001", new Object[] {
-                inputDir
-            });
-        }
+        if (!inputDir.exists())
+            throw new SpecMgrException(MessageConst.DIR_NOT_EXIST, array(inputDir));
 
         final String inputRootFilePath = inputDirPath + "/" + specId + "/" + FILENAME_SPLIT_ROOT;
         final File inputRootFile = new File(inputRootFilePath);
-        if (!inputRootFile.exists()) {
-            throw new SpecMgrException("SpecMgr.03001", new Object[] {
-                inputRootFile
-            });
-        }
+        if (!inputRootFile.exists())
+            throw new SpecMgrException(MessageConst.FILE_NOT_EXIST, array(inputRootFile));
 
         // -----------------------------------------------------------------------------------------
         // 本処理
@@ -481,9 +431,7 @@ public final class SwaggerSpecUtils {
         try {
             parsed = yamlMapper.readValue(splitFile, Object.class);
         } catch (Exception e) {
-            throw new SpecMgrException("SpecMgr.10002", new Object[] {
-                splitFilePath, e.getMessage()
-            }, e);
+            throw new SpecMgrException(MessageConst.ERROR_FILE_TO_OBJECT, array(splitFilePath, e.getMessage()), e);
         }
 
         // parsedの型を確認
@@ -514,6 +462,8 @@ public final class SwaggerSpecUtils {
                         if (KEY_REF.equals(curParsedValueMapKey)) {
                             // $refの場合、再帰呼び出し
                             final String curSplitFilePath = curParsedValueMapValue.toString().replaceFirst("^./", splitDirPath + "/");
+                            if (curSplitFilePath.equals(splitFilePath))
+                                throw new SpecMgrException(MessageConst.MERGE_REFERENCE_LOOP, array(splitFilePath, curParsedValueMapValue));
                             final Object curResult = recursiveMerge(curSplitFilePath);
                             // 結果を置換後Mapにput ※一つ上の階層に展開結果を反映しています。
                             replacedMap.put(curParsedKey, curResult);
@@ -557,18 +507,15 @@ public final class SwaggerSpecUtils {
                         if (KEY_REF.equals(curParsedElemMapKey)) {
                             // $refの場合、再帰呼び出し
                             final String curSplitFilePath = curParsedElemMapValue.toString().replaceFirst("^./", splitDirPath + "/");
-                            if (curSplitFilePath.equals(splitFilePath)) {
-                                throw new SpecMgrException("SpecMgr.10004", new Object[] {
-                                    splitFilePath, curParsedElemMapValue
-                                });
-                            }
+                            if (curSplitFilePath.equals(splitFilePath))
+                                throw new SpecMgrException(MessageConst.MERGE_REFERENCE_LOOP, array(splitFilePath, curParsedElemMapValue));
                             final Object curResult = recursiveMerge(curSplitFilePath);
                             // 結果を置換後Listにadd
                             replacedList.add(curResult);
 
                         } else {
                             // その他の場合、エラー
-                            throw new SpecMgrException("SpecMgr.10001");
+                            throw new SpecMgrException(MessageConst.MERGE_UNSUPPORTED_LIST);
                         }
                     }
 
@@ -618,35 +565,21 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        log.debug("deleteMerged: " + targetDirPath + "/" + specId);
-
-        if (StringUtils.isEmpty(targetDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "targetDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(specId)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "specId"
-            });
-        }
+        if (StringUtils.isEmpty(targetDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("targetDirPath"));
+        if (StringUtils.isEmpty(specId))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("specId"));
 
         final String specDirPath = targetDirPath + "/" + specId;
         final File targetFile = new File(specDirPath + "/" + FILENAME_MERGED);
-        if (!targetFile.exists()) {
-            throw new SpecMgrException("SpecMgr.03001", new Object[] {
-                targetFile
-            });
-        }
+        if (!targetFile.exists())
+            throw new SpecMgrException(MessageConst.FILE_NOT_EXIST, array(targetFile));
 
         // -----------------------------------------------------------------------------------------
         // 本処理
         // -----------------------------------------------------------------------------------------
-        if (!FileUtils.rmdirs(specDirPath)) {
-            throw new SpecMgrException("SpecMgr.0203", new Object[] {
-                specDirPath
-            });
-        }
+        if (!FileUtils.rmdirs(specDirPath))
+            throw new SpecMgrException(MessageConst.DIR_CANT_DELETE, array(specDirPath));
     }
 
     /**
@@ -660,34 +593,20 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 事前処理
         // -----------------------------------------------------------------------------------------
-        log.debug("deleteSplit: " + targetDirPath + "/" + specId);
-
-        if (StringUtils.isEmpty(targetDirPath)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "targetDirPath"
-            });
-        }
-        if (StringUtils.isEmpty(specId)) {
-            throw new SpecMgrException("SpecMgr.04001", new Object[] {
-                "Args", "specId"
-            });
-        }
+        if (StringUtils.isEmpty(targetDirPath))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("targetDirPath"));
+        if (StringUtils.isEmpty(specId))
+            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("specId"));
 
         final String specDirPath = targetDirPath + "/" + specId;
         final File targetFile = new File(specDirPath + "/" + FILENAME_SPLIT_ROOT);
-        if (!targetFile.exists()) {
-            throw new SpecMgrException("SpecMgr.03001", new Object[] {
-                targetFile
-            });
-        }
+        if (!targetFile.exists())
+            throw new SpecMgrException(MessageConst.FILE_NOT_EXIST, array(targetFile));
 
         // -----------------------------------------------------------------------------------------
         // 本処理
         // -----------------------------------------------------------------------------------------
-        if (!FileUtils.rmdirs(specDirPath)) {
-            throw new SpecMgrException("SpecMgr.0203", new Object[] {
-                specDirPath
-            });
-        }
+        if (!FileUtils.rmdirs(specDirPath))
+            throw new SpecMgrException(MessageConst.DIR_CANT_DELETE, array(specDirPath));
     }
 }
