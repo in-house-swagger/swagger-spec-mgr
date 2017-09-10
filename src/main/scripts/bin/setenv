@@ -61,13 +61,13 @@ readonly DIR_LOG="${DIR_BASE}/log"
 # ライブラリ
 readonly DIR_LIB="${DIR_BASE}/lib"
 # 内部データ
-readonly DIR_DATA="${DIR_BASE}/data"
+export DIR_DATA="${DIR_BASE}/data"
 
 #-------------------------------------------------------------------------------
 # ファイル
 #-------------------------------------------------------------------------------
 # ログファイル
-readonly PATH_LOG="${DIR_LOG}/script.log"
+PATH_LOG="${DIR_LOG}/script.log"
 # プロセスファイル
 readonly PATH_PID="${DIR_DATA}/pid"
 # 上書き設定ファイル
