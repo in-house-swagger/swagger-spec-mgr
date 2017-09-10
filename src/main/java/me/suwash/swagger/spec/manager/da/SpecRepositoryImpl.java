@@ -28,12 +28,12 @@ public class SpecRepositoryImpl implements SpecRepository {
 
     private final ApplicationProperties props;
     private final SpecMgrContext context;
+    private String defaultUser;
     private String dirData;
+    private String relDirSpecs;
     private List<String> splitIgnoreRegexList;
 
-    private final String SCMUSER_DEFAULT = "_default";
-    private final String DIRNAME_MERGED = "merged";
-    private final String DIRNAME_SPLIT = "split";
+    private final String DIRNAME_MERGED = "res";
 
     @Autowired
     public SpecRepositoryImpl(
@@ -45,7 +45,9 @@ public class SpecRepositoryImpl implements SpecRepository {
 
     @PostConstruct
     public void loadProps() {
+        this.defaultUser = props.getDefaultScmUser();
         this.dirData = props.getDirData();
+        this.relDirSpecs = props.getRelDirSpecs();
         this.splitIgnoreRegexList = props.getSplitIgnoreRegexList();
     }
 
@@ -75,15 +77,15 @@ public class SpecRepositoryImpl implements SpecRepository {
     }
 
     private String getSplitDir() {
-        return getBaseDir() + "/" + DIRNAME_SPLIT;
+        return getBaseDir() + "/repo/" + this.relDirSpecs;
     }
 
     private String getBaseDir() {
         final String threadName = Thread.currentThread().getName();
         final ScmInfo scmInfo = (ScmInfo) context.get(threadName, ScmInfo.class.getName());
 
-        if (scmInfo == null) return this.dirData + "/" + SCMUSER_DEFAULT;
-        if (StringUtils.isEmpty(scmInfo.getUser())) return this.dirData + "/" + SCMUSER_DEFAULT;
+        if (scmInfo == null || StringUtils.isEmpty(scmInfo.getUser()))
+            return this.dirData + "/" + this.defaultUser;
 
         return this.dirData + "/" + scmInfo.getUser();
     }

@@ -12,8 +12,12 @@ server:
   contextPath: "/v1"
 
 spec.mgr:
-  # データファイル出力ディレクトリ
+  # デフォルトcommitユーザ
+  defaultScmUser: "spec-mgr"
+  # ファイル出力ルートディレクトリ相対パス
   dirData: src/test/scripts/data
+  # 分割済み定義ファイル出力ディレクトリ相対パス
+  relDirSpecs: "docs/design/swagger"
   # 分割除外パス正規表現リスト
   splitIgnoreRegexs:
   - "/info/.*"

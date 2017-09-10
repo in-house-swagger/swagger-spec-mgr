@@ -77,17 +77,18 @@ public class SpecFacadeTest {
 
     @Test
     public void test_scmInfoあり() {
-        dirMerged = TestConst.DIR_DATA + "/" + "scm-user" + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        dirSplit = TestConst.DIR_DATA + "/" + "scm-user" + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
+        String scmUser="spec-mgr";
+        dirMerged = TestConst.DIR_DATA + "/" + scmUser + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
+        dirSplit = TestConst.DIR_DATA + "/" + scmUser + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
         FileUtils.rmdirs(dirMerged);
         FileUtils.rmdirs(dirSplit);
 
-        final ScmInfo scmInfo = new ScmInfo("scm-user", "scm-user@example.com");
+        final ScmInfo scmInfo = new ScmInfo(scmUser, "spec-mgr@example.com");
         test(scmInfo);
     }
 
     @SuppressWarnings("unchecked")
-    public final void test(final ScmInfo scmInfo) {
+    private final void test(final ScmInfo scmInfo) {
         //------------------------------------------------------------------------------------------
         // 準備
         //------------------------------------------------------------------------------------------
