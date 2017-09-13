@@ -77,20 +77,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -lt 2 ] || [ $# -gt 3 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # リネーム元ブランチ名
 from_branch="$1"
@@ -124,8 +119,10 @@ fi
 #--------------------------------------------------------------------------------
 # branch_rename
 #--------------------------------------------------------------------------------
-git.branch_rename "${dir_repo}" "${from_branch}" "${to_branch}"
-if [ $? -ne ${EXITCODE_SUCCESS} ]; then
+git.branch_rename "${dir_repo}" "${from_branch}" "${to_branch}"                               2>&1 | log.tee
+ret_code=${PIPESTATUS[0]}
+
+if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
   git.common.exit_script ${EXITCODE_ERROR} "ブランチのリネーム でエラーが発生しました。"
 fi
 

@@ -1,5 +1,7 @@
 package me.suwash.swagger.spec.manager.infra.config;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +15,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpecMgrContext {
     private Map<String, Map<String, Object>> _contexts = new HashMap<>();
-
-    private Object[] array(final Object... args) {
-        return args;
-    }
 
     private Map<String, Object> getContext(final String contextKey) {
         if (StringUtils.isEmpty(contextKey))

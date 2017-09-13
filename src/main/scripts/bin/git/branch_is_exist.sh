@@ -2,12 +2,11 @@
 #set -eux
 #==================================================================================================
 #
-# タグリネーム処理
+# ブランチ存在確認処理
 #
 # 引数
-#   1: リネーム元タグ名
-#   2: リネーム先タグ名
-#   3: コミットユーザ ※任意
+#   1: 対象ブランチ名
+#   2: コミットユーザ ※任意
 #
 #==================================================================================================
 #--------------------------------------------------------------------------------------------------
@@ -41,7 +40,7 @@ readonly DIR_BASE=$(cd ../..; pwd)
 # Usage
 #--------------------------------------------------------------------------------
 function usage() {
-  echo "Usage: $(basename $0) FROM_TAG TO_TAG [USER]" >&2
+  echo "Usage: $(basename $0) BRANCH [USER]" >&2
   exit ${EXITCODE_ERROR}
 }
 
@@ -80,27 +79,21 @@ done
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
-if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
   usage
 fi
 
 # 開始ログ
 log.start_script "$0" "${raw_args}"
 
-# リネーム元タグ名
-from_tag="$1"
-if [ "${from_tag}x" = "x" ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リネーム元タグ名 が指定されていません。"
-fi
-
-# リネーム先タグ名
-to_tag="$2"
-if [ "${to_tag}x" = "x" ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リネーム先タグ名 が指定されていません。"
+# 対象ブランチ名
+to_branch="$1"
+if [ "${to_branch}x" = "x" ]; then
+  git.common.exit_script ${EXITCODE_ERROR} "対象ブランチ名 が指定されていません。"
 fi
 
 # コミットユーザ
-user="$3"
+user="$2"
 
 
 
@@ -117,24 +110,13 @@ fi
 
 
 #--------------------------------------------------------------------------------
-# tag_rename
+# ブランチ存在チェック
 #--------------------------------------------------------------------------------
-has_origin=$(git.has_origin "${dir_repo}")
-if [ $? -ne ${EXITCODE_SUCCESS} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リモートリポジトリの存在確認 でエラーが発生しました。"
-fi
-
-if [ "${has_origin}" != "true" ]; then
-  # 存在しない場合、localのみ
-  git.tag_rename_local "${dir_repo}" "${from_tag}" "${to_tag}"                                2>&1 | log.tee
-else
-  # 存在する場合、pushあり
-  git.tag_rename "${dir_repo}" "${from_tag}" "${to_tag}"                                      2>&1 | log.tee
-fi
-ret_code=${PIPESTATUS[0]}
+git.branch_is_exist "${dir_repo}" "${to_branch}"
+ret_code=$?
 
 if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "タグのリネーム でエラーが発生しました。"
+  git.common.exit_script ${EXITCODE_ERROR} "ブランチの存在確認 でエラーが発生しました。"
 fi
 
 

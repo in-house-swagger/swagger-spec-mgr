@@ -19,20 +19,7 @@ function git.common.exit_script() {
   local _exit_msg=$2
 
   # 終了ログ
-  log.restore_indent
-  if [ ${_exit_code} -eq ${EXITCODE_SUCCESS} ]; then
-    log.info_teelog "${_exit_msg}"
-    log.info_teelog "exit_code: ${_exit_code}"
-    log.info_teelog "END   --- $(basename $0)"
-  elif [ ${_exit_code} -eq ${EXITCODE_WARN} ]; then
-    log.warn_teelog "${_exit_msg}"
-    log.warn_teelog "exit_code: ${_exit_code}"
-    log.warn_teelog "END   --- $(basename $0)"
-  else
-    log.error_teelog "${_exit_msg}"
-    log.error_teelog "exit_code: ${_exit_code}"
-    log.error_teelog "END   --- $(basename $0)"
-  fi
+  log.end_script "$0" "${_exit_code}" "${_exit_msg}"
 
   # ログローテーション（日次） ※先頭行判断
   log.rotatelog_by_day_first

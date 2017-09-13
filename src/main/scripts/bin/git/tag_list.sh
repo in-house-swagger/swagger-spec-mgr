@@ -2,12 +2,10 @@
 #set -eux
 #==================================================================================================
 #
-# タグリネーム処理
+# タグ一覧取得処理
 #
 # 引数
-#   1: リネーム元タグ名
-#   2: リネーム先タグ名
-#   3: コミットユーザ ※任意
+#   1: コミットユーザ ※任意
 #
 #==================================================================================================
 #--------------------------------------------------------------------------------------------------
@@ -41,7 +39,7 @@ readonly DIR_BASE=$(cd ../..; pwd)
 # Usage
 #--------------------------------------------------------------------------------
 function usage() {
-  echo "Usage: $(basename $0) FROM_TAG TO_TAG [USER]" >&2
+  echo "Usage: $(basename $0) [USER]" >&2
   exit ${EXITCODE_ERROR}
 }
 
@@ -80,27 +78,15 @@ done
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
-if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+if [ $# -gt 1 ]; then
   usage
 fi
 
 # 開始ログ
 log.start_script "$0" "${raw_args}"
 
-# リネーム元タグ名
-from_tag="$1"
-if [ "${from_tag}x" = "x" ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リネーム元タグ名 が指定されていません。"
-fi
-
-# リネーム先タグ名
-to_tag="$2"
-if [ "${to_tag}x" = "x" ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リネーム先タグ名 が指定されていません。"
-fi
-
 # コミットユーザ
-user="$3"
+user="$1"
 
 
 
@@ -112,29 +98,18 @@ user="$3"
 #--------------------------------------------------------------------------------
 dir_repo="$(git.common.get_repo_dir ${user})"
 if [ $? -ne ${EXITCODE_SUCCESS} ]; then
-  return ${EXITCODE_ERROR}
+  exit ${EXITCODE_ERROR}
 fi
 
 
 #--------------------------------------------------------------------------------
-# tag_rename
+# タグ一覧
 #--------------------------------------------------------------------------------
-has_origin=$(git.has_origin "${dir_repo}")
-if [ $? -ne ${EXITCODE_SUCCESS} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "リモートリポジトリの存在確認 でエラーが発生しました。"
-fi
-
-if [ "${has_origin}" != "true" ]; then
-  # 存在しない場合、localのみ
-  git.tag_rename_local "${dir_repo}" "${from_tag}" "${to_tag}"                                2>&1 | log.tee
-else
-  # 存在する場合、pushあり
-  git.tag_rename "${dir_repo}" "${from_tag}" "${to_tag}"                                      2>&1 | log.tee
-fi
-ret_code=${PIPESTATUS[0]}
+git.tag_list "${dir_repo}"
+ret_code=$?
 
 if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "タグのリネーム でエラーが発生しました。"
+  git.common.exit_script ${EXITCODE_ERROR} "タグの一覧取得 でエラーが発生しました。"
 fi
 
 

@@ -1,7 +1,9 @@
 package me.suwash.swagger.spec.manager.ws;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import io.swagger.annotations.ApiParam;
 
 import java.util.List;
@@ -33,10 +35,6 @@ public class SpecsApiController implements SpecsApi {
 
     @Autowired
     private SpecFacade facade;
-
-    private Object[] array(final Object... args) {
-        return args;
-    }
 
     @ExceptionHandler
     public Object handleException(final SpecMgrException e) {

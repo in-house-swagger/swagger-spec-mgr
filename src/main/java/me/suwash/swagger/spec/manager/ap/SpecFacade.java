@@ -1,5 +1,7 @@
 package me.suwash.swagger.spec.manager.ap;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.config.ScmInfo;
@@ -21,10 +23,6 @@ public class SpecFacade {
 
     @Autowired
     private SpecService service;
-
-    private Object[] array(final Object... args) {
-        return args;
-    }
 
     private void registerScmInfo(final ScmInfo scmInfo) {
         final String threadName = Thread.currentThread().getName();

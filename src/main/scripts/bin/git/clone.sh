@@ -17,7 +17,6 @@
 # カレントディレクトリの移動
 dir_script="$(dirname $0)"
 cd "$(cd ${dir_script}; pwd)" || exit 1
-
 # 共通設定
 readonly DIR_BASE=$(cd ../..; pwd)
 . ../setenv
@@ -162,20 +161,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -gt 2 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # コミットユーザ
 user="$1"
@@ -203,21 +197,24 @@ fi
 # GIT_REMOTE_REPOSITORY_URL の定義チェック
 if [ "${GIT_REMOTE_REPOSITORY_URL}x" = "x" ]; then
   # 定義されていない場合、init
-  local.init "${dir_repo}"                                                                    2>&1 | tee -a "${PATH_LOG}"
+  local.init "${dir_repo}"                                                                    2>&1 | log.tee
 else
   # 定義されている場合、clone
-  local.clone "${dir_repo}" "${user}"                                                         2>&1 | tee -a "${PATH_LOG}"
+  local.clone "${dir_repo}" "${user}"                                                         2>&1 | log.tee
 fi
 ret_code=${PIPESTATUS[0]}
+
 if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
   git.common.exit_script ${EXITCODE_ERROR} "リポジトリの初期化でエラーが発生しました。"
 fi
 
+
 #--------------------------------------------------------------------------------
 # リポジトリ設定の追加
 #--------------------------------------------------------------------------------
-local.set_config "${dir_repo}" "${user}" "${email}"                                           2>&1 | tee -a "${PATH_LOG}"
+local.set_config "${dir_repo}" "${user}" "${email}"                                           2>&1 | log.tee
 ret_code=${PIPESTATUS[0]}
+
 if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
   git.common.exit_script ${EXITCODE_ERROR} "リポジトリ設定の追加でエラーが発生しました。"
 fi

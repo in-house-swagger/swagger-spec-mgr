@@ -77,20 +77,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -gt 1 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # コミットユーザ
 user="$1"
@@ -122,12 +117,12 @@ if [ "${has_origin}" != "true" ]; then
   git.common.exit_script ${EXITCODE_WARN} "リモートリポジトリ が存在しません。"
 else
   # 存在する場合、pull
-  git.pull "${dir_repo}"                                                                      2>&1 | tee -a "${PATH_LOG}"
+  git.pull "${dir_repo}"                                                                      2>&1 | log.tee
 fi
 ret_code=${PIPESTATUS[0]}
 
 if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "エラーが発生しました。"
+  git.common.exit_script ${EXITCODE_ERROR} "pull でエラーが発生しました。"
 fi
 
 

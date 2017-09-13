@@ -1,5 +1,7 @@
 package me.suwash.swagger.spec.manager.infra.util;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
 import io.swagger.util.Yaml;
 
 import java.io.File;
@@ -48,10 +50,6 @@ public final class SwaggerSpecUtils {
 
     /** コンストラクタ非公開。 */
     private SwaggerSpecUtils() {}
-
-    private static Object[] array(final Object... args) {
-        return args;
-    }
 
     /**
      *
