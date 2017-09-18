@@ -77,6 +77,11 @@ public class SubProcess {
         return this;
     }
 
+    public SubProcess envMap(final Map<String, String> envMap) {
+        this.env.putAll(envMap);
+        return this;
+    }
+
     public SubProcess timeout(final int seconds) {
         this.timeoutSec = seconds;
         return this;

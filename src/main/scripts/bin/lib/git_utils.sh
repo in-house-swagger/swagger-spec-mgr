@@ -3708,7 +3708,7 @@ function git.branch_is_exist() {
 
   # ブランチ一覧
   git.branch_list "${_work_dir}"                                                                   |
-  grep "${_branch}" >/dev/null 2>&1
+  grep "^${_branch}$" >/dev/null 2>&1
   _ret_code=$?
   if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
     echo "true"
@@ -4413,7 +4413,7 @@ function git.tag_is_exist() {
 
   # ブランチ一覧
   git.tag_list "${_work_dir}"                                                                      |
-  grep "${_tag}" >/dev/null 2>&1
+  grep "^${_tag}$" >/dev/null 2>&1
   _ret_code=$?
   if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
     echo "true"

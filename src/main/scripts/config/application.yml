@@ -12,12 +12,22 @@ server:
   contextPath: "/v1"
 
 spec.mgr:
-  # デフォルトcommitユーザ
-  defaultScmUser: "${SCM_DEFAULT_USER}"
-  # ファイル出力ルートディレクトリ相対パス
-  dirData: "${DIR_DATA}"
-  # 分割済み定義ファイル出力ディレクトリ相対パス
-  relDirSpecs: "${RELDIR_SPECS}"
+  # デフォルトコミット情報
+  defaultCommitInfo:
+    # ユーザ
+    user: "${SCM_DEFAULT_USER}"
+    # メッセージ
+    message: "${SCM_DEFAULT_COMMIT_MESSAGE}"
+
+  # ディレクトリ情報
+  dirInfo:
+    # 実行スクリプト
+    bin: "${DIR_BIN}"
+    # ファイル出力ルート
+    data: "${DIR_DATA}"
+    # 分割済み定義 ※gitリポジトリルートからの相対パス
+    specs: "${RELDIR_SPECS}"
+
   # 分割除外パス正規表現リスト
   splitIgnoreRegexs:
   - "/info/.*"
@@ -30,6 +40,10 @@ spec.mgr:
   - "/paths/.*/responses"
   - "/paths/.*/tags"
   - "/paths/.*/security"
+
+  # スクリプト実行時環境変数
+  scriptEnv:
+    SOME_VAR: "SOME_VALUE"
 
 
 #---------------------------------------------------------------------------------------------------

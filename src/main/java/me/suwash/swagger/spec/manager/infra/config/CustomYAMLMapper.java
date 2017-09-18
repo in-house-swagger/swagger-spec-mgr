@@ -1,7 +1,7 @@
 package me.suwash.swagger.spec.manager.infra.config;
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 public class CustomYAMLMapper extends YAMLMapper {
     private static final long serialVersionUID = 1L;

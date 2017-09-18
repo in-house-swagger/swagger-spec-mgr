@@ -4,6 +4,7 @@ import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Spec;
 
@@ -15,17 +16,19 @@ import org.springframework.stereotype.Service;
 public class SpecService {
 
     @Autowired
-    private SpecRepository repository;
+    private SpecRepository specRepository;
+    @Autowired
+    private GitRepoRepository gitRepoRepository;
 
     public List<String> idList() {
-        return repository.idList();
+        return specRepository.idList();
     }
 
     public Spec findById(final String specId) {
         if (StringUtils.isEmpty(specId))
             throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"specId"});
 
-        return repository.findById(specId);
+        return specRepository.findById(specId);
     }
 
     public Spec newSpec(final String specId, final Object payload) {
@@ -34,6 +37,6 @@ public class SpecService {
         if (payload == null)
             throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"payload"});
 
-        return new Spec(repository, specId, payload);
+        return new Spec(gitRepoRepository, specRepository, specId, payload);
     }
 }

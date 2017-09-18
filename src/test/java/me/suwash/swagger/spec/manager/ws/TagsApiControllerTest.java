@@ -1,5 +1,6 @@
 package me.suwash.swagger.spec.manager.ws;
 
+import static me.suwash.swagger.spec.manager.ws.ControllerTestUtils.addMediaType;
 import static me.suwash.swagger.spec.manager.ws.ControllerTestUtils.addRequestBody;
 import static me.suwash.swagger.spec.manager.ws.ControllerTestUtils.addRequestHeader;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -12,17 +13,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.util.SwaggerSpecUtils;
+import me.suwash.swagger.spec.manager.sv.service.TagServiceTest;
 import me.suwash.swagger.spec.manager.ws.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
 
@@ -49,13 +47,14 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @lombok.extern.slf4j.Slf4j
-public class SpecsApiControllerTest {
+public class TagsApiControllerTest {
 
-    private static final String SPEC_ID = SpecsApiControllerTest.class.getSimpleName();
-    private static String dirMerged;
-    private static String dirSplit;
+    private static final String TAG_ID = "v1.0.0";
+    private static final String SPEC_ID = "sample_spec";
+    private static final String COMMIT_USER = TagServiceTest.class.getSimpleName();
+    private static final String DIR_DATA = TestConst.DIR_DATA + "/" + COMMIT_USER;
 
-    private static final String URI_BASE = "/specs";
+    private static final String URI_BASE = "/tags";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -64,7 +63,7 @@ public class SpecsApiControllerTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.info(SpecsApiControllerTest.class.getSimpleName());
+        log.info(TagsApiControllerTest.class.getSimpleName());
     }
 
     @AfterClass
@@ -83,28 +82,10 @@ public class SpecsApiControllerTest {
     public void tearDown() throws Exception {}
 
     @Test
-    public final void test_yaml_commitInfoなし() throws Exception {
-        test(null, RequestMediaType.yaml);
-    }
-
-    @Test
-    public final void test_yaml_commitInfoあり() throws Exception {
-        test(new CommitInfo("user-yaml", "user-yaml@test.com", "yaml:コミットメッセージ"), RequestMediaType.yaml);
-    }
-
-    @Test
-    public final void test_json_commitInfoあり() throws Exception {
-        test(new CommitInfo("user-json", "user-json@test.com", "json:コミットメッセージ"), RequestMediaType.json);
-    }
-
-    public final void test(
-        final CommitInfo commitInfo,
-        final RequestMediaType requestMediaType) throws Exception {
-
-        dirMerged = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        dirSplit = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-        FileUtils.rmdirs(dirMerged);
-        FileUtils.rmdirs(dirSplit);
+    public final void test() throws Exception {
+        CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", COMMIT_USER + " test tag.");
+        RequestMediaType requestMediaType = RequestMediaType.json;
+        FileUtils.rmdirs(DIR_DATA);
 
         // ------------------------------------------------------------------------------------------
         // 準備
@@ -112,119 +93,125 @@ public class SpecsApiControllerTest {
         // payload
         Map<String, Object> payload = new HashMap<>();
         Map<String, Object> depth1_map = new HashMap<>();
-        depth1_map.put("depth1_map.key1", LocalDate.now());
-        depth1_map.put("depth1_map.key2", LocalDateTime.now());
-        List<Object> depth1_list = new ArrayList<>();
-        depth1_list.add(LocalDateTime.now().toString());
-        depth1_list.add(LocalDateTime.now().toString());
-        depth1_list.add(LocalDateTime.now().toString());
-        payload.put("depth1_map", depth1_map);
-        payload.put("depth1_list", depth1_list);
+        depth1_map.put("depth1.now", LocalDate.now());
+        payload.put("depth1", depth1_map);
+
+        // リポジトリ初期化
+        mockMvc.perform(
+            addRequestBody(
+                post("/specs/" + SPEC_ID), requestMediaType, payload, commitInfo))
+            .andExpect(status().isCreated());
 
         // 実行結果
         MvcResult result = null;
 
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 入力チェック
+        // tags/{tag} : 入力チェック
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} POST 入力チェック " + requestMediaType);
-        mockMvc.perform(
-            addRequestHeader(post(URI_BASE + "/NotExist"), commitInfo))
-//            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isUnsupportedMediaType());
+        log.info("/tags/{tag} POST 入力チェック");
         mockMvc.perform(
             addRequestHeader(post(URI_BASE + "/NotExist"), commitInfo)
                 .contentType(requestMediaType.value()))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest());
 
-        log.info("/specs/{specId} PUT 入力チェック " + requestMediaType);
-        mockMvc.perform(
-            addRequestHeader(put(URI_BASE + "/NotExist"), commitInfo))
-//            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isUnsupportedMediaType());
+        log.info("/tags/{tag} PUT 入力チェック");
         mockMvc.perform(
             addRequestHeader(put(URI_BASE + "/NotExist"), commitInfo)
                 .contentType(requestMediaType.value()))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest());
 
+
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 取得 0件
+        // tags : 取得 0件
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} GET " + requestMediaType);
+        log.info("/tags GET " + requestMediaType);
         result = mockMvc.perform(
-            addRequestHeader(get(URI_BASE + "/" + SPEC_ID), commitInfo))
+            addRequestHeader(get(URI_BASE), commitInfo))
+//            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isNoContent())
+            .andReturn();
+
+
+        // ------------------------------------------------------------------------------------------
+        // tags/{tag} : 取得 0件
+        // ------------------------------------------------------------------------------------------
+        log.info("/tags/{tag} GET " + requestMediaType);
+        result = mockMvc.perform(
+            addRequestHeader(get(URI_BASE + "/" + TAG_ID + "/"), commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
 
+
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 追加
+        // tags/{tag} : 追加
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} POST " + requestMediaType);
+        log.info("/tags/{tag} POST " + requestMediaType);
         result = mockMvc.perform(
-            addRequestBody(
-                post(URI_BASE + "/" + SPEC_ID), requestMediaType, payload, commitInfo))
+            addMediaType(
+                post(URI_BASE + "/" + TAG_ID + "/" + "?object=master"), requestMediaType, commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isCreated())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString() + "\n", is(SwaggerSpecUtils.writeString(payload)));
+        assertThat(result.getResponse().getContentAsString(), containsString(TAG_ID));
+
 
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 取得
+        // tags/{tag} : 取得
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} GET " + requestMediaType);
+        log.info("/tags/{tag} GET " + requestMediaType);
         result = mockMvc.perform(
-            addRequestHeader(get(URI_BASE + "/" + SPEC_ID), commitInfo))
+            addRequestHeader(get(URI_BASE + "/" + TAG_ID + "/"), commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString() + "\n", is(SwaggerSpecUtils.writeString(payload)));
+        assertThat(result.getResponse().getContentAsString(), containsString(TAG_ID));
 
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 更新
+        // tags/{tag} : 更新
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} PUT " + requestMediaType);
-        payload.put("KEY_FOR_UPDATE", this.getClass().getName());
-
+        log.info("/tags/{tag} PUT " + requestMediaType);
         result = mockMvc.perform(
             addRequestBody(
-                put(URI_BASE + "/" + SPEC_ID), requestMediaType, payload, commitInfo))
+                put(URI_BASE + "/" + TAG_ID + "/" + "?to=" + "UPDATED_" + TAG_ID), requestMediaType, payload, commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString() + "\n", is(SwaggerSpecUtils.writeString(payload)));
+        assertThat(result.getResponse().getContentAsString(), containsString("UPDATED_" + TAG_ID));
+
 
         // ------------------------------------------------------------------------------------------
-        // specs
+        // tags
         // ------------------------------------------------------------------------------------------
-        log.info("/specs GET " + requestMediaType);
+        log.info("/tags GET " + requestMediaType);
         result = mockMvc.perform(
             addRequestHeader(get(URI_BASE), commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(SpecsApiControllerTest.class.getSimpleName()));
+        assertThat(result.getResponse().getContentAsString(), containsString("UPDATED_" + TAG_ID));
+
 
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 削除
+        // tags/{tag} : 削除
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} DELETE " + requestMediaType);
+        log.info("/tags/{tag} DELETE " + requestMediaType);
         result = mockMvc.perform(
-            addRequestHeader(delete(URI_BASE + "/" + SPEC_ID), commitInfo))
+            addRequestHeader(delete(URI_BASE + "/" + "UPDATED_" + TAG_ID + "/"), commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), is(StringUtils.EMPTY));
 
         // ------------------------------------------------------------------------------------------
-        // specs/{specId} : 取得 削除済み
+        // tags/{tag} : 取得 削除済み
         // ------------------------------------------------------------------------------------------
-        log.info("/specs/{specId} GET " + requestMediaType);
+        log.info("/tags/{tag} GET " + requestMediaType);
         result = mockMvc.perform(
-            addRequestHeader(get(URI_BASE + "/" + SPEC_ID), commitInfo))
+            addRequestHeader(get(URI_BASE + "/" + "UPDATED_" + TAG_ID + "/"), commitInfo))
 //            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();

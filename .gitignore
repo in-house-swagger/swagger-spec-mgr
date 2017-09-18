@@ -24,3 +24,5 @@ src/main/scripts/config/access_info
 src/main/scripts/config/access_info.enc
 src/main/scripts/log/
 src/main/scripts/data/
+src/test/scripts/log/
+src/test/scripts/data/

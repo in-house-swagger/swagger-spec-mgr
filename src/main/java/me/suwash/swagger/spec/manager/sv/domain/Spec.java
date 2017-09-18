@@ -2,33 +2,53 @@ package me.suwash.swagger.spec.manager.sv.domain;
 
 import javax.validation.constraints.NotNull;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.gen.SpecGen;
 
 public class Spec extends SpecGen {
 
     @NotNull
-    private final SpecRepository repository;
+    private final GitRepoRepository gitRepoRepository;
+    @NotNull
+    private final SpecRepository specRepository;
 
-    public Spec(final SpecRepository repository, final String id, final Object payload) {
+    public Spec(
+        final GitRepoRepository gitRepository,
+        final SpecRepository specRepository,
+        final String id,
+        final Object payload) {
+
         super(id, payload);
-        this.repository = repository;
+        this.gitRepoRepository = gitRepository;
+        this.specRepository = specRepository;
     }
 
     public void add() {
-        repository.add(this);
+        // Git作業ディレクトリが作成されていない場合、初期化
+        if(!gitRepoRepository.isExist()) gitRepoRepository.init();
+        // specを追加
+        specRepository.add(this);
+        // 追加を反映
+        gitRepoRepository.push();
     }
 
     public void update(final Object payload) {
-        if (payload == null)
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"payload"});
+        // 事前に更新を取得
+        gitRepoRepository.pull();
+        // specを更新
         this.payload = payload;
-        repository.update(this);
+        specRepository.update(this);
+        // 更新を反映
+        gitRepoRepository.push();
     }
 
     public void delete() {
-        repository.delete(this.id);
+        // 事前に更新を取得
+        gitRepoRepository.pull();
+        // specを削除
+        specRepository.delete(this.id);
+        // 削除を反映
+        gitRepoRepository.push();
     }
 }
