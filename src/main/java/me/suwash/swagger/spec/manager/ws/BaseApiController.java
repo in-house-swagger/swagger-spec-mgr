@@ -1,6 +1,9 @@
 package me.suwash.swagger.spec.manager.ws;
 
 import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
+import javax.servlet.http.HttpServletRequest;
+
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
@@ -8,7 +11,9 @@ import me.suwash.swagger.spec.manager.infra.i18n.SpecMgrMessageSource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.HandlerMapping;
 
 @lombok.extern.slf4j.Slf4j
 public class BaseApiController {
@@ -36,4 +41,13 @@ public class BaseApiController {
         return new CommitInfo(user, email, message);
     }
 
+    /*
+     * リクエストのURLパスから、今回マッチしたパターンを取り除いた文字列を返す。
+     */
+    protected String extractPathFromPattern(final HttpServletRequest request){
+        if (request == null) return null;
+        String path = (String)request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String bestMatchPattern = (String)request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        return new AntPathMatcher().extractPathWithinPattern(bestMatchPattern, path);
+    }
 }

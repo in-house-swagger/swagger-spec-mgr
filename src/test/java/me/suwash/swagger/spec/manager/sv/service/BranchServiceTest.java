@@ -1,8 +1,9 @@
-package me.suwash.swagger.spec.manager.ap;
+package me.suwash.swagger.spec.manager.sv.service;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
@@ -16,7 +17,8 @@ import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
-import me.suwash.swagger.spec.manager.sv.domain.Tag;
+import me.suwash.swagger.spec.manager.sv.domain.Branch;
+import me.suwash.swagger.spec.manager.sv.domain.Spec;
 import me.suwash.util.FileUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,30 +40,32 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @lombok.extern.slf4j.Slf4j
-public class TagFacadeTest {
+public class BranchServiceTest {
 
-    private static final String TAG_ID = "v1.0";
+    private static final String BRANCH = "develop";
+    private static final String COMMIT_USER = BranchServiceTest.class.getSimpleName();
     private static final String SPEC_ID = "sample_spec";
-    private static final String COMMIT_USER = TagFacadeTest.class.getSimpleName();
-    private static final String DIR_DATA = TestConst.DIR_DATA + "/" + COMMIT_USER;
+    private static final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
 
     @Autowired
     private SpecMgrContext context;
     @Autowired
-    private SpecFacade specFacade;
+    private SpecService specService;
     @Autowired
-    private TagFacade facade;
+    private BranchService service;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.info(TagFacadeTest.class.getSimpleName());
+        log.info(BranchServiceTest.class.getSimpleName());
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {}
 
     @Before
-    public void setUp() throws Exception {}
+    public void setUp() throws Exception {
+        FileUtils.rmdirs(dirData);
+    }
 
     @After
     public void tearDown() throws Exception {}
@@ -71,9 +75,9 @@ public class TagFacadeTest {
         //------------------------------------------------------------------------------------------
         // 準備
         //------------------------------------------------------------------------------------------
-        FileUtils.rmdirs(DIR_DATA);
-
-        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com");
+        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", "TagService test tag.");
+        final String threadName = Thread.currentThread().getName();
+        this.context.put(threadName, CommitInfo.class.getName(), commitInfo);
 
         // payload
         Map<String, Object> payload = new HashMap<>();
@@ -82,42 +86,42 @@ public class TagFacadeTest {
         payload.put("depth1", depth1_map);
 
         // リポジトリ初期化
-        specFacade.add(commitInfo, SPEC_ID, payload);
-
+        Spec spec = specService.newSpec(SPEC_ID, payload);
+        spec.add();
 
         //------------------------------------------------------------------------------------------
         // 入力チェック
         //------------------------------------------------------------------------------------------
         try {
-            facade.findById(commitInfo, StringUtils.EMPTY);
+            service.newBranch(null);
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
         }
 
         try {
-            facade.add(commitInfo, StringUtils.EMPTY, StringUtils.EMPTY);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-        try {
-            facade.add(commitInfo, "master", StringUtils.EMPTY);
+            service.findById(StringUtils.EMPTY);
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
         }
 
         try {
-            facade.rename(commitInfo, StringUtils.EMPTY, StringUtils.EMPTY);
+            service.mergeBranch(StringUtils.EMPTY, StringUtils.EMPTY);
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
         }
         try {
-            facade.rename(commitInfo, TAG_ID, StringUtils.EMPTY);
+            service.mergeBranch(StringUtils.EMPTY, "notExist");
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
+        }
+        try {
+            service.mergeBranch("notExist", StringUtils.EMPTY);
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
         }
 
         try {
-            facade.delete(commitInfo, StringUtils.EMPTY);
+            service.switchBranch(StringUtils.EMPTY);
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
         }
@@ -126,48 +130,88 @@ public class TagFacadeTest {
         //------------------------------------------------------------------------------------------
         // 0件
         //------------------------------------------------------------------------------------------
-        List<String> beforeIdList = facade.idList(commitInfo);
-        assertThat(beforeIdList, not(hasItem(TAG_ID)));
+        List<String> beforeIdList = service.idList();
+        assertThat(beforeIdList, not(hasItem(BRANCH)));
 
-        try {
-            facade.findById(commitInfo, TAG_ID);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
-        }
+        Branch finded = service.findById(BRANCH);
+        assertThat(finded, is(nullValue()));
 
 
         //------------------------------------------------------------------------------------------
         // 追加
         //------------------------------------------------------------------------------------------
         log.info("ADD");
-        Tag added = facade.add(commitInfo, "master", TAG_ID);
-        assertThat(added.getId(), is(TAG_ID));
+        Branch branch = service.newBranch(BRANCH);
+        assertThat(branch.getId(), is(BRANCH));
+        assertThat(branch.getGitObject(), is(nullValue()));
 
-        List<String> addedIdList = facade.idList(commitInfo);
-        assertThat(addedIdList, hasItem(TAG_ID));
+        branch.add("master");
+        List<String> addedIdList = service.idList();
+        assertThat(addedIdList, hasItem(BRANCH));
         log.info("-- idList: " + addedIdList);
 
+        Branch added = service.findById(BRANCH);
+        assertThat(added, not(nullValue()));
+        assertThat(added.getId(), is(BRANCH));
+
+        Branch branch2 = service.newBranch("feature");
+        branch2.add(BRANCH);
+        List<String> addedIdList2 = service.idList();
+        assertThat(addedIdList2, hasItem("feature"));
+        log.info("-- idList: " + addedIdList2);
+
+        Branch added2 = service.findById("feature");
+        assertThat(added2, not(nullValue()));
+        assertThat(added2.getId(), is("feature"));
 
         //------------------------------------------------------------------------------------------
         // 更新
         //------------------------------------------------------------------------------------------
         log.info("UPDATE");
-        facade.rename(commitInfo, TAG_ID, "RENAMED_" + TAG_ID);
+        added.rename("RENAMED_" + BRANCH);
+        Branch renamed = service.findById("RENAMED_" + BRANCH);
+        assertThat(renamed.getId(), is("RENAMED_" + BRANCH));
 
-        List<String> updatedIdList = facade.idList(commitInfo);
-        assertThat(updatedIdList, hasItem("RENAMED_" + TAG_ID));
-        log.info("-- idList: " + updatedIdList);
+        //------------------------------------------------------------------------------------------
+        // switch
+        //------------------------------------------------------------------------------------------
+        log.info("SWITCH");
+        Branch switched = service.switchBranch("feature");
+        assertThat(switched.getId(), is("feature"));
+
+
+        //------------------------------------------------------------------------------------------
+        // merge
+        //------------------------------------------------------------------------------------------
+        // featureにコミット追加
+        Map<String, Object> depth1_map2 = new HashMap<>();
+        depth1_map2.put("depth1-2.now", LocalDate.now());
+        payload.put("depth1-2", depth1_map2);
+        spec.update(payload);
+
+        // feature → RENAMED_develop にマージ
+        log.info("MERGE");
+        Branch merged = service.mergeBranch("feature", "RENAMED_" + BRANCH);
+        assertThat(merged.getId(), is("RENAMED_" + BRANCH));
 
 
         //------------------------------------------------------------------------------------------
         // 削除
         //------------------------------------------------------------------------------------------
-        log.info("DELETE");
-        facade.delete(commitInfo, "RENAMED_" + TAG_ID);
+        log.info("DELETE - feature");
+        switched.delete();
 
-        List<String> deletedIdList = facade.idList(commitInfo);
-        assertThat(deletedIdList, not(hasItem("RENAMED_" + TAG_ID)));
+        List<String> deletedIdList = service.idList();
+        assertThat(deletedIdList, not(hasItem("feature")));
         log.info("-- idList: " + deletedIdList);
-     }
+
+
+        log.info("DELETE - RENAMED_" + BRANCH);
+        merged.delete();
+
+        deletedIdList = service.idList();
+        assertThat(deletedIdList, not(hasItem("RENAMED_" + BRANCH)));
+        log.info("-- idList: " + deletedIdList);
+    }
 
 }

@@ -27,7 +27,7 @@ public interface TagsApi {
     @ApiOperation(value = "Find all tags", notes = "Returns all tags", response = Identifiable.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = Identifiable.class),
-        @ApiResponse(code = 404, message = "tag not found", response = Void.class)
+        @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
     @RequestMapping(value = "/tags",
         produces = {
@@ -42,7 +42,7 @@ public interface TagsApi {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = Object.class),
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "Specification not found", response = Void.class)
+        @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
     @RequestMapping(value = "/tags/{tag}",
         produces = {
@@ -76,7 +76,7 @@ public interface TagsApi {
     @ApiOperation(value = "rename an existing tag", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "tag not found", response = Void.class),
+        @ApiResponse(code = 404, message = "Tag not found", response = Void.class),
         @ApiResponse(code = 405, message = "Validation exception", response = Void.class)
     })
     @RequestMapping(value = "/tags/{tag}",
@@ -96,7 +96,7 @@ public interface TagsApi {
     @ApiOperation(value = "Deletes a tag", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "Specification not found", response = Void.class)
+        @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
     @RequestMapping(value = "/tags/{tag}",
         method = RequestMethod.DELETE)

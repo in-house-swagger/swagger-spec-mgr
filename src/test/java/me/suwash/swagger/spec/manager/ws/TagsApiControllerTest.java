@@ -20,7 +20,6 @@ import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.sv.service.TagServiceTest;
 import me.suwash.swagger.spec.manager.ws.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
 
@@ -51,7 +50,7 @@ public class TagsApiControllerTest {
 
     private static final String TAG_ID = "v1.0.0";
     private static final String SPEC_ID = "sample_spec";
-    private static final String COMMIT_USER = TagServiceTest.class.getSimpleName();
+    private static final String COMMIT_USER = TagsApiControllerTest.class.getSimpleName();
     private static final String DIR_DATA = TestConst.DIR_DATA + "/" + COMMIT_USER;
 
     private static final String URI_BASE = "/tags";
