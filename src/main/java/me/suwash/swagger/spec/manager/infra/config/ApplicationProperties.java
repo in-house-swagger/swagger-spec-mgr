@@ -37,6 +37,7 @@ public class ApplicationProperties {
     public String getDefaultCommitUser() {
         return defaultCommitInfo.get("user");
     }
+
     public String getDefaultCommitMessage() {
         return defaultCommitInfo.get("message");
     }
@@ -44,6 +45,7 @@ public class ApplicationProperties {
     public String getDirBin() {
         return dirInfo.get("bin");
     }
+
     public String getDirData() {
         return dirInfo.get("data");
     }

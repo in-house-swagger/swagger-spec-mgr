@@ -104,7 +104,7 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         try {
             // 文字列として書き出し
-            String parsed  = yamlMapper.writeValueAsString(value);
+            String parsed = yamlMapper.writeValueAsString(value);
 
             // DOC_START_MARKERを削除
             final String DOC_START_MARKER = "^---";

@@ -4,26 +4,49 @@ import javax.validation.constraints.NotNull;
 
 import me.suwash.swagger.spec.manager.sv.da.GitBranchRepository;
 import me.suwash.swagger.spec.manager.sv.domain.gen.BranchGen;
+import me.suwash.swagger.spec.manager.sv.specification.BranchSpec;
 
 public class Branch extends BranchGen {
+
+    @NotNull
+    private final BranchSpec branchSpec;
     @NotNull
     private GitBranchRepository repository;
 
-    public Branch(final GitBranchRepository repository, final String id) {
+    public Branch(final BranchSpec branchSpec, final GitBranchRepository repository, final String id) {
         super(id, null);
+        this.branchSpec = branchSpec;
         this.repository = repository;
     }
 
     public void add(final String gitObject) {
         this.gitObject = gitObject;
+        branchSpec.canAdd(this);
+
         repository.addBranch(this.gitObject, this.id);
     }
 
     public void rename(final String toBranch) {
+        branchSpec.canRename(this, toBranch);
+
         repository.renameBranch(this.id, toBranch);
     }
 
     public void delete() {
+        branchSpec.canDelete(this);
+
         repository.removeBranch(this.id);
+    }
+
+    public void mergeInto(final Branch to) {
+        branchSpec.canMerge(this, to);
+
+        repository.mergeBranch(this.id, to.getId());
+    }
+
+    public void switchBranch() {
+        branchSpec.canSwitchBranch(this);
+
+        repository.switchBranch(this.id);
     }
 }

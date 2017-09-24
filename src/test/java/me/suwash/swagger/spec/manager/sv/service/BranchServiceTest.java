@@ -1,16 +1,17 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
+import static me.suwash.swagger.spec.manager.SpecMgrTestUtils.assertCheckErrors;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
@@ -42,10 +43,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @lombok.extern.slf4j.Slf4j
 public class BranchServiceTest {
 
-    private static final String BRANCH = "develop";
     private static final String COMMIT_USER = BranchServiceTest.class.getSimpleName();
     private static final String SPEC_ID = "sample_spec";
-    private static final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
 
     @Autowired
     private SpecMgrContext context;
@@ -63,154 +62,333 @@ public class BranchServiceTest {
     public static void tearDownAfterClass() throws Exception {}
 
     @Before
-    public void setUp() throws Exception {
-        FileUtils.rmdirs(dirData);
-    }
+    public void setUp() throws Exception {}
 
     @After
     public void tearDown() throws Exception {}
 
     @Test
-    public final void test() {
-        //------------------------------------------------------------------------------------------
+    public final void testSpec() {
+        // ------------------------------------------------------------------------------------------
         // 準備
-        //------------------------------------------------------------------------------------------
-        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", "TagService test tag.");
-        final String threadName = Thread.currentThread().getName();
-        this.context.put(threadName, CommitInfo.class.getName(), commitInfo);
+        // ------------------------------------------------------------------------------------------
+        final String user = COMMIT_USER + "_error";
+        final CommitInfo commitInfo = new CommitInfo(user, user + "@example.com", "TagService test tag.");
+        this.context.putCommitInfo(commitInfo);
 
         // payload
-        Map<String, Object> payload = new HashMap<>();
-        Map<String, Object> depth1_map = new HashMap<>();
-        depth1_map.put("depth1.now", LocalDate.now());
-        payload.put("depth1", depth1_map);
+        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
+        final String dirData = TestConst.DIR_DATA + "/" + user;
+        FileUtils.rmdirs(dirData);
+
         Spec spec = specService.newSpec(SPEC_ID, payload);
         spec.add();
 
-        //------------------------------------------------------------------------------------------
-        // 入力チェック
-        //------------------------------------------------------------------------------------------
-        try {
-            service.newBranch(null);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-
+        // -----------------------------------------------------------------------------------------
+        // 検索
+        // -----------------------------------------------------------------------------------------
         try {
             service.findById(StringUtils.EMPTY);
+            fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
         }
 
-        try {
-            service.mergeBranch(StringUtils.EMPTY, StringUtils.EMPTY);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-        try {
-            service.mergeBranch(StringUtils.EMPTY, "notExist");
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-        try {
-            service.mergeBranch("notExist", StringUtils.EMPTY);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-
-        try {
-            service.switchBranch(StringUtils.EMPTY);
-        } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
-        }
-
-
-        //------------------------------------------------------------------------------------------
-        // 0件
-        //------------------------------------------------------------------------------------------
-        List<String> beforeIdList = service.idList();
-        assertThat(beforeIdList, not(hasItem(BRANCH)));
-
-        Branch finded = service.findById(BRANCH);
-        assertThat(finded, is(nullValue()));
-
-
-        //------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 追加
-        //------------------------------------------------------------------------------------------
-        log.info("ADD");
-        Branch branch = service.newBranch(BRANCH);
-        assertThat(branch.getId(), is(BRANCH));
-        assertThat(branch.getGitObject(), is(nullValue()));
+        // -----------------------------------------------------------------------------------------
+        // id が未設定
+        try {
+            service.newBranch(null).add("master");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // gitObject が未設定
+        try {
+            service.newBranch("error").add(null);
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // id, gitObject が未設定
+        try {
+            service.newBranch("").add("");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
 
-        branch.add("master");
+        // 作成済み
+        Branch develop = service.newBranch("develop");
+        develop.add("master");
+        try {
+            service.newBranch("develop").add("master");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageArgs()[0], is("SubProcess"));
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // スイッチ
+        // -----------------------------------------------------------------------------------------
+        // id が未設定
+        try {
+            service.newBranch(null).switchBranch();
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // マージ
+        // -----------------------------------------------------------------------------------------
+        // fromId, toBranch が未設定
+        try {
+            service.newBranch(null).mergeInto(null);
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty", MessageConst.CHECK_NOTNULL
+            });
+            context.clearErrors();
+        }
+        // toBranch が未設定
+        try {
+            develop.mergeInto(null);
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                MessageConst.CHECK_NOTNULL
+            });
+            context.clearErrors();
+        }
+        // fromId が未設定
+        try {
+            service.mergeBranch(null, "master");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // toId が未設定
+        try {
+            service.mergeBranch("develop", null);
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // fromId, toId が未設定
+        try {
+            service.mergeBranch("", "");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // リネーム
+        // -----------------------------------------------------------------------------------------
+        // fromId, toId が未設定
+        try {
+            service.newBranch("").rename("");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // toId が未設定
+        try {
+            develop.rename(null);
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                MessageConst.CHECK_NOTNULL
+            });
+            context.clearErrors();
+        }
+        // toId が既に存在する
+        try {
+            develop.rename("master");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageArgs()[0], is("SubProcess"));
+        }
+        // 削除済み
+        develop.delete();
+        try {
+            develop.rename("feature/1");
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageArgs()[0], is("SubProcess"));
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // 削除
+        // -----------------------------------------------------------------------------------------
+        // id が未設定
+        try {
+            service.newBranch(null).delete();
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertCheckErrors(context, new String[] {
+                "BeanValidator.NotEmpty"
+            });
+            context.clearErrors();
+        }
+        // 削除済み
+        try {
+            develop.delete();
+            fail();
+        } catch (final SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageArgs()[0], is("SubProcess"));
+        }
+    }
+
+    @Test
+    public final void test() {
+        // ------------------------------------------------------------------------------------------
+        // 準備
+        // ------------------------------------------------------------------------------------------
+        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", "TagService test tag.");
+        this.context.putCommitInfo(commitInfo);
+
+        // payload
+        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+
+        // リポジトリ初期化
+        final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
+        FileUtils.rmdirs(dirData);
+
+        Spec spec = specService.newSpec(SPEC_ID, payload);
+        spec.add();
+
+        // ------------------------------------------------------------------------------------------
+        // 0件
+        // ------------------------------------------------------------------------------------------
+        List<String> beforeIdList = service.idList();
+        assertThat(beforeIdList, not(hasItem("develop")));
+
+        try {
+            service.findById("develop");
+            fail();
+        } catch (SpecMgrException e) {
+            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
+        }
+
+        // ------------------------------------------------------------------------------------------
+        // 追加
+        // ------------------------------------------------------------------------------------------
+        log.info("ADD");
+        Branch develop = service.newBranch("develop");
+        assertThat(develop.getId(), is("develop"));
+        assertThat(develop.getGitObject(), is(nullValue()));
+
+        develop.add("master");
         List<String> addedIdList = service.idList();
-        assertThat(addedIdList, hasItem(BRANCH));
+        assertThat(addedIdList, hasItem("develop"));
         log.info("-- idList: " + addedIdList);
 
-        Branch added = service.findById(BRANCH);
-        assertThat(added, not(nullValue()));
-        assertThat(added.getId(), is(BRANCH));
+        Branch addedDevelop = service.findById("develop");
+        assertThat(addedDevelop, not(nullValue()));
+        assertThat(addedDevelop.getId(), is("develop"));
 
-        Branch branch2 = service.newBranch("feature");
-        branch2.add(BRANCH);
+        Branch feature1 = service.newBranch("feature/1");
+        feature1.add("develop");
         List<String> addedIdList2 = service.idList();
-        assertThat(addedIdList2, hasItem("feature"));
+        assertThat(addedIdList2, hasItem("feature/1"));
         log.info("-- idList: " + addedIdList2);
 
-        Branch added2 = service.findById("feature");
-        assertThat(added2, not(nullValue()));
-        assertThat(added2.getId(), is("feature"));
+        Branch addedFeature1 = service.findById("feature/1");
+        assertThat(addedFeature1, not(nullValue()));
+        assertThat(addedFeature1.getId(), is("feature/1"));
 
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         // 更新
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         log.info("UPDATE");
-        added.rename("RENAMED_" + BRANCH);
-        Branch renamed = service.findById("RENAMED_" + BRANCH);
-        assertThat(renamed.getId(), is("RENAMED_" + BRANCH));
+        addedFeature1.rename("feature/2");
+        Branch renamedFeature2 = service.findById("feature/2");
+        assertThat(renamedFeature2.getId(), is("feature/2"));
 
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         // switch
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         log.info("SWITCH");
-        Branch switched = service.switchBranch("feature");
-        assertThat(switched.getId(), is("feature"));
+        Branch switchedDevelop = service.switchBranch("develop");
+        assertThat(switchedDevelop.getId(), is("develop"));
 
-
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         // merge
-        //------------------------------------------------------------------------------------------
-        // featureにコミット追加
-        Map<String, Object> depth1_map2 = new HashMap<>();
-        depth1_map2.put("depth1-2.now", LocalDate.now());
-        payload.put("depth1-2", depth1_map2);
+        // ------------------------------------------------------------------------------------------
+        // developにコミット追加
+        payload.put("UPDATE_KEY", this.getClass().getSimpleName());
         spec.update(payload);
 
-        // feature → RENAMED_develop にマージ
+        // develop → master にマージ
         log.info("MERGE");
-        Branch merged = service.mergeBranch("feature", "RENAMED_" + BRANCH);
-        assertThat(merged.getId(), is("RENAMED_" + BRANCH));
+        Branch mergedMaster = service.mergeBranch("develop", "master");
+        assertThat(mergedMaster.getId(), is("master"));
 
-
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         // 削除
-        //------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
         log.info("DELETE - feature");
-        switched.delete();
+        renamedFeature2.delete();
 
         List<String> deletedIdList = service.idList();
-        assertThat(deletedIdList, not(hasItem("feature")));
+        assertThat(deletedIdList, not(hasItem("feature/2")));
         log.info("-- idList: " + deletedIdList);
 
-
-        log.info("DELETE - RENAMED_" + BRANCH);
-        merged.delete();
+        log.info("DELETE - develop");
+        switchedDevelop.delete();
 
         deletedIdList = service.idList();
-        assertThat(deletedIdList, not(hasItem("RENAMED_" + BRANCH)));
+        assertThat(deletedIdList, not(hasItem("develop")));
         log.info("-- idList: " + deletedIdList);
     }
 

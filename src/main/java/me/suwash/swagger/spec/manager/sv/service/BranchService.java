@@ -1,13 +1,15 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.da.GitBranchRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Branch;
+import me.suwash.swagger.spec.manager.sv.specification.BranchSpec;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,43 +17,39 @@ import org.springframework.stereotype.Service;
 public class BranchService {
 
     @Autowired
+    private BranchSpec branchSpec;
+    @Autowired
     private GitBranchRepository repository;
+
+    public Branch newBranch(final String branch) {
+        return new Branch(branchSpec, repository, branch);
+    }
 
     public List<String> idList() {
         return repository.branchList();
     }
 
     public Branch findById(final String branch) {
-        if (StringUtils.isEmpty(branch))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"branch"});
+        final Branch criteria = newBranch(branch);
+        branchSpec.canFind(criteria);
 
         if (repository.isExistBranch(branch)) return newBranch(branch);
-        return null;
-    }
-
-    public Branch newBranch(final String branch) {
-        if (StringUtils.isEmpty(branch))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"branch"});
-
-        return new Branch(repository, branch);
+        throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Branch.class.getSimpleName(), "id", branch));
     }
 
     public Branch mergeBranch(final String from, final String to) {
-        if (StringUtils.isEmpty(from))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"from"});
-        if (StringUtils.isEmpty(to))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"to"});
+        final Branch fromBranch = newBranch(from);
+        final Branch toBranch = newBranch(to);
 
-        repository.mergeBranch(from, to);
-        return newBranch(to);
+        fromBranch.mergeInto(toBranch);
+        return toBranch;
     }
 
     public Branch switchBranch(final String branch) {
-        if (StringUtils.isEmpty(branch))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"branch"});
+        final Branch toBranch = newBranch(branch);
 
-        repository.switchBranch(branch);
-        return newBranch(branch);
+        toBranch.switchBranch();
+        return toBranch;
     }
 
 }

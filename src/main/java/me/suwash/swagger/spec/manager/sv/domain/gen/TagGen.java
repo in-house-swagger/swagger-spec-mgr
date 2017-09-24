@@ -3,6 +3,10 @@ package me.suwash.swagger.spec.manager.sv.domain.gen;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import me.suwash.swagger.spec.manager.infra.validation.group.Create;
+import me.suwash.swagger.spec.manager.infra.validation.group.Delete;
+import me.suwash.swagger.spec.manager.infra.validation.group.Read;
+import me.suwash.swagger.spec.manager.infra.validation.group.Update;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -17,10 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TagGen {
 
     @JsonProperty("id")
-    @NotEmpty
+    @NotEmpty(groups = {
+        Read.class, Create.class, Update.class, Delete.class
+    })
     protected String id = null;
 
     @JsonProperty("object")
-    @NotEmpty
+    @NotEmpty(groups = {
+        Create.class
+    })
     protected String gitObject = null;
 }
