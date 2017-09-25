@@ -35,6 +35,7 @@ function is_cygwin() {
   return 0
 }
 
+
 #--------------------------------------------------------------------------------------------------
 # 文字列操作
 #--------------------------------------------------------------------------------------------------
@@ -163,6 +164,7 @@ function _urldecode() {
   return 0
 }
 
+
 #------------------------------------------------------------------------------
 # 拡張子取得
 #
@@ -188,3 +190,91 @@ function get_ext() {
   echo "${_ext}"
   return ${EXITCODE_SUCCESS}
 }
+
+
+#--------------------------------------------------------------------------------------------------
+# 暗号化・復号化
+#--------------------------------------------------------------------------------------------------
+function gen_encrypt_key() {
+  # 設定チェック
+  if [ "${PATH_ENCRYPT_KEY}" = "" ]; then
+    echo "PATH_ENCRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+  if [ "${PATH_DECRYPT_KEY}" = "" ]; then
+    echo "PATH_DECRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+
+  # 鍵作成
+  echo "openssl req -x509 -nodes -newkey rsa:2048 -keyout \"${PATH_DECRYPT_KEY}\" -out \"${PATH_ENCRYPT_KEY}\" -subj '/'"
+  openssl req -x509 -nodes -newkey rsa:2048 -keyout "${PATH_DECRYPT_KEY}" -out "${PATH_ENCRYPT_KEY}" -subj '/'
+  return $?
+}
+
+function _encrypt() {
+  # 設定チェック
+  if [ "${PATH_ENCRYPT_KEY}" = "" ]; then
+    echo "PATH_ENCRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+
+  # 暗号化
+  cat -                                                                                            | # 標準入力（平文）を
+  openssl smime -encrypt -aes256 -binary -outform PEM "${PATH_ENCRYPT_KEY}"                          # PATH_ENCRYPT_KEYで暗号化
+  return 0
+}
+
+function _decrypt() {
+  # 設定チェック
+  if [ "${PATH_DECRYPT_KEY}" = "" ]; then
+    echo "PATH_DECRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+
+  # 復号化
+  cat -                                                                                            | # 標準入力（暗号化文字列）を
+  openssl smime -decrypt -binary -inform PEM -inkey "${PATH_DECRYPT_KEY}"                            # PATH_DECRYPT_KEYで復号化
+  return 0
+}
+
+
+#--------------------------------------------------------------------------------------------------
+# setオプション判定
+#--------------------------------------------------------------------------------------------------
+function is_errorexit_on() {
+  is_setoption_on "errexit"
+}
+function is_nounset_on() {
+  is_setoption_on "nounset"
+}
+function is_xtrace_on() {
+  is_setoption_on "xtrace"
+}
+function is_setoption_on() {
+  local _target="$1"
+  set -o                                                                                           |
+  grep "${_target}"                                                                                |
+  tr '\t' ' '                                                                                      |
+  sed -E "s| +| |g"                                                                                |
+  cut -d ' ' -f 2                                                                                  |
+  sed -e 's|on|true|'                                                                              |
+  sed -e 's|off|false|'
+}
+# SAMPLE
+#local _before_set_errorexit=$(is_errorexit_on)
+#local _before_set_nounset=$(is_nounset_on)
+#local _before_set_xtrace=$(is_xtrace_on)
+#set +eux
+#
+# 任意の処理...
+#
+#if [ "${_before_set_errorexit}" = "true" ]; then
+#  set -e
+#fi
+#if [ "${_before_set_nounset}" = "true" ]; then
+#  set -u
+#fi
+#if [ "${_before_set_xtrace}" = "true" ]; then
+#  set -x
+#fi

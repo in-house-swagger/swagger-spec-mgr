@@ -18,6 +18,13 @@ readonly EXITCODE_WARN=3
 readonly EXITCODE_ERROR=6
 
 #-------------------------------------------------------------------------------
+# 終了メッセージ
+#-------------------------------------------------------------------------------
+readonly EXITMSG_SUCCESS="NORMAL END."
+readonly EXITMSG_WARN="PROCESS END with WARNNING."
+readonly EXITMSG_ERROR="ABNORMAL END."
+
+#-------------------------------------------------------------------------------
 # ログレベル
 #-------------------------------------------------------------------------------
 readonly LOGLEVEL_TRACE="TRACE"
@@ -54,21 +61,47 @@ readonly DIR_LOG="${DIR_BASE}/log"
 # ライブラリ
 readonly DIR_LIB="${DIR_BASE}/lib"
 # 内部データ
-readonly DIR_DATA="${DIR_BASE}/data"
+export DIR_DATA="${DIR_BASE}/data"
 
 #-------------------------------------------------------------------------------
 # ファイル
 #-------------------------------------------------------------------------------
+# ログファイル
+PATH_LOG="${DIR_LOG}/script.log"
 # プロセスファイル
 readonly PATH_PID="${DIR_DATA}/pid"
 # 上書き設定ファイル
 readonly PATH_PROJECT_ENV="${DIR_CONFIG}/swagger-spec-mgr.properties"
+
+# 暗号化キーファイル
+readonly PATH_ENCRYPT_KEY="${DIR_BIN_LIB}/encrypt/id_rsa.pub"
+# 複合化キーファイル
+readonly PATH_DECRYPT_KEY="${DIR_BIN_LIB}/encrypt/id_rsa"
+# 接続情報 暗号化前ファイル
+readonly PATH_ACCESS_INFO_RAW="${DIR_CONFIG}/access_info"
+# 接続情報 暗号化後ファイル
+readonly PATH_ACCESS_INFO="${DIR_CONFIG}/access_info.enc"
+
+# git認証情報ファイル
+GIT__PATH_CRED="${DIR_DATA}/.git-credentials"
+
+# server起動ポート
+SERVER_PORT=8081
+
+# scmデフォルトcommit user
+SCM_DEFAULT_USER="_default"
+# scmデフォルトcommit email
+SCM_DEFAULT_EMAIL="_default@dummy.com"
+
+# swagger-spec管理ディレクトリ
+RELDIR_SPECS=""
 
 
 #--------------------------------------------------------------------------------------------------
 # 共通関数読込み
 #--------------------------------------------------------------------------------------------------
 . "${DIR_BIN_LIB}/common_utils.sh"
+. "${DIR_BIN_LIB}/logging_utils.sh"
 
 
 #--------------------------------------------------------------------------------------------------
@@ -100,3 +133,34 @@ else
   log.error_console "${PATH_PROJECT_ENV} が存在しません。デプロイ結果が正しいか確認して下さい。"
   exit ${EXITCODE_ERROR}
 fi
+
+
+#--------------------------------------------------------------------------------------------------
+# 接続情報の上書き設定読込み
+#--------------------------------------------------------------------------------------------------
+if [ -f ${PATH_ACCESS_INFO} ]; then
+    while read line; do
+      eval "${line}"
+    done <<__END__
+$(cat ${PATH_ACCESS_INFO} | _decrypt)
+__END__
+
+else
+  log.warn_console "${PATH_ACCESS_INFO} が存在しないため、読込みをスキップしました。"
+fi
+
+
+#--------------------------------------------------------------------------------------------------
+# git credentialの利用可否チェック
+#--------------------------------------------------------------------------------------------------
+TMP__PATH_CHECK="/tmp/can_use_git_credential"
+git credential > "${TMP__PATH_CHECK}" 2>&1
+export GIT__CAN_USE_CREDENTIAL
+if [ "$(cat ${TMP__PATH_CHECK})" = "$(cat ${TMP__PATH_CHECK} | sed -e 's|^usage||')" ]; then
+  # usageが表示されない：git credentialが利用できない場合
+  GIT__CAN_USE_CREDENTIAL=false
+else
+  # usageが表示された：git credentialが利用できる場合
+  GIT__CAN_USE_CREDENTIAL=true
+fi
+rm -f "${TMP__PATH_CHECK}"

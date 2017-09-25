@@ -8,12 +8,16 @@
 #---------------------------------------------------------------------------------------------------
 # server起動ポート
 server:
-  port: 8081
+  port: ${SERVER_PORT}
   contextPath: "/v1"
 
 spec.mgr:
-  # データファイル出力ディレクトリ
-  dirData: data
+  # デフォルトcommitユーザ
+  defaultScmUser: "${SCM_DEFAULT_USER}"
+  # ファイル出力ルートディレクトリ相対パス
+  dirData: "${DIR_DATA}"
+  # 分割済み定義ファイル出力ディレクトリ相対パス
+  relDirSpecs: "${RELDIR_SPECS}"
   # 分割除外パス正規表現リスト
   splitIgnoreRegexs:
   - "/info/.*"

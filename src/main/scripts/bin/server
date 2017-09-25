@@ -8,7 +8,7 @@
 # 設定
 #---------------------------------------------------------------------------------------------------
 dir_script="$(dirname $0)"
-cd "$(cd ${dir_script}; pwd)" || exit 6
+cd "$(cd ${dir_script}; pwd)" || exit 1
 
 # 共通設定
 readonly DIR_BASE="$(cd ..; pwd)"

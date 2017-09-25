@@ -11,6 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "spec.mgr")
 public class ApplicationProperties {
+    private String defaultScmUser;
     private String dirData;
+    private String relDirSpecs;
     private List<String> splitIgnoreRegexList;
 }

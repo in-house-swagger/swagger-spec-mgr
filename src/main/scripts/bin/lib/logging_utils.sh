@@ -179,14 +179,14 @@ function log.local.trace.echo_saved_indent_info() {
     return ${EXITCODE_SUCCESS}
   fi
 
-  local _stack_dir=$(log.local.get_stack_dir)
-  log.trace_console "-------------------------------------------------- TRACE-START --------------------------------------------------"
-  log.trace_console "- INVOKER                       : ${FUNCNAME[1]}"
-  log.trace_console "  - STACK_DIR                   : ${_stack_dir}"
-  log.trace_console "  - ls                          : $(test -d ${_stack_dir} && ls -l ${_stack_dir})"
-  log.trace_console "  - LOG__SAVED_INDENT_FILE_COUNT: ${LOG__SAVED_INDENT_FILE_COUNT}"
-  log.trace_console "  - LOG__INDENT_COUNT           : ${LOG__INDENT_COUNT}"
-  log.trace_console "-------------------------------------------------- TRACE-END   --------------------------------------------------"
+#  local _stack_dir=$(log.local.get_stack_dir)
+#  log.trace_console "-------------------------------------------------- TRACE-START --------------------------------------------------"
+#  log.trace_console "- INVOKER                       : ${FUNCNAME[1]}"
+#  log.trace_console "  - STACK_DIR                   : ${_stack_dir}"
+#  log.trace_console "  - ls                          : $(test -d ${_stack_dir} && ls -l ${_stack_dir})"
+#  log.trace_console "  - LOG__SAVED_INDENT_FILE_COUNT: ${LOG__SAVED_INDENT_FILE_COUNT}"
+#  log.trace_console "  - LOG__INDENT_COUNT           : ${LOG__INDENT_COUNT}"
+#  log.trace_console "-------------------------------------------------- TRACE-END   --------------------------------------------------"
 }
 
 #--------------------------------------------------------------------------------------------------
@@ -893,7 +893,7 @@ function log.rotatelog_by_day() {
     local _cur_date=`date ${LOG__FORMAT_DATE}`
 
     # 最終行の日付
-    local _last_date=`cat ${PATH_LOG} | grep "[0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} " | tail -n 1 | cut -d " " -f 1`
+    local _last_date=`cat ${PATH_LOG} | grep "[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} " | tail -n 1 | cut -d " " -f 1`
 
     # 最終行の日付が当日と一致するか確認
     if [ "${_last_date}" != "${_cur_date}" ]; then
@@ -958,7 +958,7 @@ function log.rotatelog_by_day_first() {
     local _cur_date=`date ${LOG__FORMAT_DATE}`
 
     # 先頭行の日付
-    local _first_date=`cat ${PATH_LOG} | grep "[0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} " | head -n 1 | cut -d " " -f 1`
+    local _first_date=`cat ${PATH_LOG} | grep "[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} " | head -n 1 | cut -d " " -f 1`
 
     # 先頭行の日付が当日と一致するか確認
     if [ "${_first_date}" != "${_cur_date}" ]; then

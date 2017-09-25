@@ -2,7 +2,7 @@ package me.suwash.swagger.spec.manager;
 
 public interface TestConst {
     String DIR_DATA = "src/test/scripts/data";
-    String SCMUSER_DEFAULT = "_default";
+    String SCMUSER_DEFAULT = "spec-mgr";
     String DIRNAME_MERGED = "merged";
-    String DIRNAME_SPLIT = "split";
+    String DIRNAME_SPLIT = "repo/docs/design/swagger";
 }
