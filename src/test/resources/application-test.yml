@@ -1,0 +1,37 @@
+#===================================================================================================
+#
+# swagger-spec-mgr server設定
+#
+#===================================================================================================
+#---------------------------------------------------------------------------------------------------
+# spec-mgr
+#---------------------------------------------------------------------------------------------------
+# server起動ポート
+server:
+  port: 8081
+  contextPath: "/v1"
+
+spec.mgr:
+  # データファイル出力ディレクトリ
+  dirData: src/test/scripts/data
+  # 分割除外パス正規表現リスト
+  splitIgnoreRegexs:
+  - "/info/.*"
+  - "/tags/.*"
+  - "/schemas/.*"
+  - "/securityDefinitions/.*"
+  - "/paths/.*/consumes"
+  - "/paths/.*/parameters"
+  - "/paths/.*/produces"
+  - "/paths/.*/responses"
+  - "/paths/.*/tags"
+  - "/paths/.*/security"
+
+
+#---------------------------------------------------------------------------------------------------
+# swagger
+#---------------------------------------------------------------------------------------------------
+springfox.documentation.swagger.v2.path: "/api-docs"
+
+spring.jackson.date-format: "io.swagger.RFC3339DateFormat"
+spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false

@@ -1,4 +1,4 @@
-package me.suwash.swagger.spec.manager.infra.exception;
+package me.suwash.swagger.spec.manager.infra.error;
 
 import java.util.Locale;
 

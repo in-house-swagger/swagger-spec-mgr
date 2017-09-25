@@ -62,7 +62,7 @@ readonly DIR_DATA="${DIR_BASE}/data"
 # プロセスファイル
 readonly PATH_PID="${DIR_DATA}/pid"
 # 上書き設定ファイル
-readonly PATH_PROJECT_ENV="${DIR_CONFIG}/application.properties"
+readonly PATH_PROJECT_ENV="${DIR_CONFIG}/swagger-spec-mgr.properties"
 
 
 #--------------------------------------------------------------------------------------------------
