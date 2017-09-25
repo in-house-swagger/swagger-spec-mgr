@@ -78,20 +78,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # コミットコメント
 comment="$1"
@@ -126,10 +121,10 @@ fi
 
 if [ "${has_origin}" != "true" ]; then
   # 存在しない場合、commit
-  git.staging_and_commit "${dir_repo}" "${comment}"                                           2>&1 | tee -a "${PATH_LOG}"
+  git.staging_and_commit "${dir_repo}" "${comment}"                                           2>&1 | log.tee
 else
   # 存在する場合、push
-  git.staging_and_push "${dir_repo}" "${comment}"                                             2>&1 | tee -a "${PATH_LOG}"
+  git.staging_and_push "${dir_repo}" "${comment}"                                             2>&1 | log.tee
 fi
 ret_code=${PIPESTATUS[0]}
 
@@ -137,7 +132,7 @@ if [ ${ret_code} -eq ${EXITCODE_WARN} ]; then
   git.common.exit_script ${EXITCODE_WARN} "ステージング対象が存在しません。"
 
 elif [ ${ret_code} -eq ${EXITCODE_ERROR} ]; then
-  git.common.exit_script ${EXITCODE_ERROR} "エラーが発生しました。"
+  git.common.exit_script ${EXITCODE_ERROR} "push でエラーが発生しました。"
 fi
 
 

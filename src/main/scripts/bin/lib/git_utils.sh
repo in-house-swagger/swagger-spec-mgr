@@ -38,18 +38,21 @@
 #   ・git.commit_diff_file_details
 #   ・git.status_diff_file_details
 #   ・git.diff_file_details
+#   ・git.branch_list
+#   ・git.branch_is_exist
 #   ・git.branch_add
 #   ・git.branch_rename
 #   ・git.branch_remove
 #   ・git.branch_merge
+#   ・git.tag_list
+#   ・git.tag_is_exist
 #   ・git.tag_add_local
 #   ・git.tag_add
 #   ・git.tag_rename_local
 #   ・git.tag_rename
 #   ・git.tag_remove_local
 #   ・git.tag_remove
-#   ・git.is_exist_tag
-#   ・git.housekeep_local_repository
+#   ・git.housekeep_by_tag
 #
 #==================================================================================================
 GIT__CAN_USE_CREDENTIAL=${GIT__CAN_USE_CREDENTIAL:-true}
@@ -2370,7 +2373,7 @@ function git.diff_file_list() {
     _ret_code=${PIPESTATUS[0]}
 
     # 実行結果チェック
-    if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+    if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
       # エラーの場合
       log.error_console "Git作業ディレクトリの最新化に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
       rm -fr ${_dir_tmp}
@@ -2917,7 +2920,7 @@ function git.diff_file_details() {
         _ret_code=${PIPESTATUS[0]}
 
         # 実行結果チェック
-        if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+        if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
           # エラーの場合
           log.error_console "コミットハッシュ：${_cur_commit_hash}の詳細情報の取得に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
           rm -fr ${_dir_tmp}
@@ -3129,7 +3132,7 @@ function git.diff_file_details() {
             log.remove_indent
 
             # 実行結果チェック
-            if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+            if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
               # エラーの場合
               log.error_console "ファイルのチェックアウトに失敗しました。Git作業ディレクトリ：${_work_dir}、コミットハッシュ：${_tag_new}、ファイルパス：${_cur_file_path}、リターンコード：${_ret_code}"
               rm -fr ${_dir_tmp}
@@ -3160,7 +3163,7 @@ function git.diff_file_details() {
           _ret_code=${PIPESTATUS[0]}
 
           # 実行結果チェック
-          if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+          if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
             # エラーの場合
             log.error_console "差分が取得できませんでした。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
             rm -fr ${_dir_tmp}
@@ -3204,7 +3207,7 @@ function git.diff_file_details() {
     _ret_code=${PIPESTATUS[0]}
 
     # 実行結果チェック
-    if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+    if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
       # エラーの場合
       log.error_console "作業ディレクトリのリセットに失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
       rm -fr ${_dir_tmp}
@@ -3585,6 +3588,146 @@ function git.archive_diff() {
 
 #--------------------------------------------------------------------------------------------------
 # 概要
+#   ブランチの一覧を返します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   標準出力
+#     ブランチ名
+#
+#--------------------------------------------------------------------------------------------------
+function git.branch_list() {
+  #------------------------------------------------------------------------------------------------
+  # 事前処理
+  #------------------------------------------------------------------------------------------------
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数の数
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 本処理
+  #------------------------------------------------------------------------------------------------
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # fetch
+  git.fetch "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリに移動
+  log.trace_console "cd ${_work_dir}"
+  cd "${_work_dir}"
+
+  # ブランチ一覧
+  log.trace_console "git branch | sed -e 's|\*||' | _trim"
+  git branch                                                                                       |
+  sed -e 's|\*||'                                                                                  |
+  _trim                                                                                            | log.split
+
+  #------------------------------------------------------------------------------------------------
+  # 事後処理
+  #------------------------------------------------------------------------------------------------
+  # 元ディレクトリに移動
+  log.trace_console "cd -"
+  cd - > /dev/null 2>&1
+
+  log.remove_indent
+  return ${EXITCODE_SUCCESS}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ブランチの存在を確認します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#   2: 確認対象ブランチ名
+#
+# 出力
+#   標準出力
+#     true: 存在する場合
+#     false: 存在しない場合
+#
+#--------------------------------------------------------------------------------------------------
+function git.branch_is_exist() {
+  #------------------------------------------------------------------------------------------------
+  # 事前処理
+  #------------------------------------------------------------------------------------------------
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR BRANCH"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数の数
+  if [ $# -ne 2 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ブランチ名
+  local _branch="$2"
+
+
+  #------------------------------------------------------------------------------------------------
+  # 本処理
+  #------------------------------------------------------------------------------------------------
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # ブランチ一覧
+  git.branch_list "${_work_dir}"                                                                   |
+  grep "^${_branch}$" >/dev/null 2>&1
+  _ret_code=$?
+  if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 事後処理
+  #------------------------------------------------------------------------------------------------
+  log.remove_indent
+  return ${EXITCODE_SUCCESS}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
 #   ブランチを追加します。
 #
 # 引数
@@ -3635,7 +3778,7 @@ function git.branch_add() {
   # 作業ディレクトリのブランチ切替え
   git.switch ${_work_dir} ${_from}
   _ret_code=$?
-  if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
     log.error_console "作業ディレクトリのブランチ切替えに失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
@@ -4151,6 +4294,145 @@ function git.branch_merge() {
 
 #--------------------------------------------------------------------------------------------------
 # 概要
+#   タグの一覧を返します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   標準出力
+#     タグ名
+#
+#--------------------------------------------------------------------------------------------------
+function git.tag_list() {
+  #------------------------------------------------------------------------------------------------
+  # 事前処理
+  #------------------------------------------------------------------------------------------------
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数の数
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 本処理
+  #------------------------------------------------------------------------------------------------
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # fetch
+  git.fetch "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリに移動
+  log.trace_console "cd ${_work_dir}"
+  cd "${_work_dir}"
+
+  # ブランチ一覧
+  log.trace_console "git tag"
+  git tag
+
+
+  #------------------------------------------------------------------------------------------------
+  # 事後処理
+  #------------------------------------------------------------------------------------------------
+  # 元ディレクトリに移動
+  log.trace_console "cd -"
+  cd - > /dev/null 2>&1
+
+  log.remove_indent
+  return ${EXITCODE_SUCCESS}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   タグの存在を確認します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#   2: 確認対象タグ名
+#
+# 出力
+#   標準出力
+#     true: 存在する場合
+#     false: 存在しない場合
+#
+#--------------------------------------------------------------------------------------------------
+function git.tag_is_exist() {
+  #------------------------------------------------------------------------------------------------
+  # 事前処理
+  #------------------------------------------------------------------------------------------------
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR TAG"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数の数
+  if [ $# -ne 2 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # タグ名
+  local _tag="$2"
+
+
+  #------------------------------------------------------------------------------------------------
+  # 本処理
+  #------------------------------------------------------------------------------------------------
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # ブランチ一覧
+  git.tag_list "${_work_dir}"                                                                      |
+  grep "^${_tag}$" >/dev/null 2>&1
+  _ret_code=$?
+  if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 事後処理
+  #------------------------------------------------------------------------------------------------
+  log.remove_indent
+  return ${EXITCODE_SUCCESS}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
 #   ローカルリポジトリにタグを追加します。
 #
 # 引数
@@ -4337,7 +4619,7 @@ function git.tag_add() {
   # 作業ディレクトリのブランチ切替え
   git.switch ${_work_dir} ${_from}
   _ret_code=$?
-  if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
     log.error_console "作業ディレクトリのブランチ切替えに失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
@@ -4346,7 +4628,7 @@ function git.tag_add() {
   # Git作業ディレクトリの最新化
   git.reset ${_work_dir}
   _ret_code=$?
-  if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
     log.error_console "Git作業ディレクトリの最新化に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
@@ -4765,84 +5047,6 @@ function git.tag_remove() {
 
 #--------------------------------------------------------------------------------------------------
 # 概要
-#   存在するタグか否かを判定します。
-#
-# 引数
-#   1: Git作業ディレクトリ
-#   2: 確認対象
-#
-# 出力
-#   なし
-#
-# リターンコード
-#   0: 存在する場合
-#   3: 存在しない場合
-#   6: エラーが発生した場合
-#
-#--------------------------------------------------------------------------------------------------
-function git.is_exist_tag() {
-  #------------------------------------------------------------------------------------------------
-  # 事前処理
-  #------------------------------------------------------------------------------------------------
-  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR TAG"
-  log.debug_console "${FUNCNAME[0]} $*"
-  log.add_indent
-
-  # 引数の数
-  if [ $# -ne 2 ]; then
-    log.error_console "${_USAGE}"
-    log.remove_indent
-    return ${EXITCODE_ERROR}
-  fi
-
-  # Git作業ディレクトリ
-  local _work_dir="$1"
-  git.local.check_work_dir "${_work_dir}"
-  _ret_code=$?
-  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    log.remove_indent
-    return ${EXITCODE_ERROR}
-  fi
-
-  # 確認対象
-  local _to="$2"
-
-
-  #------------------------------------------------------------------------------------------------
-  # 本処理
-  #------------------------------------------------------------------------------------------------
-  local _ret_code=${EXITCODE_SUCCESS}
-
-  # Git作業ディレクトリに移動
-  log.trace_console "cd ${_work_dir}"
-  cd "${_work_dir}"
-
-  # タグ一覧から絞り込み
-  log.trace_console "git tag | grep \"${_to}\""
-  git tag                                                                                          |
-  grep "${_to}" > /dev/null
-  _ret_code=$?
-
-
-  #------------------------------------------------------------------------------------------------
-  # 事後処理
-  #------------------------------------------------------------------------------------------------
-  # 元ディレクトリに移動
-  log.trace_console "cd -"
-  cd - > /dev/null 2>&1
-
-  log.remove_indent
-  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    # grepのリターンコードが0以外の場合、WARN
-    return ${EXITCODE_WARN}
-  fi
-  return ${EXITCODE_SUCCESS}
-}
-
-
-
-#--------------------------------------------------------------------------------------------------
-# 概要
 #   指定タグ数だけのコミットを持つ、新たなリポジトリに差し替えます。
 #
 #   処理内容
@@ -5010,7 +5214,7 @@ function git.housekeep_by_tag() {
         break
       fi
 
-    elif [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+    elif [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
       # ステージング対象が存在しない場合、emptyコミット
       _is_empty_commit=true
       log.trace_console "cd ${_new_repository_path}"
@@ -5078,7 +5282,7 @@ function git.housekeep_by_tag() {
       ${DIR_BIN_LIB}/dir_diff.sh ${_dir_tmp}/old/${_cur_unzip_root_dir} ${_dir_tmp}/new/${_cur_unzip_root_dir} 2>&1 | log.trace_console
       _ret_code=${PIPESTATUS[0]}
       log.remove_indent
-      if [ ${_ret_code} -eq ${EXITCODE_WARN} ]; then
+      if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
         # 差異がある場合
         log.error_console "ハウスキープ対象リポジトリと新規リポジトリで差異が発生しました。ハウスキープ対象リポジトリ：${_work_dir}、タグ：${_target_tags[${_cur_index}]}"
         _ret_code=${EXITCODE_ERROR}

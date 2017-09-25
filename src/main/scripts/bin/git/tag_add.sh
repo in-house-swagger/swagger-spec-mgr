@@ -78,20 +78,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -lt 3 ] || [ $# -gt 4 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # 作成元
 from="$1"
@@ -134,10 +129,10 @@ fi
 
 if [ "${has_origin}" != "true" ]; then
   # 存在しない場合、localのみ
-  git.tag_add_local "${dir_repo}" "${from}" "${to_tag}" "${message}"                          2>&1 | tee -a "${PATH_LOG}"
+  git.tag_add_local "${dir_repo}" "${from}" "${to_tag}" "${message}"                          2>&1 | log.tee
 else
   # 存在する場合、pushあり
-  git.tag_add "${dir_repo}" "${from}" "${to_tag}" "${message}"                                2>&1 | tee -a "${PATH_LOG}"
+  git.tag_add "${dir_repo}" "${from}" "${to_tag}" "${message}"                                2>&1 | log.tee
 fi
 ret_code=${PIPESTATUS[0]}
 

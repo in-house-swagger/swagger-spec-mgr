@@ -2,33 +2,65 @@ package me.suwash.swagger.spec.manager.sv.domain;
 
 import javax.validation.constraints.NotNull;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.gen.SpecGen;
+import me.suwash.swagger.spec.manager.sv.specification.SpecSpec;
 
 public class Spec extends SpecGen {
 
     @NotNull
-    private final SpecRepository repository;
+    private final SpecSpec specSpec;
+    @NotNull
+    private final GitRepoRepository gitRepoRepository;
+    @NotNull
+    private final SpecRepository specRepository;
 
-    public Spec(final SpecRepository repository, final String id, final Object payload) {
+    public Spec(
+        final SpecSpec specSpec,
+        final GitRepoRepository gitRepository,
+        final SpecRepository specRepository,
+        final String id,
+        final Object payload) {
+
         super(id, payload);
-        this.repository = repository;
+        this.specSpec = specSpec;
+        this.gitRepoRepository = gitRepository;
+        this.specRepository = specRepository;
     }
 
     public void add() {
-        repository.add(this);
+        specSpec.canAdd(this);
+
+        // Git作業ディレクトリが作成されていない場合、初期化
+        // TODO specで、エラーにする。usecaseが変わるので、各テストクラスにも反映。
+        if (!gitRepoRepository.isExist()) gitRepoRepository.init();
+        // specを追加
+        specRepository.add(this);
+        // 追加を反映
+        gitRepoRepository.push();
     }
 
     public void update(final Object payload) {
-        if (payload == null)
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"payload"});
         this.payload = payload;
-        repository.update(this);
+        specSpec.canUpdate(this);
+
+        // 事前に更新を取得
+        gitRepoRepository.pull();
+        // specを更新
+        specRepository.update(this);
+        // 更新を反映
+        gitRepoRepository.push();
     }
 
     public void delete() {
-        repository.delete(this.id);
+        specSpec.canDelete(this);
+
+        // 事前に更新を取得
+        gitRepoRepository.pull();
+        // specを削除
+        specRepository.delete(this.id);
+        // 削除を反映
+        gitRepoRepository.push();
     }
 }

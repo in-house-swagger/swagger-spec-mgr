@@ -113,4 +113,8 @@ public class SpecMgrException extends LayerException {
     public String getMessage() {
         return messageSource.getMessage(messageId, messageArgs, locale);
     }
+
+    public static Object[] array(final Object... args) {
+        return args;
+    }
 }

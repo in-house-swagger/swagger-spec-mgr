@@ -1,5 +1,6 @@
 package me.suwash.swagger.spec.manager.infra.util;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
 import io.swagger.util.Yaml;
 
 import java.io.File;
@@ -48,10 +49,6 @@ public final class SwaggerSpecUtils {
 
     /** コンストラクタ非公開。 */
     private SwaggerSpecUtils() {}
-
-    private static Object[] array(final Object... args) {
-        return args;
-    }
 
     /**
      *
@@ -107,7 +104,7 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         try {
             // 文字列として書き出し
-            String parsed  = yamlMapper.writeValueAsString(value);
+            String parsed = yamlMapper.writeValueAsString(value);
 
             // DOC_START_MARKERを削除
             final String DOC_START_MARKER = "^---";
@@ -238,8 +235,12 @@ public final class SwaggerSpecUtils {
         // -----------------------------------------------------------------------------------------
         // 主処理
         // -----------------------------------------------------------------------------------------
-        final String outputRootDirPath = outputDirPath + "/" + specId;
+        final String outputRootDirPath = getSplitOutputDir(outputDirPath, specId);
         return recursiveSplit(value, outputRootDirPath, FILENAME_MERGED, effectiveIgnorePatternList);
+    }
+
+    public static String getSplitOutputDir(final String outputDirPath, final String specId) {
+        return outputDirPath + "/" + specId;
     }
 
     /**

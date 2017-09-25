@@ -376,11 +376,11 @@ public class SwaggerSpecUtilsTest {
         // -----------------------------------------------------------------------------------------
     }
 
-//    @Test
-//    public void sample() {
-//        Object value = JsonUtils.parseFile("/tmp/swagger.json", "utf8", Map.class);
-//        SwaggerSpecUtils.writeSplit(value, "/tmp/split", "sample");
-//        SwaggerSpecUtils.writeMerged("/tmp/split", "/tmp/merged", "sample");
-//    }
+    // @Test
+    // public void sample() {
+    // Object value = JsonUtils.parseFile("/tmp/swagger.json", "utf8", Map.class);
+    // SwaggerSpecUtils.writeSplit(value, "/tmp/split", "sample");
+    // SwaggerSpecUtils.writeMerged("/tmp/split", "/tmp/merged", "sample");
+    // }
 
 }

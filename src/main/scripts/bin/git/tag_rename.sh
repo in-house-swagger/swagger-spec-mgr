@@ -77,20 +77,15 @@ done
 
 
 #--------------------------------------------------------------------------------
-# 開始ログ
-#--------------------------------------------------------------------------------
-log.save_indent
-log.info_teelog "START --- $(basename $0) ${raw_args}"
-log.add_indent
-
-
-#--------------------------------------------------------------------------------
 # 引数取得
 #--------------------------------------------------------------------------------
 # 引数チェック
 if [ $# -lt 2 ] || [ $# -gt 3 ]; then
   usage
 fi
+
+# 開始ログ
+log.start_script "$0" "${raw_args}"
 
 # リネーム元タグ名
 from_tag="$1"
@@ -131,10 +126,10 @@ fi
 
 if [ "${has_origin}" != "true" ]; then
   # 存在しない場合、localのみ
-  git.tag_rename_local "${dir_repo}" "${from_tag}" "${to_tag}"                                2>&1 | tee -a "${PATH_LOG}"
+  git.tag_rename_local "${dir_repo}" "${from_tag}" "${to_tag}"                                2>&1 | log.tee
 else
   # 存在する場合、pushあり
-  git.tag_rename "${dir_repo}" "${from_tag}" "${to_tag}"                                      2>&1 | tee -a "${PATH_LOG}"
+  git.tag_rename "${dir_repo}" "${from_tag}" "${to_tag}"                                      2>&1 | log.tee
 fi
 ret_code=${PIPESTATUS[0]}
 

@@ -10,6 +10,8 @@ public interface MessageConst extends UtilMessageConst {
     String UNSUPPORTED = "SpecMgr.00002";
     /** メッセージコード：対応していない呼び出し方法です。対象：{0} */
     String ILLEGAL_ARGS = "SpecMgr.00003";
+    /** メッセージコード：妥当性チェックでエラーが発生しました。 */
+    String SPECIFICATION_ERROR = "SpecMgr.00004";
 
     // data
     /** メッセージコード：{0} に {1} が {2} のデータは、すでに登録されています。 */

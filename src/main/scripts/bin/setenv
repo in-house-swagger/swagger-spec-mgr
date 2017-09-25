@@ -51,7 +51,7 @@ fi
 # ディレクトリ
 #-------------------------------------------------------------------------------
 # 実行スクリプト
-readonly DIR_BIN="${DIR_BASE}/bin"
+export DIR_BIN="${DIR_BASE}/bin"
 # スクリプトライブラリ
 readonly DIR_BIN_LIB="${DIR_BIN}/lib"
 # 設定
@@ -61,7 +61,11 @@ readonly DIR_LOG="${DIR_BASE}/log"
 # ライブラリ
 readonly DIR_LIB="${DIR_BASE}/lib"
 # 内部データ
-export DIR_DATA="${DIR_BASE}/data"
+if [ "${TEST_DIR_DATA}x" = "x" ]; then
+  export DIR_DATA="${DIR_BASE}/data"
+else
+  export DIR_DATA="${DIR_BASE}/${TEST_DIR_DATA}"
+fi
 
 #-------------------------------------------------------------------------------
 # ファイル
@@ -153,7 +157,7 @@ fi
 #--------------------------------------------------------------------------------------------------
 # git credentialの利用可否チェック
 #--------------------------------------------------------------------------------------------------
-TMP__PATH_CHECK="/tmp/can_use_git_credential"
+TMP__PATH_CHECK="/tmp/can_use_git_credential_$$"
 git credential > "${TMP__PATH_CHECK}" 2>&1
 export GIT__CAN_USE_CREDENTIAL
 if [ "$(cat ${TMP__PATH_CHECK})" = "$(cat ${TMP__PATH_CHECK} | sed -e 's|^usage||')" ]; then

@@ -1,13 +1,16 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Spec;
+import me.suwash.swagger.spec.manager.sv.specification.SpecSpec;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,25 +18,45 @@ import org.springframework.stereotype.Service;
 public class SpecService {
 
     @Autowired
-    private SpecRepository repository;
+    private SpecSpec specSpec;
+    @Autowired
+    private SpecRepository specRepository;
+    @Autowired
+    private GitRepoRepository gitRepoRepository;
+
+    private Spec newSpec(final String specId, final Object payload) {
+        return new Spec(specSpec, gitRepoRepository, specRepository, specId, payload);
+    }
 
     public List<String> idList() {
-        return repository.idList();
+        return specRepository.idList();
     }
 
     public Spec findById(final String specId) {
-        if (StringUtils.isEmpty(specId))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"specId"});
+        final Spec criteria = newSpec(specId, null);
+        specSpec.canFind(criteria);
 
-        return repository.findById(specId);
+        final Spec finded = specRepository.findById(specId);
+        if (finded == null)
+            throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Spec.class.getSimpleName(), "id", specId));
+        return finded;
     }
 
-    public Spec newSpec(final String specId, final Object payload) {
-        if (StringUtils.isEmpty(specId))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"specId"});
-        if (payload == null)
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, new Object[] {"payload"});
-
-        return new Spec(repository, specId, payload);
+    public Spec addSpec(final String specId, final Object payload) {
+        final Spec spec = newSpec(specId, payload);
+        spec.add();
+        return findById(specId);
     }
+
+    public Spec updateSpec(final String specId, final Object payload) {
+        final Spec finded = newSpec(specId, null);
+        finded.update(payload);
+        return findById(specId);
+    }
+
+    public void deleteSpec(final String specId) {
+        final Spec finded = newSpec(specId, null);
+        finded.delete();
+    }
+
 }

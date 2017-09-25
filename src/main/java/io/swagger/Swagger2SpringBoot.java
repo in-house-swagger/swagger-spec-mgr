@@ -1,6 +1,11 @@
 package io.swagger;
 
 import io.swagger.configuration.SwaggerDocumentationConfig;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
 
 import org.springframework.boot.CommandLineRunner;
@@ -20,7 +25,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 @EnableConfigurationProperties(ApplicationProperties.class)
-@ComponentScan(basePackages = { "io.swagger", "me.suwash.swagger.spec.manager" })
+@ComponentScan(basePackages = {
+    "io.swagger", "me.suwash.swagger.spec.manager"
+})
 public class Swagger2SpringBoot implements CommandLineRunner {
 
     @Override
@@ -45,6 +52,12 @@ public class Swagger2SpringBoot implements CommandLineRunner {
             .directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
             .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
             .apiInfo(SwaggerDocumentationConfig.apiInfo());
+    }
+
+    @Bean
+    protected Validator validator() {
+        final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        return factory.getValidator();
     }
 
     class ExitException extends RuntimeException implements ExitCodeGenerator {

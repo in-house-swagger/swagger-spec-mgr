@@ -12,12 +12,22 @@ server:
   contextPath: "/v1"
 
 spec.mgr:
-  # デフォルトcommitユーザ
-  defaultScmUser: "spec-mgr"
-  # ファイル出力ルートディレクトリ相対パス
-  dirData: src/test/scripts/data
-  # 分割済み定義ファイル出力ディレクトリ相対パス
-  relDirSpecs: "docs/design/swagger"
+  # デフォルトコミット情報
+  defaultCommitInfo:
+    # ユーザ
+    user: "spec-mgr"
+    # メッセージ
+    message: "update API specifications."
+
+  # ディレクトリ情報
+  dirInfo:
+    # 実行スクリプト
+    bin: "src/main/scripts/bin"
+    # ファイル出力ルート
+    data: "src/test/scripts/data"
+    # 分割済み定義 ※gitリポジトリルートからの相対パス
+    specs: "docs/design/swagger"
+
   # 分割除外パス正規表現リスト
   splitIgnoreRegexs:
   - "/info/.*"
@@ -31,6 +41,10 @@ spec.mgr:
   - "/paths/.*/tags"
   - "/paths/.*/security"
 
+  # スクリプト実行時環境変数
+  scriptEnv:
+    SOME_VAR: "SOME_VALUE"
+    TEST_DIR_DATA: "../../test/scripts/data"
 
 #---------------------------------------------------------------------------------------------------
 # swagger
