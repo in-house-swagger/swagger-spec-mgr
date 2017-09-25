@@ -30,7 +30,7 @@ readonly PACKAGE="${GROUP}.spec.manager"
 
 ${DIR_SWAGGER}/bin/generate \
   generate \
-  -i ${DIR_SPECMGR}/design/swagger.yaml \
+  -i ${DIR_SPECMGR}/docs/design/webapi/swagger.yaml \
   -l spring \
   -o ${DIR_SPECMGR} \
   --group-id "${GROUP}" \
