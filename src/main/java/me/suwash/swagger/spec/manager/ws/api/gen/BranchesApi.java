@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiResponses;
 import javax.servlet.http.HttpServletRequest;
 
 import me.suwash.swagger.spec.manager.ws.model.gen.BranchesApiModelGen;
+import me.suwash.swagger.spec.manager.ws.model.gen.IdListApiModelGen;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Api(value = "branches", description = "Git Branch Management API")
 public interface BranchesApi {
 
-    @ApiOperation(value = "Find all tags", notes = "Returns all tags", response = BranchesApiModelGen.class, tags = {})
+    @ApiOperation(value = "Find all branches", notes = "Returns all branches", response = IdListApiModelGen.class, tags = {})
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "successful operation", response = BranchesApiModelGen.class),
+        @ApiResponse(code = 200, message = "successful operation", response = IdListApiModelGen.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
     @RequestMapping(value = "/branches",
@@ -41,7 +42,7 @@ public interface BranchesApi {
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
         @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail);
 
-    @ApiOperation(value = "Find branch by ID", notes = "Returns a single tag", response = Object.class, tags = {})
+    @ApiOperation(value = "Find branch by ID", notes = "Returns a single branch", response = Object.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = BranchesApiModelGen.class),
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),

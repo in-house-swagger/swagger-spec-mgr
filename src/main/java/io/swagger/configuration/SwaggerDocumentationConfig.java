@@ -1,5 +1,6 @@
 package io.swagger.configuration;
 
+import static com.google.common.base.Predicates.or;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import org.springframework.context.annotation.Bean;
@@ -15,11 +16,21 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SwaggerDocumentationConfig {
 
+    @SuppressWarnings("unchecked")
     @Bean
     public Docket customImplementation() {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
-            .paths(regex("/specs.*"))
+            .paths(
+                or(
+                    regex("/users.*"),
+                    regex("/specs.*"),
+                    regex("/branches.*"),
+                    regex("/switch.*"),
+                    regex("/merge.*"),
+                    regex("/tags.*")
+                )
+            )
             .build()
             .directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
             .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)

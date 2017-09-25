@@ -21,7 +21,7 @@ public class BranchService {
     @Autowired
     private GitBranchRepository repository;
 
-    public Branch newBranch(final String branch) {
+    private Branch newBranch(final String branch) {
         return new Branch(branchSpec, repository, branch);
     }
 
@@ -37,18 +37,35 @@ public class BranchService {
         throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Branch.class.getSimpleName(), "id", branch));
     }
 
-    public Branch mergeBranch(final String from, final String to) {
-        final Branch fromBranch = newBranch(from);
-        final Branch toBranch = newBranch(to);
+    public Branch addBranch(final String gitObject, final String branchId) {
+        final Branch branch = newBranch(branchId);
+        branch.add(gitObject);
+        return findById(branchId);
+    }
 
-        fromBranch.mergeInto(toBranch);
-        return toBranch;
+    public Branch renameBranch(final String fromBranch, final String toBranch) {
+        final Branch finded = newBranch(fromBranch);
+        finded.rename(toBranch);
+        return findById(toBranch);
+    }
+
+    public void deleteBranch(final String branchId) {
+        final Branch finded = newBranch(branchId);
+        finded.delete();
     }
 
     public Branch switchBranch(final String branch) {
         final Branch toBranch = newBranch(branch);
 
         toBranch.switchBranch();
+        return toBranch;
+    }
+
+    public Branch mergeBranch(final String from, final String to) {
+        final Branch fromBranch = newBranch(from);
+        final Branch toBranch = newBranch(to);
+
+        fromBranch.mergeInto(toBranch);
         return toBranch;
     }
 

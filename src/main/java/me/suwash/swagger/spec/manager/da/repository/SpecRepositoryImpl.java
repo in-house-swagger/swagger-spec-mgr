@@ -46,7 +46,6 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
         return FindUtils.find(mergedDir, 1, 1, FileType.Directory);
     }
 
-
     @Override
     public Spec findById(final String specId) {
         final Object parsed = SwaggerSpecUtils.parse(specSpec.getMergedDir(), specId);
@@ -73,7 +72,6 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
         final String mergedDir = specSpec.getMergedDir();
         SwaggerSpecUtils.writeMerged(splitDir, mergedDir, specId);
     }
-
 
     @Override
     public void delete(final String specId) {

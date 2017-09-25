@@ -41,12 +41,9 @@ public class BranchFacade extends BaseFacade {
     public BranchDto add(final CommitInfo commitInfo, final String gitObject, final String branchId) {
         registerCommitInfo(commitInfo);
 
-        // TODO facadeはserviceの1メソッドを呼ぶだけになるように、serviceでラップする。
         Branch result = null;
         try {
-            final Branch branch = service.newBranch(branchId);
-            branch.add(gitObject);
-            result = service.findById(branchId);
+            result = service.addBranch(gitObject, branchId);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -58,9 +55,7 @@ public class BranchFacade extends BaseFacade {
 
         Branch result = null;
         try {
-            final Branch finded = service.findById(fromBranch);
-            finded.rename(toBranch);
-            result = service.findById(toBranch);
+            result = service.renameBranch(fromBranch, toBranch);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -71,8 +66,7 @@ public class BranchFacade extends BaseFacade {
         registerCommitInfo(commitInfo);
 
         try {
-            final Branch finded = service.findById(branchId);
-            finded.delete();
+            service.deleteBranch(branchId);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }

@@ -43,9 +43,7 @@ public class SpecFacade extends BaseFacade {
 
         Spec result = null;
         try {
-            final Spec spec = service.newSpec(specId, payload);
-            spec.add();
-            result = service.findById(specId);
+            result = service.addSpec(specId, payload);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -57,9 +55,7 @@ public class SpecFacade extends BaseFacade {
 
         Spec result = null;
         try {
-            final Spec finded = service.findById(specId);
-            finded.update(payload);
-            result = service.findById(specId);
+            result = service.updateSpec(specId, payload);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -70,8 +66,7 @@ public class SpecFacade extends BaseFacade {
         registerCommitInfo(commitInfo);
 
         try {
-            final Spec finded = service.findById(specId);
-            finded.delete();
+            service.deleteSpec(specId);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponses;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.suwash.swagger.spec.manager.ws.model.gen.IdListApiModelGen;
 import me.suwash.swagger.spec.manager.ws.model.gen.TagsApiModelGen;
 
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Api(value = "tags", description = "Git Tag Management API")
 public interface TagsApi {
 
-    @ApiOperation(value = "Find all tags", notes = "Returns all tags", response = TagsApiModelGen.class, tags = {})
+    @ApiOperation(value = "Find all tags", notes = "Returns all tags", response = IdListApiModelGen.class, tags = {})
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "successful operation", response = TagsApiModelGen.class),
+        @ApiResponse(code = 200, message = "successful operation", response = IdListApiModelGen.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
     @RequestMapping(value = "/tags",

@@ -33,7 +33,7 @@ public class Spec extends SpecGen {
         specSpec.canAdd(this);
 
         // Git作業ディレクトリが作成されていない場合、初期化
-        // TODO specで、エラーにした方が良いかも。
+        // TODO specで、エラーにする。usecaseが変わるので、各テストクラスにも反映。
         if (!gitRepoRepository.isExist()) gitRepoRepository.init();
         // specを追加
         specRepository.add(this);

@@ -4,19 +4,12 @@ import static me.suwash.swagger.spec.manager.SpecMgrTestUtils.assertCheckErrors;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-
-import java.util.Map;
-
-import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
-import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
-import me.suwash.swagger.spec.manager.ap.dto.TagDto;
-import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
-import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
+import me.suwash.swagger.spec.manager.ap.dto.UserDto;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.util.FileUtils;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,20 +29,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @lombok.extern.slf4j.Slf4j
-public class TagFacadeTest {
-    private static final String SPEC_ID = "sample_spec";
-    private static final String COMMIT_USER = TagFacadeTest.class.getSimpleName();
+public class UserFacadeTest {
 
     @Autowired
-    private SpecMgrContext context;
-    @Autowired
-    private SpecFacade specFacade;
-    @Autowired
-    private TagFacade facade;
+    private UserFacade facade;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.info(TagFacadeTest.class.getSimpleName());
+        log.info(UserFacadeTest.class.getSimpleName());
     }
 
     @AfterClass
@@ -66,26 +53,16 @@ public class TagFacadeTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final String commitUser = COMMIT_USER + "_error";
-        final String dirData = TestConst.DIR_DATA + "/" + commitUser;
-        FileUtils.rmdirs(dirData);
-
-        final CommitInfo commitInfo = new CommitInfo(commitUser, commitUser + "@example.com");
-
-        // payload
-        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
-
-        // リポジトリ初期化
-        specFacade.add(commitInfo, SPEC_ID, payload);
+        // なし
 
         // -----------------------------------------------------------------------------------------
         // 検索
         // -----------------------------------------------------------------------------------------
-        TagDto dto = facade.findById(commitInfo, "");
+        UserDto dto = facade.findById("");
         assertCheckErrors(dto.getErrors(), new String[] {
             "BeanValidator.NotEmpty"
         });
-        dto = facade.findById(commitInfo, "v1.0.0");
+        dto = facade.findById("facade-test_error");
         assertCheckErrors(dto.getErrors(), new String[] {
             MessageConst.DATA_NOT_EXIST
         });
@@ -93,27 +70,19 @@ public class TagFacadeTest {
         // -----------------------------------------------------------------------------------------
         // 追加
         // -----------------------------------------------------------------------------------------
-        dto = facade.add(commitInfo, "", "");
+        dto = facade.add("", "");
         assertCheckErrors(dto.getErrors(), new String[] {
             "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
         });
-        dto = facade.add(commitInfo, "master", "");
+        dto = facade.add("facade_test_error", "");
         assertCheckErrors(dto.getErrors(), new String[] {
             "BeanValidator.NotEmpty"
         });
 
         // -----------------------------------------------------------------------------------------
-        // リネーム
-        // -----------------------------------------------------------------------------------------
-        dto = facade.rename(commitInfo, "", "");
-        assertCheckErrors(dto.getErrors(), new String[] {
-            "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
-        });
-
-        // -----------------------------------------------------------------------------------------
         // 削除
         // -----------------------------------------------------------------------------------------
-        dto = facade.delete(commitInfo, "");
+        dto = facade.delete("");
         assertCheckErrors(dto.getErrors(), new String[] {
             "BeanValidator.NotEmpty"
         });
@@ -124,55 +93,38 @@ public class TagFacadeTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
-        FileUtils.rmdirs(dirData);
-
-        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com");
-
-        // payload
-        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
-
-        // リポジトリ初期化
-        specFacade.add(commitInfo, SPEC_ID, payload);
+        // なし
 
         // -----------------------------------------------------------------------------------------
         // 検索
         // -----------------------------------------------------------------------------------------
-        IdListDto idListDto = facade.idList(commitInfo);
-        assertThat(idListDto.getList(), not(hasItem("v1.0.0")));
+        IdListDto idListDto = facade.idList();
+        assertThat(idListDto.getList(), not(hasItem("faade_test")));
 
         // -----------------------------------------------------------------------------------------
         // 追加
         // -----------------------------------------------------------------------------------------
         log.info("ADD");
-        TagDto dto = facade.add(commitInfo, "master", "v1.0.0");
-        assertThat(dto.getTag().getId(), is("v1.0.0"));
+        UserDto dto = facade.add("facade_test", "facade_test@test.com");
+        assertThat(dto.getUser().getId(), is("facade_test"));
+        assertThat(dto.getUser().getEmail(), is(nullValue()));
 
-        idListDto = facade.idList(commitInfo);
-        assertThat(idListDto.getList(), hasItem("v1.0.0"));
+        idListDto = facade.idList();
+        assertThat(idListDto.getList(), hasItem("facade_test"));
         log.info("-- idList: " + idListDto.getList());
 
-        dto = facade.findById(commitInfo, "v1.0.0");
-        assertThat(dto.getTag().getId(), is("v1.0.0"));
-
-        // -----------------------------------------------------------------------------------------
-        // 更新
-        // -----------------------------------------------------------------------------------------
-        log.info("UPDATE");
-        dto = facade.rename(commitInfo, "v1.0.0", "ver1.0.0");
-
-        idListDto = facade.idList(commitInfo);
-        assertThat(idListDto.getList(), hasItem("ver1.0.0"));
-        log.info("-- idList: " + idListDto.getList());
+        dto = facade.findById("facade_test");
+        assertThat(dto.getUser().getId(), is("facade_test"));
+        assertThat(dto.getUser().getEmail(), is(nullValue()));
 
         // -----------------------------------------------------------------------------------------
         // 削除
         // -----------------------------------------------------------------------------------------
         log.info("DELETE");
-        facade.delete(commitInfo, "ver1.0.0");
+        facade.delete("facade_test");
 
-        idListDto = facade.idList(commitInfo);
-        assertThat(idListDto.getList(), not(hasItem("ver1.0.0")));
+        idListDto = facade.idList();
+        assertThat(idListDto.getList(), not(hasItem("facade_test")));
         log.info("-- idList: " + idListDto.getList());
     }
 

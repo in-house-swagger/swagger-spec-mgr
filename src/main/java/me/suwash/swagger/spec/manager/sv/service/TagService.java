@@ -21,7 +21,7 @@ public class TagService {
     @Autowired
     private GitTagRepository repository;
 
-    public Tag newTag(final String tag) {
+    private Tag newTag(final String tag) {
         return new Tag(tagSpec, repository, tag);
     }
 
@@ -35,6 +35,23 @@ public class TagService {
 
         if (repository.isExistTag(tag)) return newTag(tag);
         throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Tag.class.getSimpleName(), "id", tag));
+    }
+
+    public Tag addTag(final String gitObject, final String tagId) {
+        final Tag tag = newTag(tagId);
+        tag.add(gitObject);
+        return findById(tagId);
+    }
+
+    public Tag renameTag(final String fromTag, final String toTag) {
+        final Tag finded = newTag(fromTag);
+        finded.rename(toTag);
+        return findById(toTag);
+    }
+
+    public void deleteTag(final String tagId) {
+        final Tag tag = newTag(tagId);
+        tag.delete();
     }
 
 }

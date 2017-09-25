@@ -4,25 +4,19 @@ import static me.suwash.swagger.spec.manager.SpecMgrTestUtils.assertCheckErrors;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map;
 
-import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
-import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
-import me.suwash.swagger.spec.manager.sv.domain.Spec;
+import me.suwash.swagger.spec.manager.sv.domain.User;
 import me.suwash.util.FileUtils;
-import me.suwash.util.FindUtils;
-import me.suwash.util.FindUtils.FileType;
-import me.suwash.util.JsonUtils;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -42,18 +36,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @lombok.extern.slf4j.Slf4j
-public class SpecServiceTest {
-
-    private static final String SPEC_ID = SpecServiceTest.class.getSimpleName();
+public class UserServiceTest {
 
     @Autowired
     private SpecMgrContext context;
     @Autowired
-    private SpecService service;
+    private UserService service;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.info(SpecServiceTest.class.getSimpleName());
+        log.info(UserServiceTest.class.getSimpleName());
     }
 
     @AfterClass
@@ -70,15 +62,7 @@ public class SpecServiceTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final String user = SpecServiceTest.class.getSimpleName() + "_error";
-        final CommitInfo commitInfo = new CommitInfo(user, user + "@example.com", "TagService test tag.");
-        this.context.putCommitInfo(commitInfo);
-
-        final String dirData = TestConst.DIR_DATA + "/" + user;
-        FileUtils.rmdirs(dirData);
-
-        // payload
-        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+        // なし
 
         // -----------------------------------------------------------------------------------------
         // 検索
@@ -100,7 +84,7 @@ public class SpecServiceTest {
         // -----------------------------------------------------------------------------------------
         // idが未設定
         try {
-            service.addSpec(null, payload);
+            service.addUser(null, "error@test.com");
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -110,34 +94,34 @@ public class SpecServiceTest {
             context.clearErrors();
         }
 
-        // payloadが未設定
+        // emailが未設定
         try {
-            service.addSpec("error", null);
+            service.addUser("error", null);
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
             assertCheckErrors(context, new String[] {
-                "BeanValidator.NotNull"
+                "BeanValidator.NotEmpty"
             });
             context.clearErrors();
         }
 
         // id, payloadが未設定
         try {
-            service.addSpec("", null);
+            service.addUser("", "");
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
             assertCheckErrors(context, new String[] {
-                "BeanValidator.NotEmpty", "BeanValidator.NotNull"
+                "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
             context.clearErrors();
         }
 
         // 作成済み
-        service.addSpec(SPEC_ID + "_error", payload);
+        service.addUser("error", "error@test.com");
         try {
-            service.addSpec(SPEC_ID + "_error", payload);
+            service.addUser("error", "error@test.com");
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -148,39 +132,11 @@ public class SpecServiceTest {
         }
 
         // -----------------------------------------------------------------------------------------
-        // 更新
-        // -----------------------------------------------------------------------------------------
-        // payloadが未設定
-        try {
-            service.updateSpec(SPEC_ID + "_error", null);
-            fail();
-        } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
-            assertCheckErrors(context, new String[] {
-                "BeanValidator.NotNull"
-            });
-            context.clearErrors();
-        }
-
-        // 削除済み
-        service.deleteSpec(SPEC_ID + "_error");
-        try {
-            service.updateSpec(SPEC_ID + "_error", payload);
-            fail();
-        } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
-            assertCheckErrors(context, new String[] {
-                MessageConst.DATA_NOT_EXIST
-            });
-            context.clearErrors();
-        }
-
-        // -----------------------------------------------------------------------------------------
         // 削除
         // -----------------------------------------------------------------------------------------
         // id が未設定
         try {
-            service.deleteSpec(null);
+            service.deleteUser(null);
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -191,8 +147,9 @@ public class SpecServiceTest {
         }
 
         // 削除済み
+        service.deleteUser("error");
         try {
-            service.deleteSpec(SPEC_ID + "_error");
+            service.deleteUser("error");
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -203,33 +160,21 @@ public class SpecServiceTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test() {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final String user = SpecServiceTest.class.getSimpleName();
-        final CommitInfo commitInfo = new CommitInfo(user, user + "@example.com", "TagService test tag.");
-        this.context.putCommitInfo(commitInfo);
-
-        final String dirData = TestConst.DIR_DATA + "/" + user;
-        FileUtils.rmdirs(dirData);
-
-        final String dirMerged = dirData + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        final String dirSplit = dirData + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-
-        // payload
-        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+        FileUtils.rmdirs(TestConst.DIR_DATA + "/test-user");
 
         // -----------------------------------------------------------------------------------------
         // 0件
         // -----------------------------------------------------------------------------------------
         List<String> beforeIdList = service.idList();
-        assertThat(beforeIdList, not(hasItem(SPEC_ID)));
+        assertThat(beforeIdList, not(hasItem("test-user")));
 
         try {
-            service.findById(SPEC_ID);
+            service.findById("test-user");
             fail();
         } catch (SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
@@ -239,55 +184,26 @@ public class SpecServiceTest {
         // 追加
         // -----------------------------------------------------------------------------------------
         log.info("ADD");
-        Spec spec = service.addSpec(SPEC_ID, payload);
-        assertThat(spec.getId(), is(SPEC_ID));
-        assertThat(JsonUtils.writeString(spec.getPayload()), is(JsonUtils.writeString(payload)));
+        User user = service.addUser("test-user", "test-user@test.com");
+        assertThat(user.getId(), is("test-user"));
+        assertThat(user.getEmail(), is(nullValue()));
 
         List<String> addedIdList = service.idList();
-        assertThat(addedIdList, hasItem(SPEC_ID));
+        assertThat(addedIdList, hasItem("test-user"));
         log.info("-- idList: " + addedIdList);
 
-        List<File> addedFileList = FindUtils.find(dirSplit, FileType.File);
-        assertThat(addedFileList.size(), is(3));
-        log.info("-- fileList: " + addedFileList);
-
-        // -----------------------------------------------------------------------------------------
-        // 更新
-        // -----------------------------------------------------------------------------------------
-        log.info("UPDATE");
-        payload.put("KEY_FOR_UPDATE", this.getClass().getName());
-        service.updateSpec(SPEC_ID, payload);
-
-        List<String> updatedIdList = service.idList();
-        assertThat(updatedIdList, hasItem(SPEC_ID));
-        log.info("-- idList: " + updatedIdList);
-
-        List<File> updatedFileList = FindUtils.find(dirSplit, FileType.File);
-        assertThat(updatedFileList.size(), is(3));
-        log.info("-- fileList: " + updatedFileList);
-
-        Spec updated = service.findById(SPEC_ID);
-        Object updatePayload = updated.getPayload();
-        assertThat(updatePayload, not(is(payload)));
-
-        Map<String, Object> updatedPayloadMap = (Map<String, Object>) updatePayload;
-        assertThat(updatedPayloadMap.get("KEY_FOR_UPDATE"), is(this.getClass().getName()));
+        User finded = service.findById("test-user");
+        assertThat(finded.getId(), is("test-user"));
 
         // -----------------------------------------------------------------------------------------
         // 削除
         // -----------------------------------------------------------------------------------------
         log.info("DELETE");
-        service.deleteSpec(SPEC_ID);
+        service.deleteUser("test-user");
 
         List<String> deletedIdList = service.idList();
-        assertThat(deletedIdList, not(hasItem(SPEC_ID)));
+        assertThat(deletedIdList, not(hasItem("test-user")));
         log.info("-- idList: " + deletedIdList);
-
-        final File dirMergedObj = new File(dirMerged);
-        assertThat(dirMergedObj.exists(), is(false));
-
-        final File dirSplitObj = new File(dirSplit);
-        assertThat(dirSplitObj.exists(), is(false));
     }
 
 }

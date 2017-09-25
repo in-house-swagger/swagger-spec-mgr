@@ -88,12 +88,9 @@ public class BranchSpec extends BaseSpec {
         // なし
 
         // 関連データチェック
-        if (to == null) {
+        if (to == null || StringUtils.isEmpty(to.getId())) {
             addError(Branch.class, MessageConst.CHECK_NOTNULL, "toBranch");
             isValid = false;
-
-        } else {
-            if (!isValid(to, Read.class)) isValid = false;
         }
 
         if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);

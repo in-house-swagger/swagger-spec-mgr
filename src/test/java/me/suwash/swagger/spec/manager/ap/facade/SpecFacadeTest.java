@@ -7,8 +7,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
@@ -19,8 +17,6 @@ import me.suwash.swagger.spec.manager.ap.dto.SpecDto;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.util.FileUtils;
-import me.suwash.util.FindUtils;
-import me.suwash.util.FindUtils.FileType;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -43,8 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class SpecFacadeTest {
 
     private static final String SPEC_ID = SpecFacadeTest.class.getSimpleName();
-    private static String dirMerged;
-    private static String dirSplit;
 
     @Autowired
     private SpecFacade facade;
@@ -65,33 +59,31 @@ public class SpecFacadeTest {
 
     @Test
     public final void test_error() {
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 準備
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // データ初期化
         String commitUser = this.getClass().getSimpleName() + "_error";
-        dirMerged = TestConst.DIR_DATA + "/" + commitUser + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        dirSplit = TestConst.DIR_DATA + "/" + commitUser + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-        FileUtils.rmdirs(dirMerged);
-        FileUtils.rmdirs(dirSplit);
+        final String dirData = TestConst.DIR_DATA + "/" + commitUser;
+        FileUtils.rmdirs(dirData);
 
         final CommitInfo commitInfo = new CommitInfo(commitUser, "spec-mgr@example.com");
 
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 検索
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("FIND");
         SpecDto dto = facade.findById(commitInfo, SPEC_ID);
         assertCheckErrors(dto.getErrors(), new String[] {
             MessageConst.DATA_NOT_EXIST
         });
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 追加
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("ADD");
         facade.add(commitInfo, SPEC_ID, payload);
         dto = facade.add(commitInfo, SPEC_ID, payload);
@@ -99,18 +91,18 @@ public class SpecFacadeTest {
             MessageConst.DATA_ALREADY_EXIST
         });
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 更新
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("UPDATE");
         dto = facade.update(commitInfo, "notExist", payload);
         assertCheckErrors(dto.getErrors(), new String[] {
             MessageConst.DATA_NOT_EXIST
         });
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 削除
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("DELETE");
         dto = facade.delete(commitInfo, "notExist");
         assertCheckErrors(dto.getErrors(), new String[] {
@@ -118,22 +110,20 @@ public class SpecFacadeTest {
         });
     }
 
-//    @Test
-//    public void test_commitInfoなし() {
-//        dirMerged = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-//        dirSplit = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-//        FileUtils.rmdirs(dirMerged);
-//        FileUtils.rmdirs(dirSplit);
-//        test(null);
-//    }
+    // @Test
+    // public void test_commitInfoなし() {
+    // dirMerged = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
+    // dirSplit = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
+    // FileUtils.rmdirs(dirMerged);
+    // FileUtils.rmdirs(dirSplit);
+    // test(null);
+    // }
 
     @Test
     public void test_commitInfoあり() {
         String commitUser = this.getClass().getSimpleName();
-        dirMerged = TestConst.DIR_DATA + "/" + commitUser + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        dirSplit = TestConst.DIR_DATA + "/" + commitUser + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-        FileUtils.rmdirs(dirMerged);
-        FileUtils.rmdirs(dirSplit);
+        final String dirData = TestConst.DIR_DATA + "/" + commitUser;
+        FileUtils.rmdirs(dirData);
 
         final CommitInfo commitInfo = new CommitInfo(commitUser, "spec-mgr@example.com");
         test(commitInfo);
@@ -141,21 +131,21 @@ public class SpecFacadeTest {
 
     @SuppressWarnings("unchecked")
     private final void test(final CommitInfo commitInfo) {
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 準備
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 検索
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         IdListDto beforeListDto = facade.idList(commitInfo);
         assertThat(beforeListDto.getList(), not(hasItem(SPEC_ID)));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 追加
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("ADD");
         SpecDto added = facade.add(commitInfo, SPEC_ID, payload);
         assertThat(added.getSpec().getId(), is(SPEC_ID));
@@ -167,13 +157,9 @@ public class SpecFacadeTest {
         assertThat(addedIdList.getList(), hasItem(SPEC_ID));
         log.info("-- idList: " + addedIdList);
 
-        List<File> addedFileList = FindUtils.find(dirSplit, FileType.File);
-        assertThat(addedFileList.size(), is(3));
-        log.info("-- fileList: " + addedFileList);
-
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 更新
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("UPDATE");
         payload.put("KEY_FOR_UPDATE", this.getClass().getName());
         facade.update(commitInfo, SPEC_ID, payload);
@@ -182,10 +168,6 @@ public class SpecFacadeTest {
         assertThat(updatedIdList.getList(), hasItem(SPEC_ID));
         log.info("-- idList: " + updatedIdList);
 
-        List<File> updatedFileList = FindUtils.find(dirSplit, FileType.File);
-        assertThat(updatedFileList.size(), is(3));
-        log.info("-- fileList: " + updatedFileList);
-
         SpecDto updated = facade.findById(commitInfo, SPEC_ID);
         Object updatePayload = updated.getSpec().getPayload();
         assertThat(updatePayload, not(is(payload)));
@@ -193,21 +175,15 @@ public class SpecFacadeTest {
         Map<String, Object> updatedPayloadMap = (Map<String, Object>) updatePayload;
         assertThat(updatedPayloadMap.get("KEY_FOR_UPDATE"), is(this.getClass().getName()));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 削除
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("DELETE");
         facade.delete(commitInfo, SPEC_ID);
 
         IdListDto deletedIdList = facade.idList(commitInfo);
         assertThat(deletedIdList.getList(), not(hasItem(SPEC_ID)));
         log.info("-- idList: " + deletedIdList);
-
-        final File dirMergedObj = new File(dirMerged);
-        assertThat(dirMergedObj.exists(), is(false));
-
-        final File dirSplitObj = new File(dirSplit);
-        assertThat(dirSplitObj.exists(), is(false));
     }
 
 }

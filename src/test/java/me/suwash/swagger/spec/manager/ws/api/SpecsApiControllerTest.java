@@ -95,9 +95,9 @@ public class SpecsApiControllerTest {
         final CommitInfo commitInfo,
         final RequestMediaType requestMediaType) throws Exception {
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 準備
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // ディレクトリ初期化
         dirMerged = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
         dirSplit = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
@@ -111,9 +111,9 @@ public class SpecsApiControllerTest {
         // 実行結果
         MvcResult result = null;
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 入力チェック
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} POST 入力チェック " + requestMediaType);
         // mediaTypeなし
         mockMvc.perform(
@@ -144,9 +144,9 @@ public class SpecsApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest());
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs : 取得 0件
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         if (commitInfo != null) {
             log.info("/specs GET " + requestMediaType);
             result = mockMvc.perform(
@@ -157,9 +157,9 @@ public class SpecsApiControllerTest {
                 .andReturn();
         }
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 取得 0件
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/specs/" + SPEC_ID), commitInfo)
@@ -169,9 +169,9 @@ public class SpecsApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 追加
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} POST " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(post("/specs/" + SPEC_ID), commitInfo)
@@ -194,9 +194,9 @@ public class SpecsApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_ALREADY_EXIST));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 取得
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/specs/" + SPEC_ID), commitInfo)
@@ -206,9 +206,9 @@ public class SpecsApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString() + "\n", is(SwaggerSpecUtils.writeString(payload)));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 更新
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} PUT " + requestMediaType);
         payload.put("KEY_FOR_UPDATE", this.getClass().getName());
         requestBody = convertBody(requestMediaType, payload);
@@ -227,9 +227,9 @@ public class SpecsApiControllerTest {
         // System.out.println(SwaggerSpecUtils.writeString(payload));
         assertThat(result.getResponse().getContentAsString() + "\n", is(SwaggerSpecUtils.writeString(payload)));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/specs"), commitInfo)
@@ -239,9 +239,9 @@ public class SpecsApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(SpecsApiControllerTest.class.getSimpleName()));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 削除
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} DELETE " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(delete("/specs/" + SPEC_ID), commitInfo)
@@ -251,9 +251,9 @@ public class SpecsApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), is(StringUtils.EMPTY));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // specs/{specId} : 取得 削除済み
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/specs/{specId} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/specs/" + SPEC_ID), commitInfo)

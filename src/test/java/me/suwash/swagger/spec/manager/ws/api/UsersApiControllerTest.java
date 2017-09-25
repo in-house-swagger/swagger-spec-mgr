@@ -1,25 +1,17 @@
 package me.suwash.swagger.spec.manager.ws.api;
 
-import static me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.withCommitInfo;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Map;
-
-import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
-import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
-import me.suwash.util.JsonUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -44,11 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @lombok.extern.slf4j.Slf4j
-public class TagsApiControllerTest {
-
-    private static final String SPEC_ID = "sample_spec";
-    private static final String COMMIT_USER = TagsApiControllerTest.class.getSimpleName();
-    private static final String DIR_DATA = TestConst.DIR_DATA + "/" + COMMIT_USER;
+public class UsersApiControllerTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -57,7 +45,7 @@ public class TagsApiControllerTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.info(TagsApiControllerTest.class.getSimpleName());
+        log.info(UsersApiControllerTest.class.getSimpleName());
     }
 
     @AfterClass
@@ -77,64 +65,46 @@ public class TagsApiControllerTest {
 
     @Test
     public final void test() throws Exception {
-        CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", COMMIT_USER + " test tag.");
-        RequestMediaType requestMediaType = RequestMediaType.json;
-        FileUtils.rmdirs(DIR_DATA);
-
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        // payload
-        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+        RequestMediaType requestMediaType = RequestMediaType.json;
 
-        // リポジトリ初期化
-        mockMvc.perform(
-            withCommitInfo(post("/specs/" + SPEC_ID), commitInfo)
-                .contentType(requestMediaType.value())
-                .content(JsonUtils.writeString(payload))
-            )
-            .andExpect(status().isCreated());
+        // ディレクトリ初期化
+        FileUtils.rmdirs(TestConst.DIR_DATA + "/ws_test");
 
         // 実行結果
         MvcResult result = null;
 
         // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 入力チェック
+        // users/{userId} : 入力チェック
         // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} POST 入力チェック");
+        log.info("/users/{userId} POST 入力チェック");
         mockMvc.perform(
-            withCommitInfo(post("/tags/NotExist"), commitInfo)
+            post("/users/NotExist")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest());
 
-        log.info("/tags/{tag} PUT 入力チェック");
-        mockMvc.perform(
-            withCommitInfo(put("/tags/NotExist"), commitInfo)
-                .contentType(requestMediaType.value())
-            )
-            // .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isBadRequest());
+        // // -----------------------------------------------------------------------------------------
+        // // users : 取得 0件
+        // // -----------------------------------------------------------------------------------------
+        // log.info("/users GET " + requestMediaType);
+        // result = mockMvc.perform(
+        // get("/users")
+        // .contentType(requestMediaType.value())
+        // )
+        // // .andDo(MockMvcResultHandlers.print())
+        // .andExpect(status().isNoContent())
+        // .andReturn();
 
         // -----------------------------------------------------------------------------------------
-        // tags : 取得 0件
+        // users/{userId} : 取得 0件
         // -----------------------------------------------------------------------------------------
-        log.info("/tags GET " + requestMediaType);
+        log.info("/users/{userId} GET " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(get("/tags"), commitInfo)
-                .contentType(requestMediaType.value())
-            )
-            // .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isNoContent())
-            .andReturn();
-
-        // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 取得 0件
-        // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} GET " + requestMediaType);
-        result = mockMvc.perform(
-            withCommitInfo(get("/tags/v1.0.0"), commitInfo)
+            get("/users/ws_test")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
@@ -143,73 +113,60 @@ public class TagsApiControllerTest {
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
 
         // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 追加
+        // users/{userId} : 追加
         // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} POST " + requestMediaType);
+        log.info("/users/{userId} POST " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(post("/tags/v1.0.0?object=master"), commitInfo)
+            post("/users/ws_test?email=ws_test@test.com")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isCreated())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("v1.0.0"));
+        assertThat(result.getResponse().getContentAsString(), containsString("ws_test"));
 
         // 追加済み
         result = mockMvc.perform(
-            withCommitInfo(post("/tags/v1.0.0?object=master"), commitInfo)
+            post("/users/ws_test?email=ws_test@test.com")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.ERRORHANDLE));
+        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_ALREADY_EXIST));
 
         // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 取得
+        // users/{userId} : 取得
         // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} GET " + requestMediaType);
+        log.info("/users/{userId} GET " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(get("/tags/v1.0.0"), commitInfo)
+            get("/users/ws_test")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("v1.0.0"));
+        assertThat(result.getResponse().getContentAsString(), containsString("ws_test"));
 
         // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 更新
+        // users
         // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} PUT " + requestMediaType);
+        log.info("/users GET " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(put("/tags/v1.0.0?to=release/v1.0.0"), commitInfo)
+            get("/users")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("release/v1.0.0"));
+        assertThat(result.getResponse().getContentAsString(), containsString("ws_test"));
 
         // -----------------------------------------------------------------------------------------
-        // tags
+        // users/{userId} : 削除
         // -----------------------------------------------------------------------------------------
-        log.info("/tags GET " + requestMediaType);
+        log.info("/users/{userId} DELETE " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(get("/tags"), commitInfo)
-                .contentType(requestMediaType.value())
-            )
-            // .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk())
-            .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("release/v1.0.0"));
-
-        // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 削除
-        // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} DELETE " + requestMediaType);
-        result = mockMvc.perform(
-            withCommitInfo(delete("/tags/release/v1.0.0"), commitInfo)
+            delete("/users/ws_test")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())
@@ -218,11 +175,11 @@ public class TagsApiControllerTest {
         assertThat(result.getResponse().getContentAsString(), is(StringUtils.EMPTY));
 
         // -----------------------------------------------------------------------------------------
-        // tags/{tag} : 取得 削除済み
+        // users/{userId} : 取得 削除済み
         // -----------------------------------------------------------------------------------------
-        log.info("/tags/{tag} GET " + requestMediaType);
+        log.info("/users/{userId} GET " + requestMediaType);
         result = mockMvc.perform(
-            withCommitInfo(get("/tags/release/v1.0.0"), commitInfo)
+            get("/users/ws_test")
                 .contentType(requestMediaType.value())
             )
             // .andDo(MockMvcResultHandlers.print())

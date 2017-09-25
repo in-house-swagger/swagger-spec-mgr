@@ -81,9 +81,9 @@ public class BranchesApiControllerTest {
         RequestMediaType requestMediaType = RequestMediaType.json;
         FileUtils.rmdirs(DIR_DATA);
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 準備
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
@@ -98,9 +98,9 @@ public class BranchesApiControllerTest {
         // 実行結果
         MvcResult result = null;
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 入力チェック
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches/{branch} POST 入力チェック");
         mockMvc.perform(
             withCommitInfo(post("/branches/NotExist"), commitInfo)
@@ -117,9 +117,9 @@ public class BranchesApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest());
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches : 取得 1件(masterブランチのみ)
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/branches"), commitInfo)
@@ -130,9 +130,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("master"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 取得 0件
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/tags/{tag} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/branches/develop"), commitInfo)
@@ -143,9 +143,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 追加
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/tags/{tag} POST " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(post("/branches/develop?object=master"), commitInfo)
@@ -175,9 +175,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.ERRORHANDLE));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 取得
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches/{branch} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/branches/feature/1/someUser"), commitInfo)
@@ -188,9 +188,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("feature/1/someUser"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 更新
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches/{branch} PUT " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(put("/branches/feature/1/someUser?to=feature/2/someUser"), commitInfo)
@@ -201,9 +201,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("feature/2/someUser"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/branches"), commitInfo)
@@ -215,9 +215,9 @@ public class BranchesApiControllerTest {
         assertThat(result.getResponse().getContentAsString(), containsString("feature/2/someUser"));
         assertThat(result.getResponse().getContentAsString(), containsString("develop"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // merges : マージ
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/merges POST " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(post("/merges?source=feature/2/someUser&target=develop"), commitInfo)
@@ -228,9 +228,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("develop"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // switch : スイッチ
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/switch POST " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(post("/switch/feature/2/someUser"), commitInfo)
@@ -241,9 +241,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("feature/2/someUser"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 削除
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/branches/{branch} DELETE " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(delete("/branches/feature/2/someUser"), commitInfo)
@@ -263,9 +263,9 @@ public class BranchesApiControllerTest {
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), is(StringUtils.EMPTY));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // branches/{branch} : 取得 削除済み
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("/tags/{tag} GET " + requestMediaType);
         result = mockMvc.perform(
             withCommitInfo(get("/branches/develop"), commitInfo)

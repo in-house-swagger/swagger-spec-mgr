@@ -18,7 +18,6 @@ import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
-import me.suwash.swagger.spec.manager.sv.domain.Spec;
 import me.suwash.swagger.spec.manager.sv.domain.Tag;
 import me.suwash.util.FileUtils;
 
@@ -69,9 +68,9 @@ public class TagServiceTest {
 
     @Test
     public final void testSpec() {
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 準備
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         final String user = COMMIT_USER + "_error";
         final CommitInfo commitInfo = new CommitInfo(user, user + "@example.com", "TagService test tag.");
         this.context.putCommitInfo(commitInfo);
@@ -83,8 +82,7 @@ public class TagServiceTest {
         final String dirData = TestConst.DIR_DATA + "/" + user;
         FileUtils.rmdirs(dirData);
 
-        Spec spec = specService.newSpec(SPEC_ID, payload);
-        spec.add();
+        specService.addSpec(SPEC_ID, payload);
 
         // -----------------------------------------------------------------------------------------
         // 検索
@@ -105,8 +103,7 @@ public class TagServiceTest {
         // -----------------------------------------------------------------------------------------
         // tagId が未設定
         try {
-            Tag tag = service.newTag(null);
-            tag.add("master");
+            service.addTag("master", null);
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -117,8 +114,7 @@ public class TagServiceTest {
         }
         // gitObject が未設定
         try {
-            Tag tag = service.newTag("error");
-            tag.add(null);
+            service.addTag(null, "error");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -129,8 +125,7 @@ public class TagServiceTest {
         }
         // tagId, gitObject が未設定
         try {
-            Tag tag = service.newTag("");
-            tag.add("");
+            service.addTag("", "");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -141,11 +136,9 @@ public class TagServiceTest {
         }
 
         // 作成済み
-        Tag v1 = service.newTag("v1");
-        v1.add("master");
+        service.addTag("master", "v1");
         try {
-            Tag tag = service.newTag("v1");
-            tag.add("master");
+            service.addTag("master", "v1");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
@@ -157,7 +150,7 @@ public class TagServiceTest {
         // -----------------------------------------------------------------------------------------
         // id が未設定
         try {
-            service.newTag("").rename("error");
+            service.renameTag("", "error");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -168,7 +161,7 @@ public class TagServiceTest {
         }
         // toTag が未設定
         try {
-            v1.rename(null);
+            service.renameTag("v1", "");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -179,20 +172,18 @@ public class TagServiceTest {
         }
         // toTag が既に存在する
         try {
-            v1.rename("v1");
+            service.renameTag("v1", "v1");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
-        // 削除済み
-        v1.delete();
+        // fromTag が存在しない
         try {
-            v1.rename("v2");
+            service.renameTag("v2", "v3");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
-            assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
 
         // -----------------------------------------------------------------------------------------
@@ -200,7 +191,7 @@ public class TagServiceTest {
         // -----------------------------------------------------------------------------------------
         // id が未設定
         try {
-            service.newTag("").delete();
+            service.deleteTag("");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
@@ -210,8 +201,9 @@ public class TagServiceTest {
             context.clearErrors();
         }
         // 削除済み
+        service.deleteTag("v1");
         try {
-            v1.delete();
+            service.deleteTag("v1");
             fail();
         } catch (final SpecMgrException e) {
             assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
@@ -234,12 +226,11 @@ public class TagServiceTest {
         final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
         FileUtils.rmdirs(dirData);
 
-        Spec spec = specService.newSpec(SPEC_ID, payload);
-        spec.add();
+        specService.addSpec(SPEC_ID, payload);
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 0件
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         List<String> beforeIdList = service.idList();
         assertThat(beforeIdList, not(hasItem("v1.0.0")));
 
@@ -250,15 +241,14 @@ public class TagServiceTest {
             assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
         }
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 追加
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("ADD");
-        Tag tag = service.newTag("v1.0.0");
+        Tag tag = service.addTag("master", "v1.0.0");
         assertThat(tag.getId(), is("v1.0.0"));
         assertThat(tag.getGitObject(), is(nullValue()));
 
-        tag.add("master");
         List<String> addedIdList = service.idList();
         assertThat(addedIdList, hasItem("v1.0.0"));
         log.info("-- idList: " + addedIdList);
@@ -267,8 +257,7 @@ public class TagServiceTest {
         assertThat(addedV100, not(nullValue()));
         assertThat(addedV100.getId(), is("v1.0.0"));
 
-        Tag v101 = service.newTag("v1.0.1");
-        v101.add("master");
+        service.addTag("master", "v1.0.1");
         List<String> addedIdListV101 = service.idList();
         assertThat(addedIdListV101, hasItem("v1.0.1"));
         log.info("-- idList: " + addedIdListV101);
@@ -277,19 +266,18 @@ public class TagServiceTest {
         assertThat(addedV101, not(nullValue()));
         assertThat(addedV101.getId(), is("v1.0.1"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // リネーム
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("UPDATE");
-        addedV100.rename("ver1.0.0");
-        Tag renamedVer100 = service.findById("ver1.0.0");
+        Tag renamedVer100 = service.renameTag("v1.0.0", "ver1.0.0");
         assertThat(renamedVer100.getId(), is("ver1.0.0"));
 
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // 削除
-        // ------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         log.info("DELETE");
-        renamedVer100.delete();
+        service.deleteTag("ver1.0.0");
         List<String> deletedIdList = service.idList();
         assertThat(deletedIdList, not(hasItem("ver1.0.0")));
         log.info("-- idList: " + deletedIdList);

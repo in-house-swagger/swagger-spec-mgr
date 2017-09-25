@@ -24,7 +24,7 @@ public class SpecService {
     @Autowired
     private GitRepoRepository gitRepoRepository;
 
-    public Spec newSpec(final String specId, final Object payload) {
+    private Spec newSpec(final String specId, final Object payload) {
         return new Spec(specSpec, gitRepoRepository, specRepository, specId, payload);
     }
 
@@ -40,6 +40,23 @@ public class SpecService {
         if (finded == null)
             throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Spec.class.getSimpleName(), "id", specId));
         return finded;
+    }
+
+    public Spec addSpec(final String specId, final Object payload) {
+        final Spec spec = newSpec(specId, payload);
+        spec.add();
+        return findById(specId);
+    }
+
+    public Spec updateSpec(final String specId, final Object payload) {
+        final Spec finded = newSpec(specId, null);
+        finded.update(payload);
+        return findById(specId);
+    }
+
+    public void deleteSpec(final String specId) {
+        final Spec finded = newSpec(specId, null);
+        finded.delete();
     }
 
 }

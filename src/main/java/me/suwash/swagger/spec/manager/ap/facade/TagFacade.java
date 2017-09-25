@@ -43,9 +43,7 @@ public class TagFacade extends BaseFacade {
 
         Tag result = null;
         try {
-            final Tag tag = service.newTag(tagId);
-            tag.add(gitObject);
-            result = service.findById(tagId);
+            result = service.addTag(gitObject, tagId);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -57,9 +55,7 @@ public class TagFacade extends BaseFacade {
 
         Tag result = null;
         try {
-            final Tag finded = service.findById(fromTag);
-            finded.rename(toTag);
-            result = service.findById(toTag);
+            result = service.renameTag(fromTag, toTag);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
@@ -70,8 +66,7 @@ public class TagFacade extends BaseFacade {
         registerCommitInfo(commitInfo);
 
         try {
-            final Tag tag = service.newTag(tagId);
-            tag.delete();
+            service.deleteTag(tagId);
         } catch (SpecMgrException e) {
             handleApplicationException(e);
         }
