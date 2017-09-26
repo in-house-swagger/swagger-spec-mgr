@@ -16,6 +16,6 @@
         <Root level="warn">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="me.suwash.swagger.spec.manager" level="info" />
+        <Logger name="me.suwash.swagger.spec.manager" level="@JAVA_LOGLEVEL@" />
     </Loggers>
 </Configuration>

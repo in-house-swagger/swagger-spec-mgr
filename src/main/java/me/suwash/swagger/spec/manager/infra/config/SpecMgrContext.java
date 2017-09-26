@@ -64,7 +64,6 @@ public class SpecMgrContext {
         final Map<String, Object> context = getContext(contextKey);
         return context.containsKey(key);
     }
-
     public void putCommitInfo(final CommitInfo commitInfo) {
         put(getThreadContextKey(), CommitInfo.class.getName(), commitInfo);
     }

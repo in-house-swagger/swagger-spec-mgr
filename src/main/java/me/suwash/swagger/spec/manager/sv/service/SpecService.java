@@ -4,6 +4,7 @@ import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
 
 import java.util.List;
 
+import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 public class SpecService {
 
     @Autowired
+    private SpecMgrContext context;
+    @Autowired
     private SpecSpec specSpec;
     @Autowired
     private SpecRepository specRepository;
@@ -25,7 +28,7 @@ public class SpecService {
     private GitRepoRepository gitRepoRepository;
 
     private Spec newSpec(final String specId, final Object payload) {
-        return new Spec(specSpec, gitRepoRepository, specRepository, specId, payload);
+        return new Spec(context, specSpec, gitRepoRepository, specRepository, specId, payload);
     }
 
     public List<String> idList() {

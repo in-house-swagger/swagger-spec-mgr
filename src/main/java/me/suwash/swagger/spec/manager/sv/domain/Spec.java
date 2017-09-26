@@ -2,6 +2,7 @@ package me.suwash.swagger.spec.manager.sv.domain;
 
 import javax.validation.constraints.NotNull;
 
+import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.gen.SpecGen;
@@ -10,6 +11,8 @@ import me.suwash.swagger.spec.manager.sv.specification.SpecSpec;
 public class Spec extends SpecGen {
 
     @NotNull
+    private final SpecMgrContext context;
+    @NotNull
     private final SpecSpec specSpec;
     @NotNull
     private final GitRepoRepository gitRepoRepository;
@@ -17,6 +20,7 @@ public class Spec extends SpecGen {
     private final SpecRepository specRepository;
 
     public Spec(
+        final SpecMgrContext context,
         final SpecSpec specSpec,
         final GitRepoRepository gitRepository,
         final SpecRepository specRepository,
@@ -24,6 +28,7 @@ public class Spec extends SpecGen {
         final Object payload) {
 
         super(id, payload);
+        this.context = context;
         this.specSpec = specSpec;
         this.gitRepoRepository = gitRepository;
         this.specRepository = specRepository;
@@ -32,9 +37,8 @@ public class Spec extends SpecGen {
     public void add() {
         specSpec.canAdd(this);
 
-        // Git作業ディレクトリが作成されていない場合、初期化
-        // TODO specで、エラーにする。usecaseが変わるので、各テストクラスにも反映。
-        if (!gitRepoRepository.isExist()) gitRepoRepository.init();
+        // Git作業ディレクトリが作成されていない場合、デフォルトユーザに限って初期化
+        if (!gitRepoRepository.isExist() && context.getCommitInfo() == null) gitRepoRepository.init();
         // specを追加
         specRepository.add(this);
         // 追加を反映

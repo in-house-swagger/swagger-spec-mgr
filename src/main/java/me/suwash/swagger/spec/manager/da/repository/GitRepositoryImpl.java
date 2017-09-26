@@ -51,10 +51,8 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
     public void init() {
         final StringBuilder commitArgs = new StringBuilder();
         final CommitInfo commitInfo = commitInfo();
-        if (commitInfo != null &&
-            !StringUtils.isEmpty(commitInfo.getUser()) &&
-            !StringUtils.isEmpty(commitInfo.getEmail())) {
-
+        if (commitInfo != null) {
+            commitInfo.canInit();
             commitArgs.append(" ").append(commitInfo.getUser());
             commitArgs.append(" ").append(commitInfo.getEmail());
         }

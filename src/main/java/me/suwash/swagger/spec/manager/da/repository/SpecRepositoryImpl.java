@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.da.infra.BaseRepository;
+import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
 import me.suwash.swagger.spec.manager.infra.util.SwaggerSpecUtils;
 import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SpecRepositoryImpl extends BaseRepository implements SpecRepository {
 
+    @Autowired
+    private SpecMgrContext context;
     @Autowired
     private SpecSpec specSpec;
     @Autowired
@@ -51,7 +54,7 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
         final Object parsed = SwaggerSpecUtils.parse(specSpec.getMergedDir(), specId);
         if (parsed == null) return null;
 
-        return new Spec(specSpec, gitRepository, this, specId, parsed);
+        return new Spec(context, specSpec, gitRepository, this, specId, parsed);
     }
 
     @Override

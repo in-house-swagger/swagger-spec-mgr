@@ -27,10 +27,9 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
     @Override
     public ResponseEntity<Object> getSpecs(
-        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail) {
+        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final IdListDto dto = facade.idList(commitInfo);
 
         final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
@@ -40,10 +39,9 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
     @Override
     public ResponseEntity<Object> getSpecById(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification to return", required = true) @PathVariable("specId") final String specId) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.findById(commitInfo, specId);
 
         final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.read);
@@ -53,12 +51,11 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
     @Override
     public ResponseEntity<Object> addSpecWithId(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "message for commit") @RequestHeader(value = "x-commit-message", required = false) final String commitMessage,
         @ApiParam(value = "ID of specification that needs to be add", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be add", required = true) @RequestBody final Object payload) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail, commitMessage);
+        final CommitInfo commitInfo = commitInfo(commitUser, null, commitMessage);
         final SpecDto dto = facade.add(commitInfo, specId, payload);
 
         final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.create);
@@ -68,11 +65,10 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
     @Override
     public ResponseEntity<Object> updateSpecWithId(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification that needs to be update", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be update", required = true) @RequestBody final Object payload) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.update(commitInfo, specId, payload);
 
         final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.update);
@@ -82,10 +78,9 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
     @Override
     public ResponseEntity<Void> deleteSpecById(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification to delete", required = true) @PathVariable("specId") final String specId) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.delete(commitInfo, specId);
 
         final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.delete);

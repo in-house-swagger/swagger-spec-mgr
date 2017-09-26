@@ -41,10 +41,12 @@ public abstract class BaseApiController {
         return new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    protected CommitInfo commitInfo(final String user) {
+        return commitInfo(user, null, null);
+    }
     protected CommitInfo commitInfo(final String user, final String email) {
         return commitInfo(user, email, null);
     }
-
     protected CommitInfo commitInfo(final String user, final String email, final String message) {
         return new CommitInfo(user, email, message);
     }

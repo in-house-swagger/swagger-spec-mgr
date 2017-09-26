@@ -36,6 +36,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -88,6 +89,11 @@ public class TagsApiControllerTest {
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
+        mockMvc.perform(
+            withCommitInfo(post("/users/" + commitInfo.getUser() + "?email=test@example.com"), commitInfo)
+                .contentType(requestMediaType.value())
+            )
+            .andExpect(status().isCreated());
         mockMvc.perform(
             withCommitInfo(post("/specs/" + SPEC_ID), commitInfo)
                 .contentType(requestMediaType.value())
@@ -212,7 +218,7 @@ public class TagsApiControllerTest {
             withCommitInfo(delete("/tags/release/v1.0.0"), commitInfo)
                 .contentType(requestMediaType.value())
             )
-            // .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andReturn();
         assertThat(result.getResponse().getContentAsString(), is(StringUtils.EMPTY));

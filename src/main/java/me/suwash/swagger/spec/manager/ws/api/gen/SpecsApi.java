@@ -34,8 +34,7 @@ public interface SpecsApi {
         },
         method = RequestMethod.GET)
     ResponseEntity<Object> getSpecs(
-        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail);
+        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser);
 
     @ApiOperation(value = "Find specification by ID", notes = "Returns a single specification", response = Object.class, tags = {})
     @ApiResponses(value = {
@@ -50,7 +49,6 @@ public interface SpecsApi {
         method = RequestMethod.GET)
     ResponseEntity<Object> getSpecById(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification to return", required = true) @PathVariable("specId") final String specId);
 
     @ApiOperation(value = "Add a specification with id", notes = "", response = Void.class, tags = {})
@@ -68,7 +66,6 @@ public interface SpecsApi {
         method = RequestMethod.POST)
     ResponseEntity<Object> addSpecWithId(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "message for commit") @RequestHeader(value = "x-commit-message", required = false) final String commitMessage,
         @ApiParam(value = "ID of specification that needs to be add", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be add", required = true) @RequestBody final Object payload);
@@ -89,7 +86,6 @@ public interface SpecsApi {
         method = RequestMethod.PUT)
     ResponseEntity<Object> updateSpecWithId(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification that needs to be update", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be update", required = true) @RequestBody final Object payload);
 
@@ -102,7 +98,6 @@ public interface SpecsApi {
         method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteSpecById(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of specification to delete", required = true) @PathVariable("specId") final String specId);
 
 }

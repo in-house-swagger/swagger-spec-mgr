@@ -41,6 +41,8 @@ public class SpecFacadeTest {
     private static final String SPEC_ID = SpecFacadeTest.class.getSimpleName();
 
     @Autowired
+    private UserFacade userFacade;
+    @Autowired
     private SpecFacade facade;
 
     @BeforeClass
@@ -71,6 +73,9 @@ public class SpecFacadeTest {
 
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+
+        // リポジトリ初期化
+        userFacade.add(commitInfo.getUser(), commitInfo.getEmail());
 
         // -----------------------------------------------------------------------------------------
         // 検索
@@ -136,6 +141,11 @@ public class SpecFacadeTest {
         // -----------------------------------------------------------------------------------------
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+
+        // リポジトリ初期化
+        if (commitInfo != null) {
+            userFacade.add(commitInfo.getUser(), commitInfo.getEmail());
+        }
 
         // -----------------------------------------------------------------------------------------
         // 検索

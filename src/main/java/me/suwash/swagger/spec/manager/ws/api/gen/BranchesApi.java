@@ -39,8 +39,7 @@ public interface BranchesApi {
         method = RequestMethod.GET)
     ResponseEntity<Object> getBranches(
         HttpServletRequest request,
-        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail);
+        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser);
 
     @ApiOperation(value = "Find branch by ID", notes = "Returns a single branch", response = Object.class, tags = {})
     @ApiResponses(value = {
@@ -48,7 +47,7 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = "/branches/{branch}/**",
+    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
         produces = {
             "application/json"
         },
@@ -56,14 +55,13 @@ public interface BranchesApi {
     ResponseEntity<Object> getBranchById(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of branch to return", required = true) @PathVariable("branch") final String branch);
 
     @ApiOperation(value = "Add a branch with id", notes = "", response = BranchesApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
-    @RequestMapping(value = "/branches/{branch}/**",
+    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
         produces = {
             "application/json"
         },
@@ -74,7 +72,6 @@ public interface BranchesApi {
     ResponseEntity<Object> addBranchWithId(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of branch that needs to be add", required = true) @PathVariable("branch") final String branch,
         @ApiParam(value = "the SHA of the git object this is branching", required = true) @RequestParam(value = "object", required = true) final String object);
 
@@ -84,7 +81,7 @@ public interface BranchesApi {
         @ApiResponse(code = 404, message = "branch not found", response = Void.class),
         @ApiResponse(code = 405, message = "Validation exception", response = Void.class)
     })
-    @RequestMapping(value = "/branches/{branch}/**",
+    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
         produces = {
             "application/json"
         },
@@ -95,7 +92,6 @@ public interface BranchesApi {
     ResponseEntity<Object> renameBranchWithId(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "target ID of branch that needs to be update", required = true) @PathVariable("branch") final String fromBranch,
         @ApiParam(value = "new ID of branch that needs to be update", required = true) @RequestParam(value = "to", required = true) final String toBranch);
 
@@ -104,12 +100,11 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = "/branches/{branch}/**",
+    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
         method = RequestMethod.DELETE)
     ResponseEntity<Object> deleteBranchById(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of branch to delete", required = true) @PathVariable("branch") final String branch);
 
     @ApiOperation(value = "Merge source branch to target branch", notes = "", response = BranchesApiModelGen.class, tags = {})
@@ -129,7 +124,6 @@ public interface BranchesApi {
     ResponseEntity<Object> mergeBranch(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "source ID of branch that needs to be merge", required = true) @RequestParam(value = "source", required = true) final String sourceBranch,
         @ApiParam(value = "target ID of branch that needs to be merge", required = true) @RequestParam(value = "target", required = true) final String targetBranch);
 
@@ -138,12 +132,11 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = "/switch/{branch}/**",
+    @RequestMapping(value = {"/switch/{branch:.+}", "/switch/{branch:.+}/**"},
         method = RequestMethod.POST)
     ResponseEntity<Object> switchBranch(
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of branch to switch", required = true) @PathVariable("branch") final String branch);
 
 }

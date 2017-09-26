@@ -43,6 +43,8 @@ public class BranchFacadeTest {
     @Autowired
     private SpecMgrContext context;
     @Autowired
+    private UserFacade userFacade;
+    @Autowired
     private SpecFacade specFacade;
     @Autowired
     private BranchFacade facade;
@@ -76,6 +78,7 @@ public class BranchFacadeTest {
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
+        userFacade.add(commitInfo.getUser(), commitInfo.getEmail());
         specFacade.add(commitInfo, SPEC_ID, payload);
 
         // -----------------------------------------------------------------------------------------
@@ -145,6 +148,7 @@ public class BranchFacadeTest {
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
+        userFacade.add(commitInfo.getUser(), commitInfo.getEmail());
         specFacade.add(commitInfo, SPEC_ID, payload);
 
         // -----------------------------------------------------------------------------------------

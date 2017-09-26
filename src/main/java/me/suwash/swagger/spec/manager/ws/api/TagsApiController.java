@@ -38,10 +38,9 @@ public class TagsApiController extends BaseApiController implements TagsApi {
     @Override
     public ResponseEntity<Object> getTags(
         final HttpServletRequest request,
-        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail) {
+        @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final IdListDto dto = facade.idList(commitInfo);
 
         final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
@@ -52,10 +51,9 @@ public class TagsApiController extends BaseApiController implements TagsApi {
     public ResponseEntity<Object> getTagById(
         final HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of tag to return", required = true) @PathVariable("tag") final String tag) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.findById(commitInfo, getRealTag(tag, request));
 
         final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.read);
@@ -66,12 +64,11 @@ public class TagsApiController extends BaseApiController implements TagsApi {
     public ResponseEntity<Object> addTagWithId(
         final HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "message for tag") @RequestHeader(value = "x-commit-message", required = false) final String commitMessage,
         @ApiParam(value = "ID of tag that needs to be add", required = true) @PathVariable("tag") final String tag,
         @ApiParam(value = "the SHA of the git object this is tagging", required = true) @RequestParam(value = "object", required = true) final String object) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail, commitMessage);
+        final CommitInfo commitInfo = commitInfo(commitUser, null, commitMessage);
         final TagDto dto = facade.add(commitInfo, object, getRealTag(tag, request));
 
         final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.create);
@@ -82,11 +79,10 @@ public class TagsApiController extends BaseApiController implements TagsApi {
     public ResponseEntity<Object> renameTagWithId(
         final HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "target ID of tag that needs to be update", required = true) @PathVariable("tag") final String fromTag,
         @ApiParam(value = "new ID of tag that needs to be update", required = true) @RequestParam(value = "to", required = true) final String toTag) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.rename(commitInfo, getRealTag(fromTag, request), toTag);
 
         final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.rename);
@@ -97,10 +93,9 @@ public class TagsApiController extends BaseApiController implements TagsApi {
     public ResponseEntity<Object> deleteTagById(
         final HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
-        @ApiParam(value = "email address for commit") @RequestHeader(value = "x-commit-email", required = false) final String commitEmail,
         @ApiParam(value = "ID of tag to delete", required = true) @PathVariable("tag") final String tag) {
 
-        final CommitInfo commitInfo = commitInfo(commitUser, commitEmail);
+        final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.delete(commitInfo, getRealTag(tag, request));
 
         final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.delete);

@@ -89,6 +89,11 @@ public class BranchesApiControllerTest {
 
         // リポジトリ初期化
         mockMvc.perform(
+            withCommitInfo(post("/users/" + commitInfo.getUser() + "?email=test@example.com"), commitInfo)
+                .contentType(requestMediaType.value())
+            )
+            .andExpect(status().isCreated());
+        mockMvc.perform(
             withCommitInfo(post("/specs/" + SPEC_ID), commitInfo)
                 .contentType(requestMediaType.value())
                 .content(JsonUtils.writeString(payload))

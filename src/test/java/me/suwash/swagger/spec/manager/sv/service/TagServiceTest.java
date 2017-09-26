@@ -48,6 +48,8 @@ public class TagServiceTest {
     @Autowired
     private SpecMgrContext context;
     @Autowired
+    private UserService userService;
+    @Autowired
     private SpecService specService;
     @Autowired
     private TagService service;
@@ -71,17 +73,19 @@ public class TagServiceTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final String user = COMMIT_USER + "_error";
-        final CommitInfo commitInfo = new CommitInfo(user, user + "@example.com", "TagService test tag.");
+        final String userId = COMMIT_USER + "_error";
+        final String email = userId + "@example.com";
+        final CommitInfo commitInfo = new CommitInfo(userId, email, "TagService test tag.");
         this.context.putCommitInfo(commitInfo);
 
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
-        final String dirData = TestConst.DIR_DATA + "/" + user;
+        final String dirData = TestConst.DIR_DATA + "/" + userId;
         FileUtils.rmdirs(dirData);
 
+        userService.addUser(userId, email);
         specService.addSpec(SPEC_ID, payload);
 
         // -----------------------------------------------------------------------------------------
@@ -216,16 +220,19 @@ public class TagServiceTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        final CommitInfo commitInfo = new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", "TagService test tag.");
+        final String userId = COMMIT_USER;
+        final String email = userId + "@example.com";
+        final CommitInfo commitInfo = new CommitInfo(userId, email, "TagService test tag.");
         this.context.putCommitInfo(commitInfo);
 
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
         // リポジトリ初期化
-        final String dirData = TestConst.DIR_DATA + "/" + COMMIT_USER;
+        final String dirData = TestConst.DIR_DATA + "/" + userId;
         FileUtils.rmdirs(dirData);
 
+        userService.addUser(userId, email);
         specService.addSpec(SPEC_ID, payload);
 
         // -----------------------------------------------------------------------------------------
