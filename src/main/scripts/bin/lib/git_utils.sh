@@ -918,30 +918,7 @@ function git.switch() {
     return ${EXITCODE_ERROR}
   fi
 
-  # ブランチの存在チェック
-  local _get_result=
-  log.trace_console "git branch -a | grep ${_branch}"
-  log.add_indent
-  _get_result=$( git branch -a 2>&1 | grep ${_branch} )
-  _ret_code=${PIPESTATUS[0]}
-  echo "${_get_result}"                                                                            | log.trace_console
-  log.remove_indent
-
-  # 実行結果チェック
-  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    log.error_console "ブランチ情報の取得に失敗しました。Git作業ディレクトリ：${_work_dir}、ブランチ：${_branch}、リターンコード：${_ret_code}"
-    log.remove_indent
-    return ${EXITCODE_ERROR}
-  fi
-
-  # 存在チェック
-  if [ "${_get_result}" = "" ]; then
-    log.error_console "ブランチ：${_branch} は存在しません。Git作業ディレクトリ：${_work_dir}"
-    log.remove_indent
-    return ${EXITCODE_ERROR}
-  fi
-
-  # ブランチ切替
+  # HEAD切替
   log.trace_console "git checkout ${_branch}"
   log.add_indent
   git checkout ${_branch}                                                                     2>&1 | log.trace_console
