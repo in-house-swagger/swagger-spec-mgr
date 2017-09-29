@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+#set -eux
 #===================================================================================================
 #
 # Generate swagger.yaml
@@ -22,6 +22,9 @@ readonly DIR_DIST="${DIR_BASE}/docs/design/webapi"
 #---------------------------------------------------------------------------------------------------
 # version
 readonly version="$1"
+
+# url
+readonly url="$2"
 
 
 #---------------------------------------------------------------------------------------------------
@@ -48,25 +51,28 @@ ${DIR_BASE}/dist/swagger-spec-mgr_${version}/bin/server start
 # 本処理
 #---------------------------------------------------------------------------------------------------
 echo "-- swagger.json 生成"
-curl -X GET                                  \
-  --output ${DIR_WORK}/swagger.json \
-  "http://localhost:8081/v1/api-docs"
+curl -X GET                                                                                        \
+  --output ${DIR_WORK}/swagger.json                                                                \
+   -w ' %{http_code}\n'                                                                            \
+  "${url}/api-docs"
 
 
 echo "-- デフォルトユーザ追加"
-curl -X POST                                \
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/json'       \
-  "http://localhost:8081/v1/users"
+curl -X POST                                                                                       \
+  --header 'Content-Type: application/json'                                                        \
+  --header 'Accept: application/json'                                                              \
+  -w ' %{http_code}\n'                                                                            \
+  "${url}/users"
 
 
 echo "-- swagger.yaml生成"
-curl -X POST                                \
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/x-yaml'     \
-  --data @${DIR_WORK}/swagger.json \
-  --output ${DIR_DIST}/swagger.yaml       \
-  "http://localhost:8081/v1/specs/spec-mgr"
+curl -X POST                                                                                       \
+  --header 'Content-Type: application/json'                                                        \
+  --header 'Accept: application/x-yaml'                                                            \
+  --data @${DIR_WORK}/swagger.json                                                                 \
+  --output ${DIR_DIST}/swagger.yaml                                                                \
+  -w ' %{http_code}\n'                                                                            \
+  "${url}/specs/spec-mgr"
 
 
 #---------------------------------------------------------------------------------------------------

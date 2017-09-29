@@ -21,6 +21,8 @@ readonly DIR_BASE="$(pwd)"
 readonly DIR_WORK="${DIR_BASE}/target"
 readonly DIR_DIST="${DIR_BASE}/dist"
 
+readonly URL_BASE="http://localhost:8081/v1"
+
 # プロダクト名
 product_name="$(basename ${DIR_BASE})"
 # バージョン
@@ -84,10 +86,22 @@ fi
 # swagger.yamlの生成
 #---------------------------------------------------------------------------------------------------
 echo ""
-${DIR_BASE}/build/lib/generate_swagger_yaml.sh "${version}"
+${DIR_BASE}/build/lib/generate_swagger_yaml.sh "${version}" "${URL_BASE}"
 retcode=$?
 if [[ ${retcode} -ne 0 ]]; then
   echo "swagger.yamlの生成でエラーが発生しました。" >&2
+  exit 6
+fi
+
+
+#---------------------------------------------------------------------------------------------------
+# webapi manualの生成
+#---------------------------------------------------------------------------------------------------
+echo ""
+${DIR_BASE}/build/lib/generate_swagger_html.sh
+retcode=$?
+if [[ ${retcode} -ne 0 ]]; then
+  echo "webapi manualの生成でエラーが発生しました。" >&2
   exit 6
 fi
 

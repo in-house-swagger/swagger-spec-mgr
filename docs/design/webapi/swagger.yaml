@@ -26,7 +26,7 @@ paths:
     get:
       tags:
       - "branches-api-controller"
-      summary: "Find all branches"
+      summary: "/branches GET"
       description: "Returns all branches"
       operationId: "getBranchesUsingGET_1"
       consumes:
@@ -54,7 +54,7 @@ paths:
     get:
       tags:
       - "branches-api-controller"
-      summary: "Find branch by ID"
+      summary: "/branches/{branch} GET"
       description: "Returns a single branch"
       operationId: "getBranchByIdUsingGET_2"
       consumes:
@@ -88,7 +88,7 @@ paths:
     post:
       tags:
       - "branches-api-controller"
-      summary: "Add a branch with id"
+      summary: "/branches/{branch} POST"
       operationId: "addBranchWithIdUsingPOST_2"
       consumes:
       - "application/json"
@@ -128,7 +128,7 @@ paths:
     put:
       tags:
       - "branches-api-controller"
-      summary: "rename an existing branch"
+      summary: "/branches/{branch} PUT"
       operationId: "renameBranchWithIdUsingPUT_2"
       consumes:
       - "application/json"
@@ -170,7 +170,7 @@ paths:
     delete:
       tags:
       - "branches-api-controller"
-      summary: "Deletes a branch"
+      summary: "/branches/{branch} DELETE"
       operationId: "deleteBranchByIdUsingDELETE_2"
       consumes:
       - "application/json"
@@ -206,7 +206,7 @@ paths:
     get:
       tags:
       - "branches-api-controller"
-      summary: "Find branch by ID"
+      summary: "/branches/{branch} GET"
       description: "Returns a single branch"
       operationId: "getBranchByIdUsingGET_3"
       consumes:
@@ -240,7 +240,7 @@ paths:
     post:
       tags:
       - "branches-api-controller"
-      summary: "Add a branch with id"
+      summary: "/branches/{branch} POST"
       operationId: "addBranchWithIdUsingPOST_3"
       consumes:
       - "application/json"
@@ -280,7 +280,7 @@ paths:
     put:
       tags:
       - "branches-api-controller"
-      summary: "rename an existing branch"
+      summary: "/branches/{branch} PUT"
       operationId: "renameBranchWithIdUsingPUT_3"
       consumes:
       - "application/json"
@@ -322,7 +322,7 @@ paths:
     delete:
       tags:
       - "branches-api-controller"
-      summary: "Deletes a branch"
+      summary: "/branches/{branch} DELETE"
       operationId: "deleteBranchByIdUsingDELETE_3"
       consumes:
       - "application/json"
@@ -358,7 +358,7 @@ paths:
     post:
       tags:
       - "branches-api-controller"
-      summary: "Merge source branch to target branch"
+      summary: "/merges POST"
       operationId: "mergeBranchUsingPOST_1"
       consumes:
       - "application/json"
@@ -594,7 +594,7 @@ paths:
     post:
       tags:
       - "branches-api-controller"
-      summary: "Switch to a branch"
+      summary: "/switch/{branch} POST"
       operationId: "switchBranchUsingPOST_2"
       consumes:
       - "application/json"
@@ -630,7 +630,7 @@ paths:
     post:
       tags:
       - "branches-api-controller"
-      summary: "Switch to a branch"
+      summary: "/switch/{branch} POST"
       operationId: "switchBranchUsingPOST_3"
       consumes:
       - "application/json"
