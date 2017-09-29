@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<title>Paths</title>
+<title>Swagger Specification Manager</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -427,9 +427,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
+<h1>Swagger Specification Manager</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_overview">Overview</a>
+<ul class="sectlevel2">
+<li><a href="#_version_information">Version information</a></li>
+<li><a href="#_contact_information">Contact information</a></li>
+<li><a href="#_license_information">License information</a></li>
+<li><a href="#_uri_scheme">URI scheme</a></li>
+<li><a href="#_tags">Tags</a></li>
+</ul>
+</li>
 <li><a href="#_paths">Paths</a>
 <ul class="sectlevel2">
 <li><a href="#_getbranchesusingget_1">/branches GET</a></li>
@@ -442,33 +452,96 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_renamebranchwithidusingput_3">/branches/{branch} PUT</a></li>
 <li><a href="#_deletebranchbyidusingdelete_3">/branches/{branch} DELETE</a></li>
 <li><a href="#_mergebranchusingpost_1">/merges POST</a></li>
-<li><a href="#_getspecsusingget_1">Find all specifications</a></li>
-<li><a href="#_addspecwithidusingpost_1">Add a specification with id</a></li>
-<li><a href="#_getspecbyidusingget_1">Find specification by ID</a></li>
-<li><a href="#_updatespecwithidusingput_1">Update an existing specification</a></li>
-<li><a href="#_deletespecbyidusingdelete_1">Deletes a specification</a></li>
+<li><a href="#_getspecsusingget_1">/specs GET</a></li>
+<li><a href="#_addspecwithidusingpost_1">/specs/{specId} POST</a></li>
+<li><a href="#_getspecbyidusingget_1">/specs/{specId} GET</a></li>
+<li><a href="#_updatespecwithidusingput_1">/specs/{specId} PUT</a></li>
+<li><a href="#_deletespecbyidusingdelete_1">/specs/{specId} DELETE</a></li>
 <li><a href="#_switchbranchusingpost_2">/switch/{branch} POST</a></li>
 <li><a href="#_switchbranchusingpost_3">/switch/{branch} POST</a></li>
-<li><a href="#_gettagsusingget_1">Find all tags</a></li>
-<li><a href="#_addtagwithidusingpost_2">Add a tag with id</a></li>
-<li><a href="#_gettagbyidusingget_2">Find tag by ID</a></li>
-<li><a href="#_renametagwithidusingput_2">rename an existing tag</a></li>
-<li><a href="#_deletetagbyidusingdelete_2">Deletes a tag</a></li>
-<li><a href="#_addtagwithidusingpost_3">Add a tag with id</a></li>
-<li><a href="#_gettagbyidusingget_3">Find tag by ID</a></li>
-<li><a href="#_renametagwithidusingput_3">rename an existing tag</a></li>
-<li><a href="#_deletetagbyidusingdelete_3">Deletes a tag</a></li>
-<li><a href="#_adddefaultuserusingpost_1">Add a default user</a></li>
-<li><a href="#_getusersusingget_1">Find all tags</a></li>
-<li><a href="#_adduserwithidusingpost_1">Add a user with id</a></li>
-<li><a href="#_getuserbyidusingget_1">Find user by ID</a></li>
-<li><a href="#_deleteuserbyidusingdelete_1">Deletes a user</a></li>
+<li><a href="#_gettagsusingget_1">/tags GET</a></li>
+<li><a href="#_addtagwithidusingpost_2">/tags/{tag} POST</a></li>
+<li><a href="#_gettagbyidusingget_2">/tags/{tag} GET</a></li>
+<li><a href="#_renametagwithidusingput_2">/tags/{tag} PUT</a></li>
+<li><a href="#_deletetagbyidusingdelete_2">/tags/{tag} DELETE</a></li>
+<li><a href="#_addtagwithidusingpost_3">/tags/{tag} POST</a></li>
+<li><a href="#_gettagbyidusingget_3">/tags/{tag} GET</a></li>
+<li><a href="#_renametagwithidusingput_3">/tags/{tag} PUT</a></li>
+<li><a href="#_deletetagbyidusingdelete_3">/tags/{tag} DELETE</a></li>
+<li><a href="#_adddefaultuserusingpost_1">/users POST</a></li>
+<li><a href="#_getusersusingget_1">/users GET</a></li>
+<li><a href="#_adduserwithidusingpost_1">/users{userId} POST</a></li>
+<li><a href="#_getuserbyidusingget_1">/users{userId} GET</a></li>
+<li><a href="#_deleteuserbyidusingdelete_1">/users{userId} DELETE</a></li>
+</ul>
+</li>
+<li><a href="#_definitions">Definitions</a>
+<ul class="sectlevel2">
+<li><a href="#_branchesapimodelgen">BranchesApiModelGen</a></li>
+<li><a href="#_idlistapimodelgen">IdListApiModelGen</a></li>
+<li><a href="#_tagsapimodelgen">TagsApiModelGen</a></li>
+<li><a href="#_usersapimodelgen">UsersApiModelGen</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <div id="content">
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Swagger Specification Management APIs.</p>
+</div>
+<div class="sect2">
+<h3 id="_version_information">Version information</h3>
+<div class="paragraph">
+<p><em>Version</em> : 0.3.0</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_contact_information">Contact information</h3>
+<div class="paragraph">
+<p><em>Contact</em> : suwa-sh<br>
+<em>Contact Email</em> : <a href="mailto:suwash01@gmail.com">suwash01@gmail.com</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_license_information">License information</h3>
+<div class="paragraph">
+<p><em>License</em> : Apache 2.0<br>
+<em>License URL</em> : <a href="http://www.apache.org/licenses/LICENSE-2.0.html" class="bare">http://www.apache.org/licenses/LICENSE-2.0.html</a><br>
+<em>Terms of service</em> : null</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_uri_scheme">URI scheme</h3>
+<div class="paragraph">
+<p><em>Host</em> : localhost:8081<br>
+<em>BasePath</em> : /v1</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tags">Tags</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>branches-api-controller : Git Branch Management API</p>
+</li>
+<li>
+<p>specs-api-controller : Swagger Specification Management API</p>
+</li>
+<li>
+<p>tags-api-controller : Git Tag Management API</p>
+</li>
+<li>
+<p>users-api-controller : Commit User Management API</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_paths">Paths</h2>
 <div class="sectionbody">
@@ -573,7 +646,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags">Tags</h4>
+<h4 id="_tags_2">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -702,7 +775,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_2">Tags</h4>
+<h4 id="_tags_3">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -825,7 +898,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_3">Tags</h4>
+<h4 id="_tags_4">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -959,7 +1032,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_4">Tags</h4>
+<h4 id="_tags_5">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1081,7 +1154,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_5">Tags</h4>
+<h4 id="_tags_6">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1210,7 +1283,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_6">Tags</h4>
+<h4 id="_tags_7">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1333,7 +1406,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_7">Tags</h4>
+<h4 id="_tags_8">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1467,7 +1540,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_8">Tags</h4>
+<h4 id="_tags_9">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1589,7 +1662,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_9">Tags</h4>
+<h4 id="_tags_10">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1723,7 +1796,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_10">Tags</h4>
+<h4 id="_tags_11">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1734,7 +1807,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getspecsusingget_1">Find all specifications</h3>
+<h3 id="_getspecsusingget_1">/specs GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /specs</pre>
@@ -1834,7 +1907,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_11">Tags</h4>
+<h4 id="_tags_12">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1845,7 +1918,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_addspecwithidusingpost_1">Add a specification with id</h3>
+<h3 id="_addspecwithidusingpost_1">/specs/{specId} POST</h3>
 <div class="literalblock">
 <div class="content">
 <pre>POST /specs/{specId}</pre>
@@ -1973,7 +2046,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_12">Tags</h4>
+<h4 id="_tags_13">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1984,7 +2057,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getspecbyidusingget_1">Find specification by ID</h3>
+<h3 id="_getspecbyidusingget_1">/specs/{specId} GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /specs/{specId}</pre>
@@ -2096,7 +2169,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_13">Tags</h4>
+<h4 id="_tags_14">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2107,7 +2180,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_updatespecwithidusingput_1">Update an existing specification</h3>
+<h3 id="_updatespecwithidusingput_1">/specs/{specId} PUT</h3>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /specs/{specId}</pre>
@@ -2228,7 +2301,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_14">Tags</h4>
+<h4 id="_tags_15">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2239,7 +2312,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deletespecbyidusingdelete_1">Deletes a specification</h3>
+<h3 id="_deletespecbyidusingdelete_1">/specs/{specId} DELETE</h3>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /specs/{specId}</pre>
@@ -2350,7 +2423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_15">Tags</h4>
+<h4 id="_tags_16">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2472,7 +2545,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_16">Tags</h4>
+<h4 id="_tags_17">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2594,7 +2667,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_17">Tags</h4>
+<h4 id="_tags_18">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2605,7 +2678,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_gettagsusingget_1">Find all tags</h3>
+<h3 id="_gettagsusingget_1">/tags GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /tags</pre>
@@ -2705,7 +2778,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_18">Tags</h4>
+<h4 id="_tags_19">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2716,7 +2789,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_addtagwithidusingpost_2">Add a tag with id</h3>
+<h3 id="_addtagwithidusingpost_2">/tags/{tag} POST</h3>
 <div class="literalblock">
 <div class="content">
 <pre>POST /tags/{tag}</pre>
@@ -2841,7 +2914,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_19">Tags</h4>
+<h4 id="_tags_20">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2852,7 +2925,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_gettagbyidusingget_2">Find tag by ID</h3>
+<h3 id="_gettagbyidusingget_2">/tags/{tag} GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /tags/{tag}</pre>
@@ -2964,7 +3037,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_20">Tags</h4>
+<h4 id="_tags_21">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2975,7 +3048,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_renametagwithidusingput_2">rename an existing tag</h3>
+<h3 id="_renametagwithidusingput_2">/tags/{tag} PUT</h3>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /tags/{tag}</pre>
@@ -3098,7 +3171,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_21">Tags</h4>
+<h4 id="_tags_22">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3109,7 +3182,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deletetagbyidusingdelete_2">Deletes a tag</h3>
+<h3 id="_deletetagbyidusingdelete_2">/tags/{tag} DELETE</h3>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /tags/{tag}</pre>
@@ -3220,7 +3293,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_22">Tags</h4>
+<h4 id="_tags_23">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3231,7 +3304,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_addtagwithidusingpost_3">Add a tag with id</h3>
+<h3 id="_addtagwithidusingpost_3">/tags/{tag} POST</h3>
 <div class="literalblock">
 <div class="content">
 <pre>POST /tags/{tag}/**</pre>
@@ -3356,7 +3429,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_23">Tags</h4>
+<h4 id="_tags_24">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3367,7 +3440,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_gettagbyidusingget_3">Find tag by ID</h3>
+<h3 id="_gettagbyidusingget_3">/tags/{tag} GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /tags/{tag}/**</pre>
@@ -3479,7 +3552,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_24">Tags</h4>
+<h4 id="_tags_25">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3490,7 +3563,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_renametagwithidusingput_3">rename an existing tag</h3>
+<h3 id="_renametagwithidusingput_3">/tags/{tag} PUT</h3>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /tags/{tag}/**</pre>
@@ -3613,7 +3686,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_25">Tags</h4>
+<h4 id="_tags_26">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3624,7 +3697,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deletetagbyidusingdelete_3">Deletes a tag</h3>
+<h3 id="_deletetagbyidusingdelete_3">/tags/{tag} DELETE</h3>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /tags/{tag}/**</pre>
@@ -3735,7 +3808,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_26">Tags</h4>
+<h4 id="_tags_27">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3746,10 +3819,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_adddefaultuserusingpost_1">Add a default user</h3>
+<h3 id="_adddefaultuserusingpost_1">/users POST</h3>
 <div class="literalblock">
 <div class="content">
 <pre>POST /users</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_9">Description</h4>
+<div class="paragraph">
+<p>Add a default user</p>
 </div>
 </div>
 <div class="sect3">
@@ -3822,7 +3901,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_27">Tags</h4>
+<h4 id="_tags_28">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3833,14 +3912,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getusersusingget_1">Find all tags</h3>
+<h3 id="_getusersusingget_1">/users GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /users</pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_description_9">Description</h4>
+<h4 id="_description_10">Description</h4>
 <div class="paragraph">
 <p>Returns all users</p>
 </div>
@@ -3905,7 +3984,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_28">Tags</h4>
+<h4 id="_tags_29">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3916,7 +3995,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_adduserwithidusingpost_1">Add a user with id</h3>
+<h3 id="_adduserwithidusingpost_1">/users{userId} POST</h3>
 <div class="literalblock">
 <div class="content">
 <pre>POST /users/{userId}</pre>
@@ -4027,7 +4106,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_29">Tags</h4>
+<h4 id="_tags_30">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4038,14 +4117,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getuserbyidusingget_1">Find user by ID</h3>
+<h3 id="_getuserbyidusingget_1">/users{userId} GET</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /users/{userId}</pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_description_10">Description</h4>
+<h4 id="_description_11">Description</h4>
 <div class="paragraph">
 <p>Returns a single user</p>
 </div>
@@ -4143,7 +4222,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_30">Tags</h4>
+<h4 id="_tags_31">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4154,7 +4233,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deleteuserbyidusingdelete_1">Deletes a user</h3>
+<h3 id="_deleteuserbyidusingdelete_1">/users{userId} DELETE</h3>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /users/{userId}</pre>
@@ -4258,7 +4337,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tags_31">Tags</h4>
+<h4 id="_tags_32">Tags</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4270,10 +4349,103 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_definitions">Definitions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_branchesapimodelgen">BranchesApiModelGen</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>id</strong><br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_idlistapimodelgen">IdListApiModelGen</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>idList</strong><br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">&lt; string &gt; array</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_tagsapimodelgen">TagsApiModelGen</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>id</strong><br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_usersapimodelgen">UsersApiModelGen</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>id</strong><br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-29 18:00:18 JST
+Last updated 2017-09-29 20:21:34 JST
 </div>
 </div>
 </body>

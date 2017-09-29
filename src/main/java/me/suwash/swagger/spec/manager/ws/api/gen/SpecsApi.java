@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Api(value = "specs", description = "Swagger Specification Management API")
 public interface SpecsApi {
 
-    @ApiOperation(value = "Find all specifications", notes = "Returns all specifications", response = IdListApiModelGen.class, tags = {})
+    @ApiOperation(value = "/specs GET", notes = "Returns all specifications", response = IdListApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = IdListApiModelGen.class),
         @ApiResponse(code = 404, message = "Specification not found", response = Void.class)
@@ -36,7 +36,7 @@ public interface SpecsApi {
     ResponseEntity<Object> getSpecs(
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser);
 
-    @ApiOperation(value = "Find specification by ID", notes = "Returns a single specification", response = Object.class, tags = {})
+    @ApiOperation(value = "/specs/{specId} GET", notes = "Returns a single specification", response = Object.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = Object.class),
         @ApiResponse(code = 400, message = "Invalid input", response = Object.class),
@@ -51,7 +51,7 @@ public interface SpecsApi {
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
         @ApiParam(value = "ID of specification to return", required = true) @PathVariable("specId") final String specId);
 
-    @ApiOperation(value = "Add a specification with id", notes = "", response = Void.class, tags = {})
+    @ApiOperation(value = "/specs/{specId} POST", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid input", response = Object.class)
     })
@@ -70,7 +70,7 @@ public interface SpecsApi {
         @ApiParam(value = "ID of specification that needs to be add", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be add", required = true) @RequestBody final Object payload);
 
-    @ApiOperation(value = "Update an existing specification", notes = "", response = Void.class, tags = {})
+    @ApiOperation(value = "/specs/{specId} PUT", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid input", response = Object.class),
         @ApiResponse(code = 404, message = "Specification not found", response = Void.class)
@@ -89,7 +89,7 @@ public interface SpecsApi {
         @ApiParam(value = "ID of specification that needs to be update", required = true) @PathVariable("specId") final String specId,
         @ApiParam(value = "Specification object that needs to be update", required = true) @RequestBody final Object payload);
 
-    @ApiOperation(value = "Deletes a specification", notes = "", response = Void.class, tags = {})
+    @ApiOperation(value = "/specs/{specId} DELETE", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid input", response = Object.class),
         @ApiResponse(code = 404, message = "Specification not found", response = Void.class)

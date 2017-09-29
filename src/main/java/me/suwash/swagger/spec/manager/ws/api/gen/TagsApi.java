@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Api(value = "tags", description = "Git Tag Management API")
 public interface TagsApi {
 
-    @ApiOperation(value = "Find all tags", notes = "Returns all tags", response = IdListApiModelGen.class, tags = {})
+    @ApiOperation(value = "/tags GET", notes = "Returns all tags", response = IdListApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = IdListApiModelGen.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
@@ -41,7 +41,7 @@ public interface TagsApi {
         HttpServletRequest request,
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser);
 
-    @ApiOperation(value = "Find tag by ID", notes = "Returns a single tag", response = TagsApiModelGen.class, tags = {})
+    @ApiOperation(value = "/tags/{tag} GET", notes = "Returns a single tag", response = TagsApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = TagsApiModelGen.class),
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
@@ -59,7 +59,7 @@ public interface TagsApi {
         @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user", required = false) final String commitUser,
         @ApiParam(value = "ID of tag to return", required = true) @PathVariable("tag") final String tag);
 
-    @ApiOperation(value = "Add a tag with id", notes = "", response = TagsApiModelGen.class, tags = {})
+    @ApiOperation(value = "/tags/{tag} POST", notes = "", response = TagsApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
@@ -80,7 +80,7 @@ public interface TagsApi {
         @ApiParam(value = "ID of tag that needs to be add", required = true) @PathVariable("tag") final String tag,
         @ApiParam(value = "the SHA of the git object this is tagging", required = true) @RequestParam(value = "object", required = true) final String object);
 
-    @ApiOperation(value = "rename an existing tag", notes = "", response = TagsApiModelGen.class, tags = {})
+    @ApiOperation(value = "/tags/{tag} PUT", notes = "", response = TagsApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class),
@@ -102,7 +102,7 @@ public interface TagsApi {
         @ApiParam(value = "target ID of tag that needs to be update", required = true) @PathVariable("tag") final String fromTag,
         @ApiParam(value = "new ID of tag that needs to be update", required = true) @RequestParam(value = "to", required = true) final String toTag);
 
-    @ApiOperation(value = "Deletes a tag", notes = "", response = Void.class, tags = {})
+    @ApiOperation(value = "/tags/{tag} DELETE", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)

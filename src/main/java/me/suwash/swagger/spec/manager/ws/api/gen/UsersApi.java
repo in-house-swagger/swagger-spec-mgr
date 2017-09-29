@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Api(value = "users", description = "Commit User Management API")
 public interface UsersApi {
 
-    @ApiOperation(value = "Find all tags", notes = "Returns all users", response = IdListApiModelGen.class, tags = {})
+    @ApiOperation(value = "/users GET", notes = "Returns all users", response = IdListApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = IdListApiModelGen.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
@@ -35,7 +35,7 @@ public interface UsersApi {
         method = RequestMethod.GET)
     ResponseEntity<Object> getUsers();
 
-    @ApiOperation(value = "Add a default user", notes = "", response = UsersApiModelGen.class, tags = {})
+    @ApiOperation(value = "/users POST", notes = "Add a default user", response = UsersApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
@@ -46,7 +46,7 @@ public interface UsersApi {
         method = RequestMethod.POST)
     ResponseEntity<Object> addDefaultUser();
 
-    @ApiOperation(value = "Find user by ID", notes = "Returns a single user", response = UsersApiModelGen.class, tags = {})
+    @ApiOperation(value = "/users{userId} GET", notes = "Returns a single user", response = UsersApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = UsersApiModelGen.class),
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
@@ -60,7 +60,7 @@ public interface UsersApi {
     ResponseEntity<Object> getUserById(
         @ApiParam(value = "user name for commit") @PathVariable(value = "userId", required = true) final String userId);
 
-    @ApiOperation(value = "Add a user with id", notes = "", response = UsersApiModelGen.class, tags = {})
+    @ApiOperation(value = "/users{userId} POST", notes = "", response = UsersApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
@@ -76,7 +76,7 @@ public interface UsersApi {
         @ApiParam(value = "user name for commit") @PathVariable(value = "userId", required = true) final String userId,
         @ApiParam(value = "email address for commit") @RequestParam(value = "email", required = true) final String email);
 
-    @ApiOperation(value = "Deletes a user", notes = "", response = Void.class, tags = {})
+    @ApiOperation(value = "/users{userId} DELETE", notes = "", response = Void.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "User not found", response = Void.class)

@@ -14,7 +14,7 @@ cd "$(cd ${dir_script}; cd ../..; pwd)" || exit 6
 readonly SCRIPT_NAME="$(basename $0 .sh)"
 readonly DIR_BASE="$(pwd)"
 readonly DIR_WORK="${DIR_BASE}/target/${SCRIPT_NAME}"
-readonly DIR_DIST="${DIR_BASE}/docs/manual"
+readonly DIR_DIST="${DIR_BASE}/docs/manual/webapi"
 
 
 #---------------------------------------------------------------------------------------------------
@@ -45,15 +45,22 @@ mkdir -p "${DIR_DIST}"
 # 本処理
 #---------------------------------------------------------------------------------------------------
 echo "-- adoc 生成"
-cd lib
-java -jar ${DIR_BASE}/build/lib/swagger2markup-cli-1.3.1.jar convert \
-  -i ${DIR_BASE}/docs/design/webapi/swagger.yaml \
+java -jar ${DIR_BASE}/build/lib/swagger2markup-cli-1.3.1.jar convert                               \
+  -i ${DIR_BASE}/docs/design/webapi/swagger.yaml                                                   \
   -d ${DIR_WORK}
+
+echo "-- index.adoc 生成"
+{
+  echo "include::overview.adoc[]"
+  echo "include::paths.adoc[]"
+  echo "include::security.adoc[]"
+  echo "include::definitions.adoc[]"
+} > ${DIR_WORK}/index.adoc
 
 
 echo "-- html 生成"
 cd ${DIR_WORK}
-asciidoctor -a toc=left *.adoc
+asciidoctor -a toc=left index.adoc
 cd - > /dev/null
 mv ${DIR_WORK}/*.html ${DIR_DIST}/
 

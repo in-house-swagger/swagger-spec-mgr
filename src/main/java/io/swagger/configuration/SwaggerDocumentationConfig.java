@@ -44,7 +44,7 @@ public class SwaggerDocumentationConfig {
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .termsOfServiceUrl("")
-            .version("0.1.0")
+            .version(SwaggerDocumentationConfig.class.getPackage().getImplementationVersion())
             .contact(new Contact("suwa-sh", "http://suwa-sh.github.io/profile", "suwash01@gmail.com"))
             .build();
     }
