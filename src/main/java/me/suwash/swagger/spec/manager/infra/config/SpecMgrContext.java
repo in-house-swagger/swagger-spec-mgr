@@ -1,18 +1,14 @@
 package me.suwash.swagger.spec.manager.infra.config;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.CheckErrors;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,17 +16,16 @@ public class SpecMgrContext {
     private static final String KEY_ERRORS = "__ERRORS__";
     private static final String KEY_WARNINGS = "__WARNINGS__";
 
-    private Map<String, Map<String, Object>> _contexts = new HashMap<>();
+    private Map<String, Map<String, Object>> contexts = new HashMap<>();
 
     private Map<String, Object> getContext(final String contextKey) {
-        if (StringUtils.isEmpty(contextKey))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("contextKey"));
+        ValidationUtils.notEmpty("contextKey", contextKey);
 
-        final boolean hasContext = _contexts.containsKey(contextKey);
-        if (hasContext) return _contexts.get(contextKey);
+        final boolean hasContext = contexts.containsKey(contextKey);
+        if (hasContext) return contexts.get(contextKey);
 
         final Map<String, Object> context = new HashMap<>();
-        _contexts.put(contextKey, context);
+        contexts.put(contextKey, context);
         return context;
 
     }
@@ -64,6 +59,7 @@ public class SpecMgrContext {
         final Map<String, Object> context = getContext(contextKey);
         return context.containsKey(key);
     }
+
     public void putCommitInfo(final CommitInfo commitInfo) {
         put(getThreadContextKey(), CommitInfo.class.getName(), commitInfo);
     }

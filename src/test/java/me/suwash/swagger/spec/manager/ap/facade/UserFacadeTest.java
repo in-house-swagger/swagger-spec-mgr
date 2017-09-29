@@ -9,7 +9,6 @@ import static org.junit.Assert.assertThat;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
 import me.suwash.swagger.spec.manager.ap.dto.UserDto;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -64,7 +63,7 @@ public class UserFacadeTest {
         });
         dto = facade.findById("facade-test_error");
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_NOT_EXIST
+            "data.notExist"
         });
 
         // -----------------------------------------------------------------------------------------

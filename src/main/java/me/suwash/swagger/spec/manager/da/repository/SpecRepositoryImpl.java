@@ -51,9 +51,9 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
 
     @Override
     public Spec findById(final String specId) {
-        final Object parsed = SwaggerSpecUtils.parse(specSpec.getMergedDir(), specId);
-        if (parsed == null) return null;
+        if (!idList().contains(specId)) return null;
 
+        final Object parsed = SwaggerSpecUtils.parse(specSpec.getMergedDir(), specId);
         return new Spec(context, specSpec, gitRepository, this, specId, parsed);
     }
 

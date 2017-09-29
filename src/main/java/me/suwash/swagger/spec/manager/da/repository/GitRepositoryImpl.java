@@ -1,6 +1,5 @@
 package me.suwash.swagger.spec.manager.da.repository;
 
-import java.io.File;
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.da.infra.BaseSubProcessRepository;
@@ -42,12 +41,6 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
     }
 
     @Override
-    public boolean isExist() {
-        final File userRepoDir = new File(props.getUserRepoDir(commitInfo()));
-        return userRepoDir.isDirectory();
-    }
-
-    @Override
     public void init() {
         final StringBuilder commitArgs = new StringBuilder();
         final CommitInfo commitInfo = commitInfo();
@@ -82,8 +75,7 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
             commitMessage = commitInfo.getMessage();
 
         // ダブルクォートで括る
-        if (!"\"".equals(commitMessage.indexOf(0)))
-            return "\"" + commitMessage + "\"";
+        if ('"' != commitMessage.charAt(0)) return "\"" + commitMessage + "\"";
         return commitMessage;
     }
 
@@ -99,8 +91,7 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
         final String command = appendCommitUser(
             props.getDirBin() + "/git/branch_is_exist.sh " + name);
         final ProcessResult result = subProc(command, "git branch_is_exist");
-        if ("true".equals(result.getStdout().get(0))) return true;
-        return false;
+        return "true".equals(result.getStdout().get(0));
     }
 
     @Override
@@ -151,8 +142,7 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
         final String command = appendCommitUser(
             props.getDirBin() + "/git/tag_is_exist.sh " + name);
         final ProcessResult result = subProc(command, "git tag_is_exist");
-        if ("true".equals(result.getStdout().get(0))) return true;
-        return false;
+        return "true".equals(result.getStdout().get(0));
     }
 
     @Override

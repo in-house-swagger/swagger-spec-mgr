@@ -16,7 +16,7 @@ import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
+import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
 import me.suwash.util.JsonUtils;
@@ -146,7 +146,7 @@ public class BranchesApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
 
         // -----------------------------------------------------------------------------------------
         // branches/{branch} : 追加
@@ -178,7 +178,7 @@ public class BranchesApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.ERRORHANDLE));
+        assertThat(result.getResponse().getContentAsString(), containsString(SpecMgrException.MSGCD_ERRORHANDLE));
 
         // -----------------------------------------------------------------------------------------
         // branches/{branch} : 取得
@@ -279,7 +279,7 @@ public class BranchesApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
     }
 
 }

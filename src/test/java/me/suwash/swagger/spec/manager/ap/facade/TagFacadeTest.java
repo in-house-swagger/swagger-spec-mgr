@@ -15,7 +15,6 @@ import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
 import me.suwash.swagger.spec.manager.ap.dto.TagDto;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.util.FileUtils;
 
 import org.junit.After;
@@ -90,7 +89,7 @@ public class TagFacadeTest {
         });
         dto = facade.findById(commitInfo, "v1.0.0");
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_NOT_EXIST
+            "data.notExist"
         });
 
         // -----------------------------------------------------------------------------------------

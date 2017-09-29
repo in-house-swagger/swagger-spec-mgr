@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
 
@@ -110,7 +109,7 @@ public class UsersApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
 
         // -----------------------------------------------------------------------------------------
         // users/{userId} : 追加
@@ -133,7 +132,7 @@ public class UsersApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_ALREADY_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("dir.alreadyExist"));
 
         // -----------------------------------------------------------------------------------------
         // users/{userId} : 取得
@@ -185,7 +184,7 @@ public class UsersApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
     }
 
 }

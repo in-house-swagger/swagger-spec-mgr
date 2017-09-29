@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.not;
 
 import java.io.File;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.infra.util.SubProcess.ProcessResult;
 import me.suwash.util.FileUtils;
@@ -47,7 +46,7 @@ public class SubProcessTest {
         try {
             SubProcess.newExecuter().execute();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.CHECK_NOTNULL));
+            assertThat(e.getMessageId(), is("check.notNull"));
         }
 
         // workDir

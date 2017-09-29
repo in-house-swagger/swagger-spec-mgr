@@ -28,7 +28,16 @@ public class UsersApiController extends BaseApiController implements UsersApi {
 
         final IdListDto dto = facade.idList();
 
-        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
+        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto);
+        return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
+    }
+
+    @Override
+    public ResponseEntity<Object> addDefaultUser() {
+
+        final UserDto dto = facade.addDefault();
+
+        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.CREATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -38,7 +47,7 @@ public class UsersApiController extends BaseApiController implements UsersApi {
 
         final UserDto dto = facade.findById(userId);
 
-        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.read);
+        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.READ);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -49,7 +58,7 @@ public class UsersApiController extends BaseApiController implements UsersApi {
 
         final UserDto dto = facade.add(userId, email);
 
-        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.create);
+        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.CREATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -59,7 +68,7 @@ public class UsersApiController extends BaseApiController implements UsersApi {
 
         final UserDto dto = facade.delete(userId);
 
-        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.delete);
+        final UsersApiModelMapper mapper = new UsersApiModelMapper(dto, OperationType.DELETE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 

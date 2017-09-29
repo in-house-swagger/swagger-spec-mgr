@@ -11,12 +11,10 @@ public abstract class BaseDto {
     protected CheckErrors warnings = new CheckErrors();
 
     protected BaseDto(final SpecMgrContext context) {
-        if (context != null) {
-            // チェック結果をDTOに移動
-            this.errors = context.getErrors();
-            this.warnings = context.getWarnings();
-            context.clear(context.getThreadContextKey());
-        }
+        // チェック結果をDTOに移動
+        this.errors = context.getErrors();
+        this.warnings = context.getWarnings();
+        context.clear(context.getThreadContextKey());
     }
 
     public boolean hasError() {

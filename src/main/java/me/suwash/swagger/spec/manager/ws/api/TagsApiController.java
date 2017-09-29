@@ -43,7 +43,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final IdListDto dto = facade.idList(commitInfo);
 
-        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
+        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -56,7 +56,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.findById(commitInfo, getRealTag(tag, request));
 
-        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.read);
+        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.READ);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -71,7 +71,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
         final CommitInfo commitInfo = commitInfo(commitUser, null, commitMessage);
         final TagDto dto = facade.add(commitInfo, object, getRealTag(tag, request));
 
-        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.create);
+        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.CREATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -85,7 +85,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.rename(commitInfo, getRealTag(fromTag, request), toTag);
 
-        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.rename);
+        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.RENAME);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -98,7 +98,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final TagDto dto = facade.delete(commitInfo, getRealTag(tag, request));
 
-        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.delete);
+        final TagsApiModelMapper mapper = new TagsApiModelMapper(dto, OperationType.DELETE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 

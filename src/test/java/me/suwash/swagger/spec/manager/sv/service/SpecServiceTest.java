@@ -14,9 +14,9 @@ import java.util.Map;
 import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
+import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.domain.Spec;
 import me.suwash.util.FileUtils;
@@ -47,6 +47,8 @@ public class SpecServiceTest {
     private static final String SPEC_ID = SpecServiceTest.class.getSimpleName();
 
     @Autowired
+    private ApplicationProperties props;
+    @Autowired
     private SpecMgrContext context;
     @Autowired
     private UserService userService;
@@ -66,6 +68,27 @@ public class SpecServiceTest {
 
     @After
     public void tearDown() throws Exception {}
+
+    @Test
+    public void testCommitInfoなし() {
+        this.context.putCommitInfo(null);
+
+        final String dirData = TestConst.DIR_DATA + "/" + props.getDefaultCommitUser();
+        FileUtils.rmdirs(dirData);
+
+        // payload
+        Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
+
+        try {
+            service.addSpec("specId", payload);
+        } catch (SpecMgrException e) {
+            assertThat(e.getMessageId(), is("specificationError"));
+            assertCheckErrors(context, new String[] {
+                "dir.notExist"
+            });
+            context.clearErrors();
+        }
+    }
 
     @Test
     public void testSpec() {
@@ -94,7 +117,7 @@ public class SpecServiceTest {
             service.findById(null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -109,7 +132,7 @@ public class SpecServiceTest {
             service.addSpec(null, payload);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -121,7 +144,7 @@ public class SpecServiceTest {
             service.addSpec("error", null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotNull"
             });
@@ -133,7 +156,7 @@ public class SpecServiceTest {
             service.addSpec("", null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotNull"
             });
@@ -146,9 +169,9 @@ public class SpecServiceTest {
             service.addSpec(SPEC_ID + "_error", payload);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.DATA_ALREADY_EXIST
+                "dir.alreadyExist"
             });
             context.clearErrors();
         }
@@ -161,7 +184,7 @@ public class SpecServiceTest {
             service.updateSpec(SPEC_ID + "_error", null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotNull"
             });
@@ -174,9 +197,9 @@ public class SpecServiceTest {
             service.updateSpec(SPEC_ID + "_error", payload);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.DATA_NOT_EXIST
+                "dir.notExist"
             });
             context.clearErrors();
         }
@@ -189,7 +212,7 @@ public class SpecServiceTest {
             service.deleteSpec(null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -201,9 +224,9 @@ public class SpecServiceTest {
             service.deleteSpec(SPEC_ID + "_error");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.DATA_NOT_EXIST
+                "dir.notExist"
             });
             context.clearErrors();
         }
@@ -242,7 +265,7 @@ public class SpecServiceTest {
             service.findById(SPEC_ID);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
+            assertThat(e.getMessageId(), is("data.notExist"));
         }
 
         // -----------------------------------------------------------------------------------------

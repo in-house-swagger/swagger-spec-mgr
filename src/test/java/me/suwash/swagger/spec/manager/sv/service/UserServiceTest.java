@@ -13,7 +13,6 @@ import java.util.List;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.domain.User;
 import me.suwash.util.FileUtils;
@@ -72,7 +71,7 @@ public class UserServiceTest {
             service.findById(null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -87,7 +86,7 @@ public class UserServiceTest {
             service.addUser(null, "error@test.com");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -99,7 +98,7 @@ public class UserServiceTest {
             service.addUser("error", null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -111,7 +110,7 @@ public class UserServiceTest {
             service.addUser("", "");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -124,9 +123,9 @@ public class UserServiceTest {
             service.addUser("error", "error@test.com");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.DATA_ALREADY_EXIST
+                "dir.alreadyExist"
             });
             context.clearErrors();
         }
@@ -139,7 +138,7 @@ public class UserServiceTest {
             service.deleteUser(null);
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -152,9 +151,9 @@ public class UserServiceTest {
             service.deleteUser("error");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.DATA_NOT_EXIST
+                "dir.notExist"
             });
             context.clearErrors();
         }
@@ -177,7 +176,7 @@ public class UserServiceTest {
             service.findById("test-user");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
+            assertThat(e.getMessageId(), is("data.notExist"));
         }
 
         // -----------------------------------------------------------------------------------------

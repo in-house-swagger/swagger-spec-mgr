@@ -1,11 +1,9 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-
 import java.util.List;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.sv.da.UserRepository;
 import me.suwash.swagger.spec.manager.sv.domain.User;
 import me.suwash.swagger.spec.manager.sv.specification.UserSpec;
@@ -16,6 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    @Autowired
+    private ApplicationProperties props;
     @Autowired
     private UserSpec userSpec;
     @Autowired
@@ -34,9 +34,14 @@ public class UserService {
         userSpec.canFind(criteria);
 
         final User finded = userRepository.findById(userId);
-        if (finded == null)
-            throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(User.class.getSimpleName(), "id", userId));
+        ValidationUtils.existData(User.class.getSimpleName(), "id", userId, finded);
         return finded;
+    }
+
+    public User addDefaultUser() {
+        final String userId = props.getDefaultCommitUser();
+        final String email = props.getDefaultCommitEmail();
+        return addUser(userId, email);
     }
 
     public User addUser(final String userId, final String email) {

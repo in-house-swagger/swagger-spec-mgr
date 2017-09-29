@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 public class BranchesApiModelMapper extends BaseApiModelMapper {
     public BranchesApiModelMapper(final BranchDto dto, final OperationType operation) {
-        if (OperationType.read.equals(operation) && dto.getBranch() == null) {
+        if (OperationType.READ.equals(operation) && dto.getBranch() == null) {
             this.httpStatus = HttpStatus.NOT_FOUND;
             this.body = newBody(null, dto);
             return;
@@ -21,17 +21,17 @@ public class BranchesApiModelMapper extends BaseApiModelMapper {
         }
 
         switch (operation) {
-            case create:
+            case CREATE:
                 this.httpStatus = HttpStatus.CREATED;
                 this.body = newBody(new BranchesApiModel(dto), dto);
                 break;
-            case read:
-            case update:
-            case rename:
+            case READ:
+            case UPDATE:
+            case RENAME:
                 this.httpStatus = HttpStatus.OK;
                 this.body = newBody(new BranchesApiModel(dto), dto);
                 break;
-            case delete:
+            case DELETE:
             default:
                 this.httpStatus = HttpStatus.OK;
                 break;

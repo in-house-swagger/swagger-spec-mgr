@@ -1,12 +1,12 @@
 package me.suwash.swagger.spec.manager.ws.infra;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.MSGCD_ERRORHANDLE;
 import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
 
 import javax.servlet.http.HttpServletRequest;
 
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.i18n.SpecMgrMessageSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public abstract class BaseApiController {
 
         log.error(
             SpecMgrMessageSource.getInstance().getMessage(
-                MessageConst.ERRORHANDLE,
+                MSGCD_ERRORHANDLE,
                 array(e.getStackTrace()[0].toString(), e.getMessage())
                 )
             , e);
@@ -44,9 +44,11 @@ public abstract class BaseApiController {
     protected CommitInfo commitInfo(final String user) {
         return commitInfo(user, null, null);
     }
+
     protected CommitInfo commitInfo(final String user, final String email) {
         return commitInfo(user, email, null);
     }
+
     protected CommitInfo commitInfo(final String user, final String email, final String message) {
         return new CommitInfo(user, email, message);
     }

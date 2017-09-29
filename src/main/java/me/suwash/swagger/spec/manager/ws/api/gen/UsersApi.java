@@ -35,6 +35,17 @@ public interface UsersApi {
         method = RequestMethod.GET)
     ResponseEntity<Object> getUsers();
 
+    @ApiOperation(value = "Add a default user", notes = "", response = UsersApiModelGen.class, tags = {})
+    @ApiResponses(value = {
+        @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
+    })
+    @RequestMapping(value = "/users",
+        produces = {
+            "application/json"
+        },
+        method = RequestMethod.POST)
+    ResponseEntity<Object> addDefaultUser();
+
     @ApiOperation(value = "Find user by ID", notes = "Returns a single user", response = UsersApiModelGen.class, tags = {})
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "successful operation", response = UsersApiModelGen.class),

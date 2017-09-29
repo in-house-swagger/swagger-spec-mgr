@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 public class TagsApiModelMapper extends BaseApiModelMapper {
     public TagsApiModelMapper(final TagDto dto, final OperationType operation) {
-        if (OperationType.read.equals(operation) && dto.getTag() == null) {
+        if (OperationType.READ.equals(operation) && dto.getTag() == null) {
             this.httpStatus = HttpStatus.NOT_FOUND;
             this.body = newBody(null, dto);
             return;
@@ -21,16 +21,16 @@ public class TagsApiModelMapper extends BaseApiModelMapper {
         }
 
         switch (operation) {
-            case create:
+            case CREATE:
                 this.httpStatus = HttpStatus.CREATED;
                 this.body = newBody(new TagsApiModel(dto), dto);
                 break;
-            case read:
-            case rename:
+            case READ:
+            case RENAME:
                 this.httpStatus = HttpStatus.OK;
                 this.body = newBody(new TagsApiModel(dto), dto);
                 break;
-            case delete:
+            case DELETE:
             default:
                 this.httpStatus = HttpStatus.OK;
                 break;

@@ -6,10 +6,13 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
+import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BaseSpec {
+
+    public static final String SPECIFICATION_ERROR = "specificationError";
 
     @Autowired
     private SpecMgrContext context;
@@ -25,7 +28,7 @@ public abstract class BaseSpec {
         return false;
     }
 
-    protected void addError(final Class<?> type, final String messageId, final Object... messageArgs) {
-        context.addError(type, messageId, messageArgs);
+    protected void addError(final Class<?> type, final SpecMgrException e) {
+        context.addError(type, e.getMessageId(), e.getMessageArgs());
     }
 }

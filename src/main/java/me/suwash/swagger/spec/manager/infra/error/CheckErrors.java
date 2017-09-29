@@ -41,9 +41,7 @@ public class CheckErrors implements Iterable<CheckError> {
     }
 
     public <T> void addViolations(Set<ConstraintViolation<T>> violations) {
-        violations.forEach(violation -> {
-            list.add(convCheckError(violation));
-        });
+        violations.forEach(violation -> list.add(convCheckError(violation)));
     }
 
     private <T> CheckError convCheckError(ConstraintViolation<T> violation) {

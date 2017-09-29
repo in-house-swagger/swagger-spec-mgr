@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spec.mgr")
 public class ApplicationProperties {
     private static final String DIRNAME_REPOSITORY = "repo";
+    private static final String DEFAULT_EMAIL_DOMAIN = "@domain.local";
 
     private Map<String, String> defaultCommitInfo;
     private Map<String, String> dirInfo;
@@ -48,5 +49,9 @@ public class ApplicationProperties {
 
     public String getDirData() {
         return dirInfo.get("data");
+    }
+
+    public String getDefaultCommitEmail() {
+        return getDefaultCommitUser() + DEFAULT_EMAIL_DOMAIN;
     }
 }

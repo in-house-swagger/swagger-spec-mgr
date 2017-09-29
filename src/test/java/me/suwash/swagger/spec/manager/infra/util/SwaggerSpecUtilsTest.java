@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.test.TestUtils;
 import me.suwash.util.CompareUtils;
@@ -55,23 +54,23 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.parse(null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // nullチェック
         try {
-            SwaggerSpecUtils.parse("/path/to/notExist", null);
+            SwaggerSpecUtils.parse("/tmp", null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // ファイル存在チェック
         try {
-            SwaggerSpecUtils.parse("/path/to/notExist", "dummy");
+            SwaggerSpecUtils.parse("/tmp", "dummy");
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.FILE_NOT_EXIST, e.getMessageId());
+            assertEquals("file.notExist", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -89,7 +88,7 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.writeString(null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -108,7 +107,7 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.writeSplit(null, null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -116,7 +115,7 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.writeSplit(new Object(), null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -124,7 +123,7 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.writeSplit(new Object(), "/path/to/notExist", null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -169,39 +168,39 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.writeMerged(null, null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // nullチェック
         try {
-            SwaggerSpecUtils.writeMerged("/path/to/input", null, null);
+            SwaggerSpecUtils.writeMerged("/tmp", null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // nullチェック
         try {
-            SwaggerSpecUtils.writeMerged("/path/to/input", "/path/to/output", null);
+            SwaggerSpecUtils.writeMerged("/tmp", "/tmp/output", null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
-        // ディレクトリチェック
+        // 入力ディレクトリチェック
         try {
-            SwaggerSpecUtils.writeMerged("/path/to/input", "/path/to/output", "specId");
+            SwaggerSpecUtils.writeMerged("/path/to/input", "/tmp", "specId");
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.DIR_NOT_EXIST, e.getMessageId());
+            assertEquals("dir.notExist", e.getMessageId());
             log.debug(e.getMessage());
         }
 
-        // ファイルチェック
+        // 入力ファイルチェック
         try {
             SwaggerSpecUtils.writeMerged("/tmp", "/path/to/output", "specId");
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.FILE_NOT_EXIST, e.getMessageId());
+            assertEquals("file.notExist", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -317,23 +316,23 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.deleteMerged(null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // nullチェック
         try {
-            SwaggerSpecUtils.deleteMerged("/path/to/target", null);
+            SwaggerSpecUtils.deleteMerged("/tmp", null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // ファイルチェック
         try {
-            SwaggerSpecUtils.deleteMerged("/path/to/target", "dummy");
+            SwaggerSpecUtils.deleteMerged("/tmp", "dummy");
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.FILE_NOT_EXIST, e.getMessageId());
+            assertEquals("file.notExist", e.getMessageId());
             log.debug(e.getMessage());
         }
 
@@ -351,23 +350,23 @@ public class SwaggerSpecUtilsTest {
         try {
             SwaggerSpecUtils.deleteSplit(null, null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // nullチェック
         try {
-            SwaggerSpecUtils.deleteSplit("/path/to/target", null);
+            SwaggerSpecUtils.deleteSplit("/tmp", null);
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.CHECK_NOTNULL, e.getMessageId());
+            assertEquals("check.notNull", e.getMessageId());
             log.debug(e.getMessage());
         }
 
         // ファイルチェック
         try {
-            SwaggerSpecUtils.deleteSplit("/path/to/target", "dummy");
+            SwaggerSpecUtils.deleteSplit("/tmp", "dummy");
         } catch (SpecMgrException e) {
-            assertEquals(MessageConst.FILE_NOT_EXIST, e.getMessageId());
+            assertEquals("file.notExist", e.getMessageId());
             log.debug(e.getMessage());
         }
 
