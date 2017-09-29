@@ -32,7 +32,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final IdListDto dto = facade.idList(commitInfo);
 
-        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
+        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -44,7 +44,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.findById(commitInfo, specId);
 
-        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.read);
+        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.READ);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -58,7 +58,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
         final CommitInfo commitInfo = commitInfo(commitUser, null, commitMessage);
         final SpecDto dto = facade.add(commitInfo, specId, payload);
 
-        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.create);
+        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.CREATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -71,7 +71,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.update(commitInfo, specId, payload);
 
-        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.update);
+        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.UPDATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -83,7 +83,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
         final CommitInfo commitInfo = commitInfo(commitUser);
         final SpecDto dto = facade.delete(commitInfo, specId);
 
-        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.delete);
+        final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.DELETE);
         return new ResponseEntity<Void>(mapper.getHttpStatus());
     }
 

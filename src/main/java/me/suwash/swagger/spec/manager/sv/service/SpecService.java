@@ -1,12 +1,9 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.sv.da.GitRepoRepository;
 import me.suwash.swagger.spec.manager.sv.da.SpecRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Spec;
@@ -40,8 +37,7 @@ public class SpecService {
         specSpec.canFind(criteria);
 
         final Spec finded = specRepository.findById(specId);
-        if (finded == null)
-            throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Spec.class.getSimpleName(), "id", specId));
+        ValidationUtils.existData(Spec.class.getSimpleName(), "id", specId, finded);
         return finded;
     }
 

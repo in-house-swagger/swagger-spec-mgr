@@ -1,11 +1,8 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-
 import java.util.List;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.sv.da.GitBranchRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Branch;
 import me.suwash.swagger.spec.manager.sv.specification.BranchSpec;
@@ -33,8 +30,10 @@ public class BranchService {
         final Branch criteria = newBranch(branch);
         branchSpec.canFind(criteria);
 
-        if (repository.isExistBranch(branch)) return newBranch(branch);
-        throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Branch.class.getSimpleName(), "id", branch));
+        Branch finded = null;
+        if (repository.isExistBranch(branch)) finded = newBranch(branch);
+        ValidationUtils.existData(Branch.class.getSimpleName(), "id", branch, finded);
+        return finded;
     }
 
     public Branch addBranch(final String gitObject, final String branchId) {

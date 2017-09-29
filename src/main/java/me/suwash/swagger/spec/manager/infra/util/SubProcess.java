@@ -1,6 +1,6 @@
 package me.suwash.swagger.spec.manager.infra.util;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.MSGCD_ERRORHANDLE;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import lombok.AccessLevel;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,11 +25,11 @@ import org.joda.time.LocalDateTime;
 @lombok.extern.slf4j.Slf4j
 public class SubProcess {
 
-    public static int EXITCODE_NOTEXECUTE = Integer.MIN_VALUE;
-    public static int EXITCODE_SUCCESS = 0;
-    public static int EXITCODE_WARN = 3;
-    public static int EXITCODE_ERROR = 6;
-    public static int EXITCODE_TIMEOUT = Integer.MAX_VALUE;
+    public static final int EXITCODE_NOTEXECUTE = Integer.MIN_VALUE;
+    public static final int EXITCODE_SUCCESS = 0;
+    public static final int EXITCODE_WARN = 3;
+    public static final int EXITCODE_ERROR = 6;
+    public static final int EXITCODE_TIMEOUT = Integer.MAX_VALUE;
 
     private String command;
     private String workDir;
@@ -94,27 +94,31 @@ public class SubProcess {
         final String stderrFilePath) {
 
         // 外部プロセス実行コマンド
-        final List<String> execCmdList = Arrays.asList(new String[] {
-            "/bin/bash", "-c",
-            "[ -f ~/.bash_profile ] && . ~/.bash_profile; " + command
-        });
+        final List<String> execCmdList = getExecCmdList(command);
 
         // ProcessBuilderを返却
-        final ProcessBuilder builder =
-            new ProcessBuilder(execCmdList)
-                .directory(new File(workDir))
-                .redirectInput(Redirect.PIPE)
-                // 標準出力ログ
-                .redirectOutput(Redirect.appendTo(new File(stdoutFilePath)))
-                // 標準エラーログ
-                .redirectError(Redirect.appendTo(new File(stderrFilePath)));
+        return new ProcessBuilder(execCmdList)
+            .directory(new File(workDir))
+            .redirectInput(Redirect.PIPE)
+            // 標準出力ログ
+            .redirectOutput(Redirect.appendTo(new File(stdoutFilePath)))
+            // 標準エラーログ
+            .redirectError(Redirect.appendTo(new File(stderrFilePath)));
+    }
 
-        return builder;
+    private List<String> getExecCmdList(final String command) {
+        return Arrays.asList(array(
+            "/bin/bash", "-c",
+            "[ -f ~/.bash_profile ] && . ~/.bash_profile; " + command
+            ));
+    }
+
+    private String[] array(final String... strings) {
+        return strings;
     }
 
     public ProcessResult execute() {
-        if (StringUtils.isEmpty(command))
-            throw new SpecMgrException(MessageConst.CHECK_NOTNULL, array("command"));
+        ValidationUtils.notEmpty("command", command);
 
         final ProcessBuilder builder = newProcessBuilder(command, workDir, stdout, stderr);
         builder.environment().putAll(env);
@@ -146,7 +150,7 @@ public class SubProcess {
         } catch (
             IOException | InterruptedException e) {
             if (process != null) closeStreams(process);
-            throw new SpecMgrException(MessageConst.ERRORHANDLE, array(command, e.getMessage()), e);
+            throw new SpecMgrException(MSGCD_ERRORHANDLE, array(command, e.getMessage()), e);
         } finally {
             if (process != null) closeStreams(process);
         }
@@ -161,7 +165,7 @@ public class SubProcess {
             process.getOutputStream().close();
             process.getErrorStream().close();
         } catch (IOException e) {
-            throw new SpecMgrException(MessageConst.ERRORHANDLE, array("closeStreams", e.getMessage()), e);
+            throw new SpecMgrException(MSGCD_ERRORHANDLE, array("closeStreams", e.getMessage()), e);
         }
     }
 
@@ -176,7 +180,8 @@ public class SubProcess {
             try {
                 return Files.readAllLines(Paths.get(stdoutFilePath), Charset.defaultCharset());
             } catch (IOException e) {
-                throw new SpecMgrException(MessageConst.FILE_CANT_READ, array(stdoutFilePath), e);
+                ValidationUtils.fileCantRead(stdoutFilePath, e);
+                return new ArrayList<>();
             }
         }
 
@@ -184,7 +189,8 @@ public class SubProcess {
             try {
                 return Files.readAllLines(Paths.get(stderrFilePath), Charset.defaultCharset());
             } catch (IOException e) {
-                throw new SpecMgrException(MessageConst.FILE_CANT_READ, array(stderrFilePath), e);
+                ValidationUtils.fileCantRead(stderrFilePath, e);
+                return new ArrayList<>();
             }
         }
     }

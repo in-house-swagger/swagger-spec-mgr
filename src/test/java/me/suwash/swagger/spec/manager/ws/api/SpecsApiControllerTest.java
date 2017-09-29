@@ -16,7 +16,6 @@ import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.util.SwaggerSpecUtils;
 import me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
@@ -48,8 +47,6 @@ import org.springframework.web.context.WebApplicationContext;
 public class SpecsApiControllerTest {
 
     private static final String SPEC_ID = SpecsApiControllerTest.class.getSimpleName();
-    private static String dirMerged;
-    private static String dirSplit;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -98,18 +95,31 @@ public class SpecsApiControllerTest {
         // -----------------------------------------------------------------------------------------
         // 準備
         // -----------------------------------------------------------------------------------------
-        // ディレクトリ初期化
-        dirMerged = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_MERGED + "/" + SPEC_ID;
-        dirSplit = TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT + "/" + TestConst.DIRNAME_SPLIT + "/" + SPEC_ID;
-        FileUtils.rmdirs(dirMerged);
-        FileUtils.rmdirs(dirSplit);
-
         // payload
         Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
         String requestBody = convertBody(requestMediaType, payload);
 
         // 実行結果
         MvcResult result = null;
+
+        // リポジトリ初期化
+        if (commitInfo != null) {
+            FileUtils.rmdirs(TestConst.DIR_DATA + "/" + commitInfo.getUser());
+            mockMvc.perform(
+                withCommitInfo(post("/users/" + commitInfo.getUser() + "?email=" + commitInfo.getEmail()), commitInfo)
+                    .contentType(RequestMediaType.json.value())
+                )
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated());
+
+        } else {
+            FileUtils.rmdirs(TestConst.DIR_DATA + "/" + TestConst.COMMITUSER_DEFAULT);
+            mockMvc.perform(
+                post("/users")
+                    .contentType(RequestMediaType.json.value())
+                )
+                .andExpect(status().isCreated());
+        }
 
         // -----------------------------------------------------------------------------------------
         // specs/{specId} : 入力チェック
@@ -167,7 +177,7 @@ public class SpecsApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
 
         // -----------------------------------------------------------------------------------------
         // specs/{specId} : 追加
@@ -192,7 +202,7 @@ public class SpecsApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isBadRequest())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_ALREADY_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("dir.alreadyExist"));
 
         // -----------------------------------------------------------------------------------------
         // specs/{specId} : 取得
@@ -261,7 +271,7 @@ public class SpecsApiControllerTest {
             // .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound())
             .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString(MessageConst.DATA_NOT_EXIST));
+        assertThat(result.getResponse().getContentAsString(), containsString("data.notExist"));
     }
 
     /**

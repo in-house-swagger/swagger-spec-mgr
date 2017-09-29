@@ -33,6 +33,16 @@ public class UserFacade extends BaseFacade {
         return new UserDto(context, result);
     }
 
+    public UserDto addDefault() {
+        User result = null;
+        try {
+            result = service.addDefaultUser();
+        } catch (SpecMgrException e) {
+            handleApplicationException(e);
+        }
+        return new UserDto(context, result);
+    }
+
     public UserDto add(final String userId, final String email) {
         User result = null;
         try {

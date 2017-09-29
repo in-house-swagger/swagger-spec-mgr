@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public abstract class BaseApiModelMapper {
 
     public enum OperationType {
-        create, read, update, delete, rename
+        CREATE, READ, UPDATE, DELETE, RENAME
     }
 
     protected HttpStatus httpStatus;

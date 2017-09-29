@@ -7,7 +7,7 @@ import me.suwash.swagger.spec.manager.ws.model.IdListApiModel;
 import org.springframework.http.HttpStatus;
 
 public class IdListApiModelMapper extends BaseApiModelMapper {
-    public IdListApiModelMapper(final IdListDto dto, final OperationType operation) {
+    public IdListApiModelMapper(final IdListDto dto) {
         if (dto.hasError()) {
             this.httpStatus = HttpStatus.BAD_REQUEST;
             this.body = newBody(null, dto);

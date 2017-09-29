@@ -37,8 +37,6 @@ public class Spec extends SpecGen {
     public void add() {
         specSpec.canAdd(this);
 
-        // Git作業ディレクトリが作成されていない場合、デフォルトユーザに限って初期化
-        if (!gitRepoRepository.isExist() && context.getCommitInfo() == null) gitRepoRepository.init();
         // specを追加
         specRepository.add(this);
         // 追加を反映

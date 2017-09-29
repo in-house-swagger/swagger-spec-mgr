@@ -1,16 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>me.suwash.swagger</groupId>
     <artifactId>swagger-spec-mgr</artifactId>
     <packaging>jar</packaging>
     <name>swagger-spec-mgr</name>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.4.7.RELEASE</version>
     </parent>
+
+    <url>https://suwa-sh.github.io/swagger-spec-mgr</url>
+    <scm>
+    	<url>https://github.com/suwa-sh/swagger-spec-mgr.git</url>
+    </scm>
+    <issueManagement>
+      	<system>GitHub</system>
+      	<url>https://github.com/suwa-sh/swagger-spec-mgr/issues</url>
+    </issueManagement>
 
     <properties>
         <java.version>1.8</java.version>

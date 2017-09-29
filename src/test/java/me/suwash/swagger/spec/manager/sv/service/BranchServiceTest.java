@@ -16,7 +16,6 @@ import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.domain.Branch;
 import me.suwash.util.FileUtils;
@@ -96,7 +95,7 @@ public class BranchServiceTest {
             service.findById(StringUtils.EMPTY);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -111,7 +110,7 @@ public class BranchServiceTest {
             service.addBranch("master", null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -122,7 +121,7 @@ public class BranchServiceTest {
             service.addBranch(null, "error");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -133,7 +132,7 @@ public class BranchServiceTest {
             service.addBranch("", "");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -146,7 +145,7 @@ public class BranchServiceTest {
             service.addBranch("master", "develop");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
 
@@ -158,7 +157,7 @@ public class BranchServiceTest {
             service.switchBranch(null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -173,7 +172,7 @@ public class BranchServiceTest {
             service.mergeBranch(null, null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -184,9 +183,9 @@ public class BranchServiceTest {
             service.mergeBranch("develop", null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.CHECK_NOTNULL
+                "check.notNull"
             });
             context.clearErrors();
         }
@@ -195,7 +194,7 @@ public class BranchServiceTest {
             service.mergeBranch(null, "master");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -206,7 +205,7 @@ public class BranchServiceTest {
             service.mergeBranch("", "");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -221,7 +220,7 @@ public class BranchServiceTest {
             service.renameBranch("", "");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -232,9 +231,9 @@ public class BranchServiceTest {
             service.renameBranch("develop", null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.CHECK_NOTNULL
+                "check.notNull"
             });
             context.clearErrors();
         }
@@ -243,7 +242,7 @@ public class BranchServiceTest {
             service.renameBranch("develop", "master");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
         // 削除済み
@@ -252,7 +251,7 @@ public class BranchServiceTest {
             service.renameBranch("develop", "feature/1");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
         }
 
         // -----------------------------------------------------------------------------------------
@@ -263,7 +262,7 @@ public class BranchServiceTest {
             service.deleteBranch(null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -274,7 +273,7 @@ public class BranchServiceTest {
             service.deleteBranch("develop");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
         }
     }
 
@@ -308,7 +307,7 @@ public class BranchServiceTest {
             service.findById("develop");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
+            assertThat(e.getMessageId(), is("data.notExist"));
         }
 
         // -----------------------------------------------------------------------------------------

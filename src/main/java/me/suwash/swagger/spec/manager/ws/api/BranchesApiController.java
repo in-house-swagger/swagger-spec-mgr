@@ -43,7 +43,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final IdListDto dto = facade.idList(commitInfo);
 
-        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto, OperationType.read);
+        final IdListApiModelMapper mapper = new IdListApiModelMapper(dto);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -56,7 +56,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.findById(commitInfo, getRealBranch(branch, request));
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.read);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.READ);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -70,7 +70,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.add(commitInfo, object, getRealBranch(branch, request));
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.create);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.CREATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -84,7 +84,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.rename(commitInfo, getRealBranch(fromBranch, request), toBranch);
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.rename);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.RENAME);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -97,7 +97,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.delete(commitInfo, getRealBranch(branch, request));
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.delete);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.DELETE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -111,7 +111,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.mergeBranch(commitInfo, sourceBranch, targetBranch);
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.update);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.UPDATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 
@@ -124,7 +124,7 @@ public class BranchesApiController extends BaseApiController implements Branches
         final CommitInfo commitInfo = commitInfo(commitUser);
         final BranchDto dto = facade.switchBranch(commitInfo, getRealBranch(branch, request));
 
-        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.update);
+        final BranchesApiModelMapper mapper = new BranchesApiModelMapper(dto, OperationType.UPDATE);
         return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
     }
 

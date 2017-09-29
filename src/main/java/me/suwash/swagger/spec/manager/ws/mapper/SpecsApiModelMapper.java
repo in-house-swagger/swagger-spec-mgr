@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 public class SpecsApiModelMapper extends BaseApiModelMapper {
     public SpecsApiModelMapper(final SpecDto dto, final OperationType operation) {
-        if (OperationType.read.equals(operation) && dto.getSpec() == null) {
+        if (OperationType.READ.equals(operation) && dto.getSpec() == null) {
             this.httpStatus = HttpStatus.NOT_FOUND;
             this.body = newBody(null, dto);
             return;
@@ -20,16 +20,16 @@ public class SpecsApiModelMapper extends BaseApiModelMapper {
         }
 
         switch (operation) {
-            case create:
+            case CREATE:
                 this.httpStatus = HttpStatus.CREATED;
                 this.body = dto.getSpec().getPayload();
                 break;
-            case read:
-            case update:
+            case READ:
+            case UPDATE:
                 this.httpStatus = HttpStatus.OK;
                 this.body = dto.getSpec().getPayload();
                 break;
-            case delete:
+            case DELETE:
             default:
                 this.httpStatus = HttpStatus.OK;
                 this.body = null;

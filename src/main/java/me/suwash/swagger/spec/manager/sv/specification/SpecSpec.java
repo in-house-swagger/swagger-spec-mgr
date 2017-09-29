@@ -1,14 +1,13 @@
 package me.suwash.swagger.spec.manager.sv.specification;
 
-import java.io.File;
 import java.util.List;
 
 import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.infra.util.SwaggerSpecUtils;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.infra.validation.group.Create;
 import me.suwash.swagger.spec.manager.infra.validation.group.Delete;
 import me.suwash.swagger.spec.manager.infra.validation.group.Read;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpecSpec extends BaseSpec {
 
-    private final String DIRNAME_MERGED = "res";
+    private static final String DIRNAME_MERGED = "res";
 
     @Autowired
     private ApplicationProperties props;
@@ -41,7 +40,7 @@ public class SpecSpec extends BaseSpec {
         // 関連データチェック
         // なし
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
     }
 
     public void canAdd(final Spec spec) {
@@ -52,18 +51,25 @@ public class SpecSpec extends BaseSpec {
         // 複数項目関連チェック
         // なし
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
 
         // 関連データチェック
-        final File outputDir = new File(getSplitOutputDir(spec));
-        if (outputDir.isDirectory()) {
-            addError(spec.getClass(),
-                MessageConst.DATA_ALREADY_EXIST,
-                spec.getClass().getSimpleName(), "id", spec.getId());
+        // Git作業ディレクトリ
+        try {
+            ValidationUtils.existDir(props.getUserRepoDir(context.getCommitInfo()));
+        } catch (SpecMgrException e) {
+            addError(Spec.class, e);
+            isValid = false;
+        }
+        // 出力ディレクトリ
+        try {
+            ValidationUtils.notExistDir(getSplitOutputDir(spec));
+        } catch (SpecMgrException e) {
+            addError(Spec.class, e);
             isValid = false;
         }
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
     }
 
     public void canUpdate(final Spec spec) {
@@ -75,18 +81,12 @@ public class SpecSpec extends BaseSpec {
         // 複数項目関連チェック
         // なし
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
 
         // 関連データチェック
-        final File outputDir = new File(getSplitOutputDir(spec));
-        if (!outputDir.isDirectory()) {
-            addError(spec.getClass(),
-                MessageConst.DATA_NOT_EXIST,
-                spec.getClass().getSimpleName(), "id", spec.getId());
-            isValid = false;
-        }
+        isValid = checkInit(spec);
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
     }
 
     public void canDelete(final Spec spec) {
@@ -98,22 +98,27 @@ public class SpecSpec extends BaseSpec {
         // 複数項目関連チェック
         // なし
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
 
         // 関連データチェック
-        final File outputDir = new File(getSplitOutputDir(spec));
-        if (!outputDir.isDirectory()) {
-            addError(spec.getClass(),
-                MessageConst.DATA_NOT_EXIST,
-                spec.getClass().getSimpleName(), "id", spec.getId());
-            isValid = false;
-        }
+        isValid = checkInit(spec);
 
-        if (!isValid) throw new SpecMgrException(MessageConst.SPECIFICATION_ERROR);
+        if (!isValid) throw new SpecMgrException(SPECIFICATION_ERROR);
+    }
+
+    private boolean checkInit(final Spec spec) {
+        try {
+            ValidationUtils.existDir(getSplitOutputDir(spec));
+            return true;
+
+        } catch (SpecMgrException e) {
+            addError(Spec.class, e);
+            return false;
+        }
     }
 
     public String getSplitOutputDir(final Spec spec) {
-        return SwaggerSpecUtils.getSplitOutputDir(getSplitDir(), spec.getId());
+        return SwaggerSpecUtils.getSplitDir(getSplitDir(), spec.getId());
     }
 
     public String getSplitDir() {

@@ -47,7 +47,9 @@ public interface TagsApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
-    @RequestMapping(value = { "/tags/{tag:.+}", "/tags/{tag:.+}/**" },
+    @RequestMapping(value = {
+        "/tags/{tag:.+}", "/tags/{tag:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -61,7 +63,9 @@ public interface TagsApi {
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
-    @RequestMapping(value = { "/tags/{tag:.+}", "/tags/{tag:.+}/**" },
+    @RequestMapping(value = {
+        "/tags/{tag:.+}", "/tags/{tag:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -82,7 +86,9 @@ public interface TagsApi {
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class),
         @ApiResponse(code = 405, message = "Validation exception", response = Void.class)
     })
-    @RequestMapping(value = { "/tags/{tag:.+}", "/tags/{tag:.+}/**" },
+    @RequestMapping(value = {
+        "/tags/{tag:.+}", "/tags/{tag:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -101,7 +107,9 @@ public interface TagsApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Tag not found", response = Void.class)
     })
-    @RequestMapping(value = { "/tags/{tag:.+}", "/tags/{tag:.+}/**" },
+    @RequestMapping(value = {
+        "/tags/{tag:.+}", "/tags/{tag:.+}/**"
+    },
         method = RequestMethod.DELETE)
     ResponseEntity<Object> deleteTagById(
         HttpServletRequest request,

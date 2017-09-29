@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 public class UsersApiModelMapper extends BaseApiModelMapper {
     public UsersApiModelMapper(final UserDto dto, final OperationType operation) {
-        if (OperationType.read.equals(operation) && dto.getUser() == null) {
+        if (OperationType.READ.equals(operation) && dto.getUser() == null) {
             this.httpStatus = HttpStatus.NOT_FOUND;
             this.body = newBody(null, dto);
             return;
@@ -21,15 +21,15 @@ public class UsersApiModelMapper extends BaseApiModelMapper {
         }
 
         switch (operation) {
-            case create:
+            case CREATE:
                 this.httpStatus = HttpStatus.CREATED;
                 this.body = newBody(new UsersApiModel(dto), dto);
                 break;
-            case read:
+            case READ:
                 this.httpStatus = HttpStatus.OK;
                 this.body = newBody(new UsersApiModel(dto), dto);
                 break;
-            case delete:
+            case DELETE:
             default:
                 this.httpStatus = HttpStatus.OK;
                 break;

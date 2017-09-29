@@ -13,6 +13,8 @@ public class SpecMgrException extends LayerException {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String MSGCD_ERRORHANDLE = "unexpectedError";
+
     /**
      * コンストラクタ。
      *

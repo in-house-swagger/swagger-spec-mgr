@@ -19,6 +19,8 @@ readonly PROGNAME="swagger-spec-mgr"
 readonly PATH_LOG="${DIR_LOG}/${PROGNAME}.log"
 . "${DIR_BIN_LIB}/logging_utils.sh"
 
+readonly local URL_HEALTHCHECK="http://localhost:${SERVER_PORT}/v1/users"
+
 
 #---------------------------------------------------------------------------------------------------
 # 関数定義
@@ -74,10 +76,28 @@ function start() {
     cd - > /dev/null
     PID=$!
     echo ${PID} > ${PATH_PID}
-    # TODO graceful statup
+
+    # レスポンスが返せるようになるまでwait
+    wait_response
     log.info_teelog "start ${PROGNAME} process. PID=${PID}"
 
     return ${EXITCODE_SUCCESS}
+}
+
+function wait_response() {
+    log.debug_console "wait response"
+    log.add_indent
+    while :; do
+      local _cur_status=$( curl -s -X GET -w '%{http_code}' --output /dev/null ${URL_HEALTHCHECK} 2>/dev/null )
+
+      log.trace_console "response code: ${_cur_status}"
+      if [[ "$(echo ${_cur_status} | cut -c 1)" = "2" ]]; then
+        break
+      fi
+
+      sleep 1
+    done
+    log.remove_indent
 }
 
 function stop() {

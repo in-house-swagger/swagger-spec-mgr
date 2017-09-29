@@ -15,7 +15,6 @@ import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
 import me.suwash.swagger.spec.manager.ap.dto.SpecDto;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.util.FileUtils;
 
 import org.junit.After;
@@ -83,7 +82,7 @@ public class SpecFacadeTest {
         log.info("FIND");
         SpecDto dto = facade.findById(commitInfo, SPEC_ID);
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_NOT_EXIST
+            "data.notExist"
         });
 
         // -----------------------------------------------------------------------------------------
@@ -93,7 +92,7 @@ public class SpecFacadeTest {
         facade.add(commitInfo, SPEC_ID, payload);
         dto = facade.add(commitInfo, SPEC_ID, payload);
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_ALREADY_EXIST
+            "dir.alreadyExist"
         });
 
         // -----------------------------------------------------------------------------------------
@@ -102,7 +101,7 @@ public class SpecFacadeTest {
         log.info("UPDATE");
         dto = facade.update(commitInfo, "notExist", payload);
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_NOT_EXIST
+            "dir.notExist"
         });
 
         // -----------------------------------------------------------------------------------------
@@ -111,7 +110,7 @@ public class SpecFacadeTest {
         log.info("DELETE");
         dto = facade.delete(commitInfo, "notExist");
         assertCheckErrors(dto.getErrors(), new String[] {
-            MessageConst.DATA_NOT_EXIST
+            "dir.notExist"
         });
     }
 

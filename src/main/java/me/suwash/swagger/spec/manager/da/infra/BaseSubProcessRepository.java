@@ -1,18 +1,13 @@
 package me.suwash.swagger.spec.manager.da.infra;
 
+import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.MSGCD_ERRORHANDLE;
 import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.infra.util.SubProcess;
 import me.suwash.swagger.spec.manager.infra.util.SubProcess.ProcessResult;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 @lombok.extern.slf4j.Slf4j
 public abstract class BaseSubProcessRepository extends BaseRepository {
-    @Autowired
-    protected ApplicationProperties props;
 
     protected ProcessResult subProc(final String command, final String procName) {
         final ProcessResult result = SubProcess.newExecuter()
@@ -34,22 +29,16 @@ public abstract class BaseSubProcessRepository extends BaseRepository {
         if (log.isDebugEnabled()) {
             log.debug("-- command: " + command);
             log.debug("-- stdout");
-            result.getStdout().forEach(curLine -> {
-                log.debug(curLine);
-            });
+            result.getStdout().forEach(log::debug);
             log.debug("-- stderr");
-            result.getStderr().forEach(curLine -> {
-                log.debug(curLine);
-            });
+            result.getStderr().forEach(log::debug);
         }
     }
 
     private void throwSubProcessException(final String procName, final ProcessResult result) {
         final StringBuilder sb = new StringBuilder();
         sb.append(procName).append("\n");
-        result.getStderr().forEach(curLine -> {
-            sb.append(curLine).append("\n");
-        });
-        throw new SpecMgrException(MessageConst.ERRORHANDLE, array("SubProcess", sb));
+        result.getStderr().forEach(curLine -> sb.append(curLine).append("\n"));
+        throw new SpecMgrException(MSGCD_ERRORHANDLE, array("SubProcess", sb));
     }
 }

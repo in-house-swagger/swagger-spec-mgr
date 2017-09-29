@@ -16,7 +16,6 @@ import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.config.SpecMgrContext;
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.sv.domain.Tag;
 import me.suwash.util.FileUtils;
@@ -95,7 +94,7 @@ public class TagServiceTest {
             service.findById(StringUtils.EMPTY);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -110,7 +109,7 @@ public class TagServiceTest {
             service.addTag("master", null);
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -121,7 +120,7 @@ public class TagServiceTest {
             service.addTag(null, "error");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -132,7 +131,7 @@ public class TagServiceTest {
             service.addTag("", "");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty", "BeanValidator.NotEmpty"
             });
@@ -145,7 +144,7 @@ public class TagServiceTest {
             service.addTag("master", "v1");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
 
@@ -157,7 +156,7 @@ public class TagServiceTest {
             service.renameTag("", "error");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -168,9 +167,9 @@ public class TagServiceTest {
             service.renameTag("v1", "");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
-                MessageConst.CHECK_NOTNULL
+                "check.notNull"
             });
             context.clearErrors();
         }
@@ -179,7 +178,7 @@ public class TagServiceTest {
             service.renameTag("v1", "v1");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
         // fromTag が存在しない
@@ -187,7 +186,7 @@ public class TagServiceTest {
             service.renameTag("v2", "v3");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
         }
 
         // -----------------------------------------------------------------------------------------
@@ -198,7 +197,7 @@ public class TagServiceTest {
             service.deleteTag("");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.SPECIFICATION_ERROR));
+            assertThat(e.getMessageId(), is("specificationError"));
             assertCheckErrors(context, new String[] {
                 "BeanValidator.NotEmpty"
             });
@@ -210,7 +209,7 @@ public class TagServiceTest {
             service.deleteTag("v1");
             fail();
         } catch (final SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.ERRORHANDLE));
+            assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
             assertThat(e.getMessageArgs()[0], is("SubProcess"));
         }
     }
@@ -245,7 +244,7 @@ public class TagServiceTest {
             service.findById("v1.0.0");
             fail();
         } catch (SpecMgrException e) {
-            assertThat(e.getMessageId(), is(MessageConst.DATA_NOT_EXIST));
+            assertThat(e.getMessageId(), is("data.notExist"));
         }
 
         // -----------------------------------------------------------------------------------------

@@ -47,7 +47,9 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
+    @RequestMapping(value = {
+        "/branches/{branch:.+}", "/branches/{branch:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -61,7 +63,9 @@ public interface BranchesApi {
     @ApiResponses(value = {
         @ApiResponse(code = 405, message = "Invalid input", response = Void.class)
     })
-    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
+    @RequestMapping(value = {
+        "/branches/{branch:.+}", "/branches/{branch:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -81,7 +85,9 @@ public interface BranchesApi {
         @ApiResponse(code = 404, message = "branch not found", response = Void.class),
         @ApiResponse(code = 405, message = "Validation exception", response = Void.class)
     })
-    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
+    @RequestMapping(value = {
+        "/branches/{branch:.+}", "/branches/{branch:.+}/**"
+    },
         produces = {
             "application/json"
         },
@@ -100,7 +106,9 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
+    @RequestMapping(value = {
+        "/branches/{branch:.+}", "/branches/{branch:.+}/**"
+    },
         method = RequestMethod.DELETE)
     ResponseEntity<Object> deleteBranchById(
         HttpServletRequest request,
@@ -132,7 +140,9 @@ public interface BranchesApi {
         @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
         @ApiResponse(code = 404, message = "Branch not found", response = Void.class)
     })
-    @RequestMapping(value = {"/switch/{branch:.+}", "/switch/{branch:.+}/**"},
+    @RequestMapping(value = {
+        "/switch/{branch:.+}", "/switch/{branch:.+}/**"
+    },
         method = RequestMethod.POST)
     ResponseEntity<Object> switchBranch(
         HttpServletRequest request,

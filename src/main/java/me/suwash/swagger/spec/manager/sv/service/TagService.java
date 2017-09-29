@@ -1,11 +1,8 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
-import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
-
 import java.util.List;
 
-import me.suwash.swagger.spec.manager.infra.constant.MessageConst;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
+import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.sv.da.GitTagRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Tag;
 import me.suwash.swagger.spec.manager.sv.specification.TagSpec;
@@ -33,8 +30,10 @@ public class TagService {
         final Tag criteria = newTag(tag);
         tagSpec.canFind(criteria);
 
-        if (repository.isExistTag(tag)) return newTag(tag);
-        throw new SpecMgrException(MessageConst.DATA_NOT_EXIST, array(Tag.class.getSimpleName(), "id", tag));
+        Tag finded = null;
+        if (repository.isExistTag(tag)) finded = newTag(tag);
+        ValidationUtils.existData(Tag.class.getSimpleName(), "id", tag, finded);
+        return finded;
     }
 
     public Tag addTag(final String gitObject, final String tagId) {
