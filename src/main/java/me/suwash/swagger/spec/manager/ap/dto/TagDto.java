@@ -8,10 +8,10 @@ import me.suwash.swagger.spec.manager.sv.domain.Tag;
 @Getter
 public class TagDto extends BaseDto {
 
-    private Tag tag;
+  private Tag tag;
 
-    public TagDto(final SpecMgrContext context, final Tag tag) {
-        super(context);
-        this.tag = tag;
-    }
+  public TagDto(final SpecMgrContext context, final Tag tag) {
+    super(context);
+    this.tag = tag;
+  }
 }

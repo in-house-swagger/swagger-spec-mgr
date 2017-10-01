@@ -8,10 +8,10 @@ import me.suwash.swagger.spec.manager.sv.domain.Branch;
 @Getter
 public class BranchDto extends BaseDto {
 
-    private Branch branch;
+  private Branch branch;
 
-    public BranchDto(final SpecMgrContext context, final Branch branch) {
-        super(context);
-        this.branch = branch;
-    }
+  public BranchDto(final SpecMgrContext context, final Branch branch) {
+    super(context);
+    this.branch = branch;
+  }
 }

@@ -3,129 +3,222 @@ package me.suwash.swagger.spec.manager.infra.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.ConstraintViolation;
-
+import org.springframework.stereotype.Component;
 import me.suwash.swagger.spec.manager.infra.error.CheckErrors;
 import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 
-import org.springframework.stereotype.Component;
-
 @Component
 public class SpecMgrContext {
-    private static final String KEY_ERRORS = "__ERRORS__";
-    private static final String KEY_WARNINGS = "__WARNINGS__";
+  private static final String KEY_ERRORS = "__ERRORS__";
+  private static final String KEY_WARNINGS = "__WARNINGS__";
 
-    private Map<String, Map<String, Object>> contexts = new HashMap<>();
+  private Map<String, Map<String, Object>> contexts = new HashMap<>();
 
-    private Map<String, Object> getContext(final String contextKey) {
-        ValidationUtils.notEmpty("contextKey", contextKey);
+  private Map<String, Object> getContext(final String contextKey) {
+    ValidationUtils.notEmpty("contextKey", contextKey);
 
-        final boolean hasContext = contexts.containsKey(contextKey);
-        if (hasContext) return contexts.get(contextKey);
+    final boolean hasContext = contexts.containsKey(contextKey);
+    if (hasContext)
+      return contexts.get(contextKey);
 
-        final Map<String, Object> context = new HashMap<>();
-        contexts.put(contextKey, context);
-        return context;
+    final Map<String, Object> context = new HashMap<>();
+    contexts.put(contextKey, context);
+    return context;
 
-    }
+  }
 
-    public void put(final String contextKey, final String key, final Object value) {
-        final Map<String, Object> context = getContext(contextKey);
-        context.put(key, value);
-    }
+  /**
+   * コンテキストに値を登録します。
+   *
+   * @param contextKey コンテキストキー
+   * @param key キー
+   * @param value 設定値
+   */
+  public void put(final String contextKey, final String key, final Object value) {
+    final Map<String, Object> context = getContext(contextKey);
+    context.put(key, value);
+  }
 
-    public Object get(final String contextKey, final String key) {
-        final Map<String, Object> context = getContext(contextKey);
-        return context.get(key);
-    }
+  /**
+   * コンテキストから値を取得します。
+   *
+   * @param contextKey コンテキストキー
+   * @param key キー
+   * @return 設定値
+   */
+  public Object get(final String contextKey, final String key) {
+    final Map<String, Object> context = getContext(contextKey);
+    return context.get(key);
+  }
 
-    public void remove(final String contextKey, final String key) {
-        final Map<String, Object> context = getContext(contextKey);
-        context.remove(key);
-    }
+  /**
+   * コンテキストから値を削除します。
+   *
+   * @param contextKey コンテキストキー
+   * @param key キー
+   */
+  public void remove(final String contextKey, final String key) {
+    final Map<String, Object> context = getContext(contextKey);
+    context.remove(key);
+  }
 
-    public void clear(final String contextKey) {
-        final Map<String, Object> context = getContext(contextKey);
-        context.clear();
-    }
+  /**
+   * コンテキストをクリアします。
+   *
+   * @param contextKey コンテキストキー
+   */
+  public void clear(final String contextKey) {
+    final Map<String, Object> context = getContext(contextKey);
+    context.clear();
+  }
 
-    public Set<String> keySet(final String contextKey) {
-        final Map<String, Object> context = getContext(contextKey);
-        return context.keySet();
-    }
+  /**
+   * コンテキストのキーセットを返します。
+   *
+   * @param contextKey コンテキストキー
+   * @return キーセット
+   */
+  public Set<String> keySet(final String contextKey) {
+    final Map<String, Object> context = getContext(contextKey);
+    return context.keySet();
+  }
 
-    public boolean containsKey(final String contextKey, final String key) {
-        final Map<String, Object> context = getContext(contextKey);
-        return context.containsKey(key);
-    }
+  /**
+   * コンテキストにキーが存在するか確認します。
+   *
+   * @param contextKey コンテキストキー
+   * @param key キー
+   * @return 存在する場合、true
+   */
+  public boolean containsKey(final String contextKey, final String key) {
+    final Map<String, Object> context = getContext(contextKey);
+    return context.containsKey(key);
+  }
 
-    public void putCommitInfo(final CommitInfo commitInfo) {
-        put(getThreadContextKey(), CommitInfo.class.getName(), commitInfo);
-    }
+  /**
+   * 現在のthreadコンテキストにコミット情報を登録します。
+   *
+   * @param commitInfo コミット情報
+   */
+  public void putCommitInfo(final CommitInfo commitInfo) {
+    put(getThreadContextKey(), CommitInfo.class.getName(), commitInfo);
+  }
 
-    public CommitInfo getCommitInfo() {
-        return (CommitInfo) get(getThreadContextKey(), CommitInfo.class.getName());
-    }
+  /**
+   * 現在のthreadコンテキストからコミット情報を取得します。
+   *
+   * @return コミット情報
+   */
+  public CommitInfo getCommitInfo() {
+    return (CommitInfo) get(getThreadContextKey(), CommitInfo.class.getName());
+  }
 
-    public CheckErrors getErrors() {
-        final Object errors = get(getThreadContextKey(), KEY_ERRORS);
-        if (errors != null) return (CheckErrors) errors;
-        return new CheckErrors();
-    }
+  /**
+   * 現在のthreadコンテキストからエラー情報を取得します。
+   *
+   * @return エラー情報
+   */
+  public CheckErrors getErrors() {
+    final Object errors = get(getThreadContextKey(), KEY_ERRORS);
+    if (errors != null)
+      return (CheckErrors) errors;
+    return new CheckErrors();
+  }
 
-    public <T> void addErrors(Set<ConstraintViolation<T>> violations) {
-        final CheckErrors errors = getErrors();
-        errors.addViolations(violations);
-        putErrors(errors);
-    }
+  /**
+   * 現在のthreadコンテキストにエラー情報を一括追加します。
+   *
+   * @param violations 妥当性チェック結果
+   */
+  public <T> void addErrors(Set<ConstraintViolation<T>> violations) {
+    final CheckErrors errors = getErrors();
+    errors.addViolations(violations);
+    putErrors(errors);
+  }
 
-    public void addError(final Class<?> type, final String messageId, final Object... messageArgs) {
-        final CheckErrors errors = getErrors();
-        errors.add(type, messageId, messageArgs);
-        putErrors(errors);
-    }
+  /**
+   * 現在のthreadコンテキストにエラー情報を追加します。
+   *
+   * @param type 対象クラス
+   * @param messageId エラーメッセージID
+   * @param messageArgs メッセージ引数
+   */
+  public void addError(final Class<?> type, final String messageId, final Object... messageArgs) {
+    final CheckErrors errors = getErrors();
+    errors.add(type, messageId, messageArgs);
+    putErrors(errors);
+  }
 
-    public void clearErrors() {
-        final CheckErrors errors = getErrors();
-        errors.clear();
-        putErrors(errors);
-    }
+  /**
+   * 現在のthreadコンテキストからエラー情報をクリアします。
+   */
+  public void clearErrors() {
+    final CheckErrors errors = getErrors();
+    errors.clear();
+    putErrors(errors);
+  }
 
-    private void putErrors(final CheckErrors errors) {
-        put(getThreadContextKey(), KEY_ERRORS, errors);
-    }
+  private void putErrors(final CheckErrors errors) {
+    put(getThreadContextKey(), KEY_ERRORS, errors);
+  }
 
-    public CheckErrors getWarnings() {
-        final Object errors = get(getThreadContextKey(), KEY_WARNINGS);
-        if (errors != null) return (CheckErrors) errors;
-        return new CheckErrors();
-    }
+  /**
+   * 現在のthreadコンテキストから警告情報を取得します。
+   *
+   * @return 警告情報
+   */
+  public CheckErrors getWarnings() {
+    final Object errors = get(getThreadContextKey(), KEY_WARNINGS);
+    if (errors != null)
+      return (CheckErrors) errors;
+    return new CheckErrors();
+  }
 
-    public <T> void addWarnings(Set<ConstraintViolation<T>> violations) {
-        final CheckErrors errors = getWarnings();
-        errors.addViolations(violations);
-        putWarnings(errors);
-    }
+  /**
+   * 現在のthreadコンテキストに警告情報を一括追加します。
+   *
+   * @param violations 妥当性チェック結果
+   */
+  public <T> void addWarnings(Set<ConstraintViolation<T>> violations) {
+    final CheckErrors errors = getWarnings();
+    errors.addViolations(violations);
+    putWarnings(errors);
+  }
 
-    public void addWarning(final Class<?> type, final String messageId, final Object... messageArgs) {
-        final CheckErrors errors = getWarnings();
-        errors.add(type, messageId, messageArgs);
-        putWarnings(errors);
-    }
+  /**
+   * 現在のthreadコンテキストに警告情報を追加します。
+   *
+   * @param type 対象クラス
+   * @param messageId 警告メッセージID
+   * @param messageArgs メッセージ引数
+   */
+  public void addWarning(final Class<?> type, final String messageId, final Object... messageArgs) {
+    final CheckErrors errors = getWarnings();
+    errors.add(type, messageId, messageArgs);
+    putWarnings(errors);
+  }
 
-    public void clearWarnings() {
-        final CheckErrors errors = getWarnings();
-        errors.clear();
-        putWarnings(errors);
-    }
+  /**
+   * 現在のthreadコンテキストから警告情報をクリアします。
+   */
+  public void clearWarnings() {
+    final CheckErrors errors = getWarnings();
+    errors.clear();
+    putWarnings(errors);
+  }
 
-    private void putWarnings(final CheckErrors errors) {
-        put(getThreadContextKey(), KEY_WARNINGS, errors);
-    }
+  private void putWarnings(final CheckErrors errors) {
+    put(getThreadContextKey(), KEY_WARNINGS, errors);
+  }
 
-    public String getThreadContextKey() {
-        return Thread.currentThread().getName();
-    }
+  /**
+   * 現在のthreadコンテキストにアクセスするキーを返します。
+   *
+   * @return threadコンテキストキー
+   */
+  public String getThreadContextKey() {
+    return Thread.currentThread().getName();
+  }
 
 }

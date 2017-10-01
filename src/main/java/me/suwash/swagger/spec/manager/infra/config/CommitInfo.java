@@ -8,20 +8,20 @@ import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 @Getter
 public class CommitInfo {
 
-    public CommitInfo(final String user, final String email) {
-        this.user = user;
-        this.email = email;
-    }
+  public CommitInfo(final String user, final String email) {
+    this.user = user;
+    this.email = email;
+  }
 
-    protected String user = null;
+  protected String user = null;
 
-    protected String email = null;
+  protected String email = null;
 
-    protected String message = null;
+  protected String message = null;
 
-    public void canInit() {
-        ValidationUtils.notEmpty("user", user);
-        ValidationUtils.notEmpty("email", email);
-    }
+  public void canInit() {
+    ValidationUtils.notEmpty("user", user);
+    ValidationUtils.notEmpty("email", email);
+  }
 
 }

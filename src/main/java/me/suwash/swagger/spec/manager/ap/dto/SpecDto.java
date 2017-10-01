@@ -8,10 +8,10 @@ import me.suwash.swagger.spec.manager.sv.domain.Spec;
 @Getter
 public class SpecDto extends BaseDto {
 
-    private Spec spec;
+  private Spec spec;
 
-    public SpecDto(final SpecMgrContext context, final Spec spec) {
-        super(context);
-        this.spec = spec;
-    }
+  public SpecDto(final SpecMgrContext context, final Spec spec) {
+    super(context);
+    this.spec = spec;
+  }
 }

@@ -1,18 +1,38 @@
 package me.suwash.swagger.spec.manager.sv.da;
 
 import java.util.List;
-
 import me.suwash.swagger.spec.manager.sv.domain.User;
 
 public interface UserRepository {
 
-    List<String> idList();
+  /**
+   * コミットユーザ名一覧を返します。
+   * 
+   * @return コミットユーザ名一覧
+   */
+  List<String> idList();
 
-    User findById(String userId);
+  /**
+   * コミットユーザを検索します。
+   *
+   * @param userId コミットユーザ名
+   * @return コミットユーザ
+   */
+  User findById(String userId);
 
-    void add(User user);
+  /**
+   * コミットユーザを追加します。
+   *
+   * @param user コミットユーザ
+   */
+  void add(User user);
 
-    // void update(User user);
+  // void update(User user);
 
-    void delete(User user);
+  /**
+   * コミットユーザを削除します。
+   *
+   * @param user コミットユーザ
+   */
+  void delete(User user);
 }

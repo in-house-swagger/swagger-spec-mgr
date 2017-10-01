@@ -4,18 +4,57 @@ import java.util.List;
 
 public interface GitBranchRepository {
 
-    List<String> branchList();
+  /**
+   * ブランチ名一覧を返します。
+   *
+   * @return ブランチ名一覧
+   */
+  List<String> branchList();
 
-    boolean isExistBranch(String name);
+  /**
+   * ブランチの存在を確認します。
+   *
+   * @param name ブランチ名
+   * @return 存在する場合、true
+   */
+  boolean isExistBranch(String name);
 
-    void addBranch(String from, String to);
+  /**
+   * ブランチを追加します。
+   *
+   * @param from 作成元gitオブジェクト
+   * @param to ブランチ名
+   */
+  void addBranch(String from, String to);
 
-    void renameBranch(String from, String to);
+  /**
+   * ブランチをリネームします。
+   *
+   * @param from リネーム元ブランチ名
+   * @param to リネーム先ブランチ名
+   */
+  void renameBranch(String from, String to);
 
-    void removeBranch(String name);
+  /**
+   * ブランチを削除します。
+   *
+   * @param name ブランチ名
+   */
+  void removeBranch(String name);
 
-    void mergeBranch(String from, String to);
+  /**
+   * ブランチをマージします。
+   *
+   * @param from マージ元ブランチ名
+   * @param to マージ先ブランチ名
+   */
+  void mergeBranch(String from, String to);
 
-    void switchBranch(String name);
+  /**
+   * ブランチを切り替えます。
+   *
+   * @param name 切り替え先ブランチ名
+   */
+  void switchBranch(String name);
 
 }

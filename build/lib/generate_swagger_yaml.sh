@@ -53,7 +53,7 @@ ${DIR_BASE}/dist/swagger-spec-mgr_${version}/bin/server start
 echo "-- swagger.json 生成"
 curl -X GET                                                                                        \
   --output ${DIR_WORK}/swagger.json                                                                \
-   -w ' %{http_code}\n'                                                                            \
+  -w ' %{http_code}\n'                                                                             \
   "${url}/api-docs"
 
 
@@ -61,7 +61,7 @@ echo "-- デフォルトユーザ追加"
 curl -X POST                                                                                       \
   --header 'Content-Type: application/json'                                                        \
   --header 'Accept: application/json'                                                              \
-  -w ' %{http_code}\n'                                                                            \
+  -w ' %{http_code}\n'                                                                             \
   "${url}/users"
 
 
@@ -71,7 +71,7 @@ curl -X POST                                                                    
   --header 'Accept: application/x-yaml'                                                            \
   --data @${DIR_WORK}/swagger.json                                                                 \
   --output ${DIR_DIST}/swagger.yaml                                                                \
-  -w ' %{http_code}\n'                                                                            \
+  -w ' %{http_code}\n'                                                                             \
   "${url}/specs/spec-mgr"
 
 

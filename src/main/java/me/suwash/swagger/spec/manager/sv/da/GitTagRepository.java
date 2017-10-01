@@ -4,14 +4,42 @@ import java.util.List;
 
 public interface GitTagRepository {
 
-    List<String> tagList();
+  /**
+   * タグ名一覧を返します。
+   *
+   * @return タグ名一覧
+   */
+  List<String> tagList();
 
-    boolean isExistTag(String name);
+  /**
+   * タグの存在を確認します。
+   *
+   * @param name タグ名
+   * @return 存在する場合、true
+   */
+  boolean isExistTag(String name);
 
-    void addTag(String from, String to);
+  /**
+   * タグを追加します。
+   *
+   * @param from 作成元gitオブジェクト
+   * @param to タグ名
+   */
+  void addTag(String from, String to);
 
-    void renameTag(String from, String to);
+  /**
+   * タグをリネームします。
+   *
+   * @param from リネーム元タグ名
+   * @param to リネーム先タグ名
+   */
+  void renameTag(String from, String to);
 
-    void removeTag(String name);
+  /**
+   * タグを削除します。
+   *
+   * @param name タグ名
+   */
+  void removeTag(String name);
 
 }

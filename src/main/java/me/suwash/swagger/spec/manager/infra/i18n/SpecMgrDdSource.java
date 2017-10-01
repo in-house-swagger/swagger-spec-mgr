@@ -6,20 +6,20 @@ import me.suwash.util.i18n.DdSource;
  * データディクショナリ用プロパティファイルの定義保持クラス。
  */
 public class SpecMgrDdSource extends DdSource {
-    private static SpecMgrDdSource instance = new SpecMgrDdSource();
+  private static SpecMgrDdSource specMgrDdSource = new SpecMgrDdSource();
 
-    /**
-     * Singletonパターンでオブジェクトを返します。
-     *
-     * @return DataDictionaryオブジェクト
-     */
-    public static SpecMgrDdSource getInstance() {
-        return instance;
-    }
+  /**
+   * Singletonパターンでオブジェクトを返します。
+   *
+   * @return DataDictionaryオブジェクト
+   */
+  public static SpecMgrDdSource getInstance() {
+    return specMgrDdSource;
+  }
 
-    @Override
-    protected DdSource getParent() {
-        return DdSource.getInstance();
-    }
+  @Override
+  protected DdSource getParent() {
+    return DdSource.getInstance();
+  }
 
 }

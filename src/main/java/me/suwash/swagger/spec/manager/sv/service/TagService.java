@@ -1,56 +1,85 @@
 package me.suwash.swagger.spec.manager.sv.service;
 
 import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import me.suwash.swagger.spec.manager.infra.util.ValidationUtils;
 import me.suwash.swagger.spec.manager.sv.da.GitTagRepository;
 import me.suwash.swagger.spec.manager.sv.domain.Tag;
 import me.suwash.swagger.spec.manager.sv.specification.TagSpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class TagService {
 
-    @Autowired
-    private TagSpec tagSpec;
-    @Autowired
-    private GitTagRepository repository;
+  @Autowired
+  private TagSpec tagSpec;
+  @Autowired
+  private GitTagRepository repository;
 
-    private Tag newTag(final String tag) {
-        return new Tag(tagSpec, repository, tag);
-    }
+  private Tag newTag(final String tag) {
+    return new Tag(tagSpec, repository, tag);
+  }
 
-    public List<String> idList() {
-        return repository.tagList();
-    }
+  /**
+   * タグID一覧を返します。
+   *
+   * @return タグID一覧
+   */
+  public List<String> idList() {
+    return repository.tagList();
+  }
 
-    public Tag findById(final String tag) {
-        final Tag criteria = newTag(tag);
-        tagSpec.canFind(criteria);
+  /**
+   * タグを検索します。
+   *
+   * @param tagId タグ名
+   * @return 検索後のタグ
+   */
+  public Tag findById(final String tagId) {
+    final Tag criteria = newTag(tagId);
+    tagSpec.canFind(criteria);
 
-        Tag finded = null;
-        if (repository.isExistTag(tag)) finded = newTag(tag);
-        ValidationUtils.existData(Tag.class.getSimpleName(), "id", tag, finded);
-        return finded;
-    }
+    Tag finded = null;
+    if (repository.isExistTag(tagId))
+      finded = newTag(tagId);
+    ValidationUtils.existData(Tag.class.getSimpleName(), "id", tagId, finded);
+    return finded;
+  }
 
-    public Tag addTag(final String gitObject, final String tagId) {
-        final Tag tag = newTag(tagId);
-        tag.add(gitObject);
-        return findById(tagId);
-    }
+  /**
+   * タグを追加します。
+   *
+   * @param gitObject 作成元gitオブジェクト
+   * @param tagId タグ名
+   * @return 追加後のタグ
+   */
+  public Tag addTag(final String gitObject, final String tagId) {
+    final Tag tag = newTag(tagId);
+    tag.add(gitObject);
+    return findById(tagId);
+  }
 
-    public Tag renameTag(final String fromTag, final String toTag) {
-        final Tag finded = newTag(fromTag);
-        finded.rename(toTag);
-        return findById(toTag);
-    }
+  /**
+   * タグをリネームします。
+   *
+   * @param fromTag リネーム元タグ名
+   * @param toTag リネーム先タグ名
+   * @return リネーム後のタグ
+   */
+  public Tag renameTag(final String fromTag, final String toTag) {
+    final Tag finded = newTag(fromTag);
+    finded.rename(toTag);
+    return findById(toTag);
+  }
 
-    public void deleteTag(final String tagId) {
-        final Tag tag = newTag(tagId);
-        tag.delete();
-    }
+  /**
+   * タグを削除します。
+   *
+   * @param tagId タグ名
+   */
+  public void deleteTag(final String tagId) {
+    final Tag tag = newTag(tagId);
+    tag.delete();
+  }
 
 }
