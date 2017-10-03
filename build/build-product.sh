@@ -15,7 +15,7 @@ readonly BUILD_PROFILE="product"
 
 readonly SONAR_URL="https://sonarcloud.io"
 readonly SONAR_ORGANIZATION="suwa-sh-github"
-readonly SONAR_EXCLUDES="src/test/**,src/main/java/io/**,**/gen/**,**/*Exception.java"
+readonly SONAR_EXCLUDES="src/test/**,src/main/java/io/**,**/gen/**,**/*Exception.java,**/ws/infra/*Filter.java"
 
 readonly DIR_BASE="$(pwd)"
 readonly DIR_WORK="${DIR_BASE}/target"
