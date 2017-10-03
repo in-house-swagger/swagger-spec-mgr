@@ -17,6 +17,7 @@ public class ApplicationProperties {
   private Map<String, String> defaultCommitInfo;
   private Map<String, String> dirInfo;
   private List<String> splitIgnoreRegexList;
+  private Map<String, String> cors;
   private Map<String, String> scriptEnv;
 
   /**
@@ -57,5 +58,20 @@ public class ApplicationProperties {
 
   public String getDefaultCommitEmail() {
     return getDefaultCommitUser() + DEFAULT_EMAIL_DOMAIN;
+  }
+
+  public String getAllowOrigin() {
+    if (cors == null) return null;
+    return cors.get("allowOrigin");
+  }
+
+  public String getAllowMethods() {
+    if (cors == null) return null;
+    return cors.get("allowMethods");
+  }
+
+  public String getAllowHeaders() {
+    if (cors == null) return null;
+    return cors.get("allowHeaders");
   }
 }

@@ -41,6 +41,12 @@ spec.mgr:
   - "/paths/.*/tags"
   - "/paths/.*/security"
 
+  # CORS設定
+  cors:
+    allowOrigin: "*"
+    allowMethods: "GET, POST, PUT, DELETE"
+    allowHeaders: "Content-Type"
+
   # スクリプト実行時環境変数
   scriptEnv:
     SOME_VAR: "SOME_VALUE"
