@@ -47,8 +47,8 @@ public interface UsersApi {
       @ApiResponse(code = 404, message = "User not found", response = Void.class)})
   @RequestMapping(value = "/users/{userId:.+}", produces = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Object> getUserById(@ApiParam(value = "user name for commit") @PathVariable(
-      value = "userId", required = true) final String userId);
+  ResponseEntity<Object> getUserById(@ApiParam(value = "user name for commit",
+      required = true) @PathVariable(value = "userId") final String userId);
 
   @ApiOperation(value = "/users{userId} POST", notes = "", response = UsersApiModelGen.class,
       tags = {})
@@ -57,17 +57,17 @@ public interface UsersApi {
   @RequestMapping(value = "/users/{userId:.+}", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Object> addUserWithId(
-      @ApiParam(value = "user name for commit") @PathVariable(value = "userId",
-          required = true) final String userId,
-      @ApiParam(value = "email address for commit") @RequestParam(value = "email",
-          required = true) final String email);
+      @ApiParam(value = "user name for commit",
+          required = true) @PathVariable(value = "userId") final String userId,
+      @ApiParam(value = "email address for commit",
+          required = true) @RequestParam(value = "email") final String email);
 
   @ApiOperation(value = "/users{userId} DELETE", notes = "", response = Void.class, tags = {})
   @ApiResponses(
       value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
           @ApiResponse(code = 404, message = "User not found", response = Void.class)})
   @RequestMapping(value = "/users/{userId:.+}", method = RequestMethod.DELETE)
-  ResponseEntity<Object> deleteUserById(@ApiParam(value = "user name for commit") @PathVariable(
-      value = "userId", required = true) final String userId);
+  ResponseEntity<Object> deleteUserById(@ApiParam(value = "user name for commit",
+      required = true) @PathVariable(value = "userId") final String userId);
 
 }
