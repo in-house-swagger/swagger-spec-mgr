@@ -89,6 +89,7 @@ public class BranchesApiControllerTest {
     mockMvc
         .perform(withCommitInfo(post("/users/" + commitInfo.getUser() + "?email=test@example.com"),
             commitInfo).contentType(requestMediaType.value()))
+//        .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isCreated());
     mockMvc
         .perform(withCommitInfo(post("/specs/" + SPEC_ID), commitInfo)

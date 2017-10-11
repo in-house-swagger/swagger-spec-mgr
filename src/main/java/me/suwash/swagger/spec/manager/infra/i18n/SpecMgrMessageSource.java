@@ -30,14 +30,22 @@ public class SpecMgrMessageSource extends MessageSource {
 
   /*
    * (非 Javadoc)
-   * 
+   *
    * @see me.suwash.util.i18n.MessageSource#getMessage(java.lang.String, java.lang.Object[],
    * java.util.Locale)
    */
   @Override
-  public String getMessage(String messageId, Object[] args, Locale locale) {
+  public String getMessage(final String messageId, final Object[] args, final Locale locale) {
     StringBuilder sb = new StringBuilder();
-    sb.append("[").append(messageId).append("] ").append(super.getMessage(messageId, args, locale));
+    sb.append("[").append(messageId).append("] ").append(getSimpleMessage(messageId, args, locale));
     return sb.toString();
+  }
+
+  public String getSimpleMessage(final String messageId, final Object[] args) {
+    return getSimpleMessage(messageId, args, Locale.getDefault());
+  }
+
+  public String getSimpleMessage(final String messageId, final Object[] args, Locale locale) {
+    return super.getMessage(messageId, args, locale);
   }
 }

@@ -48,7 +48,7 @@ public class SpecMgrTestUtils {
     // errorsから propertyKey + message の実績値リストを作成
     List<String> actualMsgList = new ArrayList<>();
     errors.forEach(error -> {
-      final String checkMessage = error.getPropertyKey() + " : " + error.getMessage();
+      final String checkMessage = error.getPropertyKey() + ": [" + error.getMessageId() + "]" + error.getMessage();
       actualMsgList.add(checkMessage);
     });
     return actualMsgList;
