@@ -28,24 +28,24 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
 
   @Override
   public List<String> idList() {
-    final List<String> idList = getMergedSpecIdList();
+    final List<String> idList = getSplitSpecIdList();
     return Collections.unmodifiableList(idList);
   }
 
-  private List<String> getMergedSpecIdList() {
+  private List<String> getSplitSpecIdList() {
     final List<String> idList = new ArrayList<>();
-    for (final File curDir : getMergedSpecDirList()) {
+    for (final File curDir : getSplitSpecDirList()) {
       idList.add(curDir.getName());
     }
     return idList;
   }
 
-  private List<File> getMergedSpecDirList() {
-    final String mergedDir = specSpec.getMergedDir();
-    if (!new File(mergedDir).exists())
+  private List<File> getSplitSpecDirList() {
+    final String splitDir = specSpec.getSplitRootDir();
+    if (!new File(splitDir).exists())
       return new ArrayList<>();
 
-    return FindUtils.find(mergedDir, 1, 1, FileType.Directory);
+    return FindUtils.find(splitDir, 1, 1, FileType.Directory);
   }
 
   @Override
@@ -53,7 +53,13 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
     if (!idList().contains(specId))
       return null;
 
-    final Object parsed = SwaggerSpecUtils.parse(specSpec.getMergedDir(), specId);
+    // 返却用に統合ファイルを生成
+    final String splitDir = specSpec.getSplitRootDir();
+    final String mergedDir = specSpec.getMergedDir();
+    SwaggerSpecUtils.writeMerged(splitDir, mergedDir, specId);
+
+    // 統合ファイルのparse結果でSpecを返却
+    final Object parsed = SwaggerSpecUtils.parse(mergedDir, specId);
     return new Spec(context, specSpec, gitRepository, this, specId, parsed);
   }
 
@@ -71,9 +77,6 @@ public class SpecRepositoryImpl extends BaseRepository implements SpecRepository
     final String splitDir = specSpec.getSplitRootDir();
     final List<String> splitIgnoreRegexList = specSpec.getSplitIgnoreRegexList();
     SwaggerSpecUtils.writeSplit(payload, splitDir, specId, splitIgnoreRegexList);
-
-    final String mergedDir = specSpec.getMergedDir();
-    SwaggerSpecUtils.writeMerged(splitDir, mergedDir, specId);
   }
 
   @Override

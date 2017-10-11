@@ -308,6 +308,11 @@ public class BranchServiceTest {
     assertThat(addedFeature1, not(nullValue()));
     assertThat(addedFeature1.getId(), is("feature/1"));
 
+    // feature/1 に sample_spec_2 を追加
+    specService.addSpec(SPEC_ID + "_2", payload);
+    List<String> featureSpecList = specService.idList();
+    assertThat(featureSpecList, hasItem(SPEC_ID + "_2"));
+
     // -----------------------------------------------------------------------------------------
     // 更新
     // -----------------------------------------------------------------------------------------
@@ -322,6 +327,10 @@ public class BranchServiceTest {
     log.info("SWITCH");
     Branch switchedDevelop = service.switchBranch("develop");
     assertThat(switchedDevelop.getId(), is("develop"));
+
+    // develop に sample_spec_2 が存在しないこと
+    List<String> developSpecList = specService.idList();
+    assertThat(developSpecList, not(hasItem(SPEC_ID + "_2")));
 
     // -----------------------------------------------------------------------------------------
     // merge
