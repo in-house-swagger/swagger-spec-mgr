@@ -66,7 +66,8 @@ public interface UsersApi {
   @ApiResponses(
       value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
           @ApiResponse(code = 404, message = "User not found", response = Void.class)})
-  @RequestMapping(value = "/users/{userId:.+}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/users/{userId:.+}", produces = {"application/json"},
+      method = RequestMethod.DELETE)
   ResponseEntity<Object> deleteUserById(@ApiParam(value = "user name for commit",
       required = true) @PathVariable(value = "userId") final String userId);
 

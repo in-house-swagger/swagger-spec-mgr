@@ -113,7 +113,7 @@ public class UserServiceTest {
       fail();
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.alreadyExist"});
+      assertCheckErrors(context, new String[] {"data.alreadyExist"});
       context.clearErrors();
     }
 
@@ -137,7 +137,7 @@ public class UserServiceTest {
       fail();
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.notExist"});
+      assertCheckErrors(context, new String[] {"data.notExist"});
       context.clearErrors();
     }
   }

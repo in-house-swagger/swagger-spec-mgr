@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "Swagger Specification Management APIs. "
-  version: "0.3.1"
+  version: "0.4.0"
   title: "Swagger Specification Manager"
   contact:
     name: "suwa-sh"
@@ -175,7 +175,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/json"
       parameters:
       - name: "x-commit-user"
         in: "header"
@@ -327,7 +327,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/json"
       parameters:
       - name: "x-commit-user"
         in: "header"
@@ -563,7 +563,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/x-yaml"
       parameters:
       - name: "x-commit-user"
         in: "header"
@@ -578,6 +578,8 @@ paths:
       responses:
         200:
           description: "OK"
+          schema:
+            type: "object"
         204:
           description: "No Content"
         400:
@@ -820,7 +822,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/json"
       parameters:
       - name: "x-commit-user"
         in: "header"
@@ -977,7 +979,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/json"
       parameters:
       - name: "x-commit-user"
         in: "header"
@@ -1124,7 +1126,7 @@ paths:
       consumes:
       - "application/json"
       produces:
-      - "*/*"
+      - "application/json"
       parameters:
       - name: "userId"
         in: "path"

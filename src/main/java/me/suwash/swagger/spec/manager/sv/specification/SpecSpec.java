@@ -1,5 +1,6 @@
 package me.suwash.swagger.spec.manager.sv.specification;
 
+import java.io.File;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,22 +67,12 @@ public class SpecSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 関連データチェック
-    // Git作業ディレクトリ
-    try {
-      ValidationUtils.existDir(props.getUserRepoDir(context.getCommitInfo()));
-    } catch (SpecMgrException e) {
-      addError(Spec.class, e);
-      isValid = false;
-    }
-    // 出力ディレクトリ
-    try {
-      ValidationUtils.notExistDir(getSplitOutputDir(spec));
-    } catch (SpecMgrException e) {
-      addError(Spec.class, e);
-      isValid = false;
-    }
+    // ユーザディレクトリ
+    if (! mustExistUserDir())
+      throw new SpecMgrException(SPECIFICATION_ERROR);
 
-    if (!isValid)
+    // 出力ディレクトリ
+    if (!mustNotExist(spec))
       throw new SpecMgrException(SPECIFICATION_ERROR);
   }
 
@@ -104,7 +95,7 @@ public class SpecSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 関連データチェック
-    isValid = checkInit(spec);
+    isValid = mustExist(spec);
 
     if (!isValid)
       throw new SpecMgrException(SPECIFICATION_ERROR);
@@ -129,21 +120,10 @@ public class SpecSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 関連データチェック
-    isValid = checkInit(spec);
+    isValid = mustExist(spec);
 
     if (!isValid)
       throw new SpecMgrException(SPECIFICATION_ERROR);
-  }
-
-  private boolean checkInit(final Spec spec) {
-    try {
-      ValidationUtils.existDir(getSplitOutputDir(spec));
-      return true;
-
-    } catch (SpecMgrException e) {
-      addError(Spec.class, e);
-      return false;
-    }
   }
 
   /**
@@ -186,4 +166,39 @@ public class SpecSpec extends BaseSpec {
   public List<String> getSplitIgnoreRegexList() {
     return props.getSplitIgnoreRegexList();
   }
+
+  private boolean mustExistUserDir() {
+    try {
+      ValidationUtils.mustExistDir(props.getUserRepoDir(context.getCommitInfo()));
+    } catch (SpecMgrException e) {
+      addError(Spec.class, e);
+      return false;
+    }
+    return true;
+  }
+
+  private boolean mustExist(final Spec spec) {
+    if (! new File(getSplitOutputDir(spec)).isDirectory()) {
+      try {
+        ValidationUtils.mustExistData("Spec", "Spec.id", spec.getId(), null);
+      } catch (SpecMgrException e) {
+        addError(Spec.class, e);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean mustNotExist(final Spec spec) {
+    if (new File(getSplitOutputDir(spec)).isDirectory()) {
+      try {
+        ValidationUtils.mustNotExistData("Spec", "Spec.id", spec.getId(), spec);
+      } catch (SpecMgrException e) {
+        addError(Spec.class, e);
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

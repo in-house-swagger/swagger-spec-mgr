@@ -76,11 +76,16 @@ public class SpecServiceTest {
     // payload
     Map<String, Object> payload = SpecMgrTestUtils.getTestPayload();
 
+    // リポジトリ初期化
+    final String userId = "spec-mgr";
+    final String email = userId + "@example.com";
+    userService.addUser(userId, email);
+
     try {
       service.addSpec("specId", payload);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.notExist"});
+      assertCheckErrors(context, new String[] {"data.notExist"});
       context.clearErrors();
     }
   }
@@ -157,7 +162,7 @@ public class SpecServiceTest {
       fail();
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.alreadyExist"});
+      assertCheckErrors(context, new String[] {"data.alreadyExist"});
       context.clearErrors();
     }
 
@@ -181,7 +186,7 @@ public class SpecServiceTest {
       fail();
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.notExist"});
+      assertCheckErrors(context, new String[] {"data.notExist"});
       context.clearErrors();
     }
 
@@ -204,7 +209,7 @@ public class SpecServiceTest {
       fail();
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("specificationError"));
-      assertCheckErrors(context, new String[] {"dir.notExist"});
+      assertCheckErrors(context, new String[] {"data.notExist"});
       context.clearErrors();
     }
   }

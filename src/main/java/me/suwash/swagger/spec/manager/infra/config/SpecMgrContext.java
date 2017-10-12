@@ -16,7 +16,7 @@ public class SpecMgrContext {
   private Map<String, Map<String, Object>> contexts = new HashMap<>();
 
   private Map<String, Object> getContext(final String contextKey) {
-    ValidationUtils.notEmpty("contextKey", contextKey);
+    ValidationUtils.mustNotEmpty("contextKey", contextKey);
 
     final boolean hasContext = contexts.containsKey(contextKey);
     if (hasContext)

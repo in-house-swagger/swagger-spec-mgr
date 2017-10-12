@@ -72,7 +72,7 @@ public class TagSpec extends BaseSpec {
 
     // 複数項目関連チェック
     try {
-      ValidationUtils.notEmpty("toTag", toTag);
+      ValidationUtils.mustNotEmpty("toTag", toTag);
     } catch (SpecMgrException e) {
       addError(Tag.class, e);
       isValid = false;
@@ -105,5 +105,23 @@ public class TagSpec extends BaseSpec {
 
     if (!isValid)
       throw new SpecMgrException(SPECIFICATION_ERROR);
+  }
+
+  /**
+   * タグが存在しないエラーを発生させます。
+   *
+   * @param id タグ名
+   */
+  public void notExist(final String id) {
+    ValidationUtils.mustExistData("Tag", "Tag.id", id, null);
+  }
+
+  /**
+   * タグがすでに存在するエラーを発生させます。
+   *
+   * @param id タグ名
+   */
+  public void alreadyExist(final String id) {
+    ValidationUtils.mustNotExistData("Tag", "Tag.id", id, this);
   }
 }

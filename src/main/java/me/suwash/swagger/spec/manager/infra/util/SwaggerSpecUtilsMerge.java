@@ -180,7 +180,7 @@ public final class SwaggerSpecUtilsMerge {
   protected static void deleteMerged(final String inputDirPath, final String specId) {
     final String specDirPath = mergedDir(inputDirPath, specId);
     final String mergedFilePath = FilePathUtils.filePath(specDirPath, FILENAME_MERGED);
-    ValidationUtils.existFile(mergedFilePath);
+    ValidationUtils.mustExistFile(mergedFilePath);
 
     if (!FileUtils.rmdirs(specDirPath))
       ValidationUtils.dirCantDelete(specDirPath);

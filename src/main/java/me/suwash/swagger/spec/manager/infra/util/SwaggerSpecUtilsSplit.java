@@ -182,7 +182,7 @@ public final class SwaggerSpecUtilsSplit {
   protected static void deleteSplit(final String targetDirPath, final String specId) {
     final String specDirPath = splitDir(targetDirPath, specId);
     final String splitRootFilePath = FilePathUtils.filePath(specDirPath, FILENAME_SPLIT_ROOT);
-    ValidationUtils.existFile(splitRootFilePath);
+    ValidationUtils.mustExistFile(splitRootFilePath);
 
     if (!FileUtils.rmdirs(specDirPath))
       ValidationUtils.dirCantDelete(specDirPath);

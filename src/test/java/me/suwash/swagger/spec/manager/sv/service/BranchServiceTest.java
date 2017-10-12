@@ -134,8 +134,7 @@ public class BranchServiceTest {
       service.addBranch("master", "develop");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -217,8 +216,7 @@ public class BranchServiceTest {
       service.renameBranch("develop", "master");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
     // 削除済み
     service.deleteBranch("develop");
@@ -226,7 +224,7 @@ public class BranchServiceTest {
       service.renameBranch("develop", "feature/1");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -246,7 +244,7 @@ public class BranchServiceTest {
       service.deleteBranch("develop");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
   }
 

@@ -85,7 +85,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
   }
 
   @Override
-  public ResponseEntity<Void> deleteSpecById(
+  public ResponseEntity<Object> deleteSpecById(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
           required = false) final String commitUser,
       @ApiParam(value = "ID of specification to delete",
@@ -95,7 +95,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
     final SpecDto dto = facade.delete(commitInfo, specId);
 
     final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.DELETE);
-    return new ResponseEntity<Void>(mapper.getHttpStatus());
+    return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
   }
 
 }

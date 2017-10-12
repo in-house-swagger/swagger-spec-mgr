@@ -84,7 +84,8 @@ public interface TagsApi {
   @ApiResponses(
       value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
           @ApiResponse(code = 404, message = "Tag not found", response = Void.class)})
-  @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, method = RequestMethod.DELETE)
+  @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, produces = {"application/json"},
+      method = RequestMethod.DELETE)
   ResponseEntity<Object> deleteTagById(HttpServletRequest request,
       @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
           required = false) final String commitUser,

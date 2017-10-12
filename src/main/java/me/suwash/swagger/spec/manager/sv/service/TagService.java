@@ -42,7 +42,7 @@ public class TagService {
     Tag finded = null;
     if (repository.isExistTag(tagId))
       finded = newTag(tagId);
-    ValidationUtils.existData(Tag.class.getSimpleName(), "id", tagId, finded);
+    ValidationUtils.mustExistData(Tag.class.getSimpleName(), "id", tagId, finded);
     return finded;
   }
 

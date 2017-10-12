@@ -1,6 +1,5 @@
 package me.suwash.swagger.spec.manager.infra.error;
 
-import java.util.Locale;
 import lombok.Getter;
 import me.suwash.swagger.spec.manager.infra.i18n.SpecMgrDdSource;
 import me.suwash.swagger.spec.manager.infra.i18n.SpecMgrMessageSource;

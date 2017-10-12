@@ -120,7 +120,7 @@ public class UsersApiControllerTest {
             post("/users/ws_test?email=ws_test@test.com").contentType(requestMediaType.value()))
         // .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isBadRequest()).andReturn();
-    assertThat(result.getResponse().getContentAsString(), containsString("dir.alreadyExist"));
+    assertThat(result.getResponse().getContentAsString(), containsString("data.alreadyExist"));
 
     // -----------------------------------------------------------------------------------------
     // users/{userId} : 取得

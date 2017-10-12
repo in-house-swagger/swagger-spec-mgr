@@ -39,16 +39,16 @@ public class ValidationUtilsTest {
 
     new File(fileExist).createNewFile();
 
-    ValidationUtils.notNull(name, objNotNull);
+    ValidationUtils.mustNotNull(name, objNotNull);
     try {
-      ValidationUtils.notNull(name, objNull);
+      ValidationUtils.mustNotNull(name, objNull);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("check.notNull"));
     }
 
-    ValidationUtils.notEmpty(name, strNotEmpty);
+    ValidationUtils.mustNotEmpty(name, strNotEmpty);
     try {
-      ValidationUtils.notEmpty(name, strEmpty);
+      ValidationUtils.mustNotEmpty(name, strEmpty);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("check.notNull"));
     }
@@ -59,9 +59,9 @@ public class ValidationUtilsTest {
       assertThat(e.getMessageId(), is("illegalArgs"));
     }
 
-    ValidationUtils.existFile(fileExist);
+    ValidationUtils.mustExistFile(fileExist);
     try {
-      ValidationUtils.existFile(fileNotExist);
+      ValidationUtils.mustExistFile(fileNotExist);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("file.notExist"));
     }
@@ -84,18 +84,18 @@ public class ValidationUtilsTest {
       assertThat(e.getMessageId(), is("file.cantDelete"));
     }
 
-    ValidationUtils.existDir(dirExist);
+    ValidationUtils.mustExistDir(dirExist);
     try {
-      ValidationUtils.existDir(dirNotExist);
+      ValidationUtils.mustExistDir(dirNotExist);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("dir.notExist"));
     }
 
-    ValidationUtils.existDirForce("/tmp/force_create");
+    ValidationUtils.mustExistDirForce("/tmp/force_create");
 
-    ValidationUtils.notExistDir(dirNotExist);
+    ValidationUtils.mustNotExistDir(dirNotExist);
     try {
-      ValidationUtils.notExistDir(dirExist);
+      ValidationUtils.mustNotExistDir(dirExist);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("dir.alreadyExist"));
     }
@@ -112,9 +112,9 @@ public class ValidationUtilsTest {
       assertThat(e.getMessageId(), is("dir.cantDelete"));
     }
 
-    ValidationUtils.existData(name, "key", "value", objNotNull);
+    ValidationUtils.mustExistData(name, "key", "value", objNotNull);
     try {
-      ValidationUtils.existData(name, "key", "value", objNull);
+      ValidationUtils.mustExistData(name, "key", "value", objNull);
     } catch (SpecMgrException e) {
       assertThat(e.getMessageId(), is("data.notExist"));
     }

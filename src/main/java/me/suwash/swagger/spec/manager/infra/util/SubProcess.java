@@ -160,7 +160,7 @@ public class SubProcess {
    * @return 実行結果
    */
   public ProcessResult execute() {
-    ValidationUtils.notEmpty("command", command);
+    ValidationUtils.mustNotEmpty("command", command);
 
     final ProcessBuilder builder = newProcessBuilder(command, workDir, stdout, stderr);
     builder.environment().putAll(env);
