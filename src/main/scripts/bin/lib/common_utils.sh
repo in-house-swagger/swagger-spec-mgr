@@ -206,6 +206,16 @@ function gen_encrypt_key() {
     return 1
   fi
 
+  # ディレクトリ作成
+  local dir_encrypt="$(dirname ${PATH_ENCRYPT_KEY})"
+  if [ ! -d "${dir_encrypt}" ]; then
+    mkdir -p "${dir_encrypt}"
+  fi
+  local dir_decrypt="$(dirname ${PATH_DECRYPT_KEY})"
+  if [ ! -d "${dir_decrypt}" ]; then
+    mkdir -p "${dir_decrypt}"
+  fi
+
   # 鍵作成
   echo "openssl req -x509 -nodes -newkey rsa:2048 -keyout \"${PATH_DECRYPT_KEY}\" -out \"${PATH_ENCRYPT_KEY}\" -subj '/'"
   openssl req -x509 -nodes -newkey rsa:2048 -keyout "${PATH_DECRYPT_KEY}" -out "${PATH_ENCRYPT_KEY}" -subj '/'
@@ -216,6 +226,10 @@ function _encrypt() {
   # 設定チェック
   if [ "${PATH_ENCRYPT_KEY}" = "" ]; then
     echo "PATH_ENCRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+  if [ ! -f "${PATH_ENCRYPT_KEY}" ]; then
+    echo "${PATH_ENCRYPT_KEY} が存在しません。" >&2
     return 1
   fi
 
@@ -229,6 +243,10 @@ function _decrypt() {
   # 設定チェック
   if [ "${PATH_DECRYPT_KEY}" = "" ]; then
     echo "PATH_DECRYPT_KEY が設定されていません。" >&2
+    return 1
+  fi
+  if [ ! -f "${PATH_DECRYPT_KEY}" ]; then
+    echo "${PATH_DECRYPT_KEY} が存在しません。" >&2
     return 1
   fi
 
