@@ -180,7 +180,7 @@ public class SpecsApiControllerTest {
             .contentType(requestMediaType.value()).content(requestBody))
         // .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isBadRequest()).andReturn();
-    assertThat(result.getResponse().getContentAsString(), containsString("dir.alreadyExist"));
+    assertThat(result.getResponse().getContentAsString(), containsString("data.alreadyExist"));
 
     // -----------------------------------------------------------------------------------------
     // specs/{specId} : 取得

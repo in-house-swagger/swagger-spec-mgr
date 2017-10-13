@@ -43,7 +43,7 @@ public class UserService {
     userSpec.canFind(criteria);
 
     final User finded = userRepository.findById(userId);
-    ValidationUtils.existData(User.class.getSimpleName(), "id", userId, finded);
+    ValidationUtils.mustExistData(User.class.getSimpleName(), "id", userId, finded);
     return finded;
   }
 

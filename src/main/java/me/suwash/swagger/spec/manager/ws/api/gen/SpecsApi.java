@@ -80,8 +80,9 @@ public interface SpecsApi {
   @ApiResponses(
       value = {@ApiResponse(code = 400, message = "Invalid input", response = Object.class),
           @ApiResponse(code = 404, message = "Specification not found", response = Void.class)})
-  @RequestMapping(value = "/specs/{specId}", method = RequestMethod.DELETE)
-  ResponseEntity<Void> deleteSpecById(
+  @RequestMapping(value = "/specs/{specId}", produces = {"application/x-yaml"},
+      method = RequestMethod.DELETE)
+  ResponseEntity<Object> deleteSpecById(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
           required = false) final String commitUser,
       @ApiParam(value = "ID of specification to delete",

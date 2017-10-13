@@ -92,6 +92,8 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void addBranch(final String from, final String to) {
+    if (isExistBranch(to)) branchSpec.alreadyExist(to);
+
     final String command =
         appendCommitUser(props.getDirBin() + "/git/branch_add.sh " + from + " " + to);
     subProc(command, "git branch_add");
@@ -99,6 +101,9 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void renameBranch(final String from, String to) {
+    if (! isExistBranch(from)) branchSpec.notExist(from);
+    if (isExistBranch(to)) branchSpec.alreadyExist(to);
+
     final String command =
         appendCommitUser(props.getDirBin() + "/git/branch_rename.sh " + from + " " + to);
     subProc(command, "git branch_rename");
@@ -106,12 +111,17 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void removeBranch(final String name) {
+    if (! isExistBranch(name)) branchSpec.notExist(name);
+
     final String command = appendCommitUser(props.getDirBin() + "/git/branch_remove.sh " + name);
     subProc(command, "git branch_remove");
   }
 
   @Override
   public void mergeBranch(final String from, String to) {
+    if (! isExistBranch(from)) branchSpec.notExist(from);
+    if (! isExistBranch(to)) branchSpec.notExist(to);
+
     final String command =
         appendCommitUser(props.getDirBin() + "/git/branch_merge.sh " + from + " " + to);
     subProc(command, "git branch_merge");
@@ -119,6 +129,8 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void switchBranch(final String name) {
+    if (! isExistBranch(name)) branchSpec.notExist(name);
+
     final String command = appendCommitUser(props.getDirBin() + "/git/switch.sh " + name);
     subProc(command, "git switch");
   }
@@ -139,6 +151,8 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void addTag(final String from, final String to) {
+    if (isExistTag(to)) tagSpec.alreadyExist(to);
+
     final String command = appendCommitUser(
         props.getDirBin() + "/git/tag_add.sh " + from + " " + to + " " + commitMessage());
     subProc(command, "git tag_add");
@@ -146,6 +160,9 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void renameTag(final String from, String to) {
+    if (! isExistTag(from)) tagSpec.notExist(from);
+    if (isExistTag(to)) tagSpec.alreadyExist(to);
+
     final String command =
         appendCommitUser(props.getDirBin() + "/git/tag_rename.sh " + from + " " + to);
     subProc(command, "git tag_rename");
@@ -153,6 +170,8 @@ public class GitRepositoryImpl extends BaseSubProcessRepository implements GitRe
 
   @Override
   public void removeTag(final String name) {
+    if (! isExistTag(name)) tagSpec.notExist(name);
+
     final String command = appendCommitUser(props.getDirBin() + "/git/tag_remove.sh " + name);
     subProc(command, "git tag_remove");
   }

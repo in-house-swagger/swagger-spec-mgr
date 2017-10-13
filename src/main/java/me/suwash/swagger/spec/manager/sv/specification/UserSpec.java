@@ -1,5 +1,6 @@
 package me.suwash.swagger.spec.manager.sv.specification;
 
+import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import me.suwash.swagger.spec.manager.infra.config.ApplicationProperties;
@@ -57,14 +58,7 @@ public class UserSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 関連データチェック
-    try {
-      ValidationUtils.notExistDir(getUserDir(user));
-    } catch (SpecMgrException e) {
-      addError(User.class, e);
-      isValid = false;
-    }
-
-    if (!isValid)
+    if (!mustNotExist(user))
       throw new SpecMgrException(SPECIFICATION_ERROR);
   }
 
@@ -96,14 +90,7 @@ public class UserSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 関連データチェック
-    try {
-      ValidationUtils.existDir(getUserDir(user));
-    } catch (SpecMgrException e) {
-      addError(User.class, e);
-      isValid = false;
-    }
-
-    if (!isValid)
+    if (!mustExist(user))
       throw new SpecMgrException(SPECIFICATION_ERROR);
   }
 
@@ -124,5 +111,29 @@ public class UserSpec extends BaseSpec {
    */
   public String getUserDir(final User user) {
     return getUsersDir() + "/" + user.getId();
+  }
+
+  private boolean mustNotExist(final User user) {
+    if (new File(getUserDir(user)).isDirectory()) {
+      try {
+        ValidationUtils.mustNotExistData("User", "User.id", user.getId(), this);
+      } catch (SpecMgrException e) {
+        addError(User.class, e);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean mustExist(final User user) {
+    if (!new File(getUserDir(user)).isDirectory()) {
+      try {
+        ValidationUtils.mustExistData("User", "User.id", user.getId(), null);
+      } catch (SpecMgrException e) {
+        addError(User.class, e);
+        return false;
+      }
+    }
+    return true;
   }
 }

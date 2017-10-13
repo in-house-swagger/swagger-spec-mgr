@@ -42,7 +42,7 @@ public class BranchService {
     Branch finded = null;
     if (repository.isExistBranch(branch))
       finded = newBranch(branch);
-    ValidationUtils.existData(Branch.class.getSimpleName(), "id", branch, finded);
+    ValidationUtils.mustExistData(Branch.class.getSimpleName(), "id", branch, finded);
     return finded;
   }
 

@@ -18,21 +18,21 @@ public final class SwaggerSpecUtils {
   private SwaggerSpecUtils() {}
 
   private static void checkSpecId(final String specId) {
-    ValidationUtils.notEmpty("specId", specId);
+    ValidationUtils.mustNotEmpty("specId", specId);
   }
 
   private static void checkInputDirPath(final String inputDirPath) {
-    ValidationUtils.notEmpty("inputDirPath", inputDirPath);
-    ValidationUtils.existDir(inputDirPath);
+    ValidationUtils.mustNotEmpty("inputDirPath", inputDirPath);
+    ValidationUtils.mustExistDir(inputDirPath);
   }
 
   private static void checkOutputDirPath(final String outputDirPath) {
-    ValidationUtils.notEmpty("outputDirPath", outputDirPath);
-    ValidationUtils.existDirForce(outputDirPath);
+    ValidationUtils.mustNotEmpty("outputDirPath", outputDirPath);
+    ValidationUtils.mustExistDirForce(outputDirPath);
   }
 
   private static void checkValue(final Object value) {
-    ValidationUtils.notNull("value", value);
+    ValidationUtils.mustNotNull("value", value);
   }
 
   public static String getSplitDir(final String dirPath, final String specId) {
@@ -148,7 +148,7 @@ public final class SwaggerSpecUtils {
     checkSpecId(specId);
 
     final String inputRootFilePath = splitRootFilePath(inputDirPath, specId);
-    ValidationUtils.existFile(inputRootFilePath);
+    ValidationUtils.mustExistFile(inputRootFilePath);
 
     // 分割ファイルをmerge
     final Object merged = SwaggerSpecUtilsMerge.recursiveMerge(inputRootFilePath);

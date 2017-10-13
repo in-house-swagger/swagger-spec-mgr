@@ -20,8 +20,8 @@ public class CommitInfo {
   protected String message = null;
 
   public void canInit() {
-    ValidationUtils.notEmpty("user", user);
-    ValidationUtils.notEmpty("email", email);
+    ValidationUtils.mustNotEmpty("user", user);
+    ValidationUtils.mustNotEmpty("email", email);
   }
 
 }

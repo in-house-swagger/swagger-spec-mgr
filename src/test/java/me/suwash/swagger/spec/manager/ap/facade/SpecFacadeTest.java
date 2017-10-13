@@ -86,21 +86,21 @@ public class SpecFacadeTest {
     log.info("ADD");
     facade.add(commitInfo, SPEC_ID, payload);
     dto = facade.add(commitInfo, SPEC_ID, payload);
-    assertCheckErrors(dto.getErrors(), new String[] {"dir.alreadyExist"});
+    assertCheckErrors(dto.getErrors(), new String[] {"data.alreadyExist"});
 
     // -----------------------------------------------------------------------------------------
     // 更新
     // -----------------------------------------------------------------------------------------
     log.info("UPDATE");
     dto = facade.update(commitInfo, "notExist", payload);
-    assertCheckErrors(dto.getErrors(), new String[] {"dir.notExist"});
+    assertCheckErrors(dto.getErrors(), new String[] {"data.notExist"});
 
     // -----------------------------------------------------------------------------------------
     // 削除
     // -----------------------------------------------------------------------------------------
     log.info("DELETE");
     dto = facade.delete(commitInfo, "notExist");
-    assertCheckErrors(dto.getErrors(), new String[] {"dir.notExist"});
+    assertCheckErrors(dto.getErrors(), new String[] {"data.notExist"});
   }
 
   // @Test

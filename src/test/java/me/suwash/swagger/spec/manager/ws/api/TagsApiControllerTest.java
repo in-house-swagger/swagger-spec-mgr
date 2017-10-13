@@ -32,7 +32,6 @@ import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
-import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.RequestMediaType;
 import me.suwash.util.FileUtils;
 import me.suwash.util.JsonUtils;
@@ -154,7 +153,7 @@ public class TagsApiControllerTest {
         // .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isBadRequest()).andReturn();
     assertThat(result.getResponse().getContentAsString(),
-        containsString(SpecMgrException.MSGCD_ERRORHANDLE));
+        containsString("data.alreadyExist"));
 
     // -----------------------------------------------------------------------------------------
     // tags/{tag} : 取得

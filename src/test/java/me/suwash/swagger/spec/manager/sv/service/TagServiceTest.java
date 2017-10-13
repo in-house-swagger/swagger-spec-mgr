@@ -133,8 +133,7 @@ public class TagServiceTest {
       service.addTag("master", "v1");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -163,15 +162,14 @@ public class TagServiceTest {
       service.renameTag("v1", "v1");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
     // fromTag が存在しない
     try {
       service.renameTag("v2", "v3");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -192,8 +190,7 @@ public class TagServiceTest {
       service.deleteTag("v1");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
   }
 

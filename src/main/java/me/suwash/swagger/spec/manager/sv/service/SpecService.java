@@ -46,7 +46,7 @@ public class SpecService {
     specSpec.canFind(criteria);
 
     final Spec finded = specRepository.findById(specId);
-    ValidationUtils.existData(Spec.class.getSimpleName(), "id", specId, finded);
+    ValidationUtils.mustExistData(Spec.class.getSimpleName(), "id", specId, finded);
     return finded;
   }
 

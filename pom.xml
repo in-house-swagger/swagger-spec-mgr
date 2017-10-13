@@ -5,7 +5,7 @@
     <artifactId>swagger-spec-mgr</artifactId>
     <packaging>jar</packaging>
     <name>swagger-spec-mgr</name>
-    <version>0.3.1</version>
+    <version>0.4.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,7 +26,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <springfox-version>2.6.1</springfox-version>
+        <springfox-version>2.7.0</springfox-version>
 
         <dirname.assembly.work>${project.artifactId}_${project.version}</dirname.assembly.work>
         <dir.assembly.work>${project.build.directory}/${dirname.assembly.work}</dir.assembly.work>

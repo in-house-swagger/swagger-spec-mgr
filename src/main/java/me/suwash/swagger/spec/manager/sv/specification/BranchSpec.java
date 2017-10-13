@@ -72,7 +72,7 @@ public class BranchSpec extends BaseSpec {
 
     // 複数項目関連チェック
     try {
-      ValidationUtils.notEmpty("toBranch", toBranch);
+      ValidationUtils.mustNotEmpty("toBranch", toBranch);
     } catch (SpecMgrException e) {
       addError(Branch.class, e);
       isValid = false;
@@ -125,7 +125,7 @@ public class BranchSpec extends BaseSpec {
 
     // 関連データチェック
     try {
-      ValidationUtils.notEmpty("toBranch", to.getId());
+      ValidationUtils.mustNotEmpty("toBranch", to.getId());
     } catch (SpecMgrException e) {
       addError(Branch.class, e);
       isValid = false;
@@ -142,5 +142,23 @@ public class BranchSpec extends BaseSpec {
    */
   public void canSwitchBranch(final Branch branch) {
     canFind(branch);
+  }
+
+  /**
+   * ブランチが存在しないエラーを発生させます。
+   *
+   * @param id ブランチ名
+   */
+  public void notExist(final String id) {
+    ValidationUtils.mustExistData("Branch", "Branch.id", id, null);
+  }
+
+  /**
+   * ブランチがすでに存在するエラーを発生させます。
+   *
+   * @param id ブランチ名
+   */
+  public void alreadyExist(final String id) {
+    ValidationUtils.mustNotExistData("Branch", "Branch.id", id, this);
   }
 }

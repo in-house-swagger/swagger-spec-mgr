@@ -86,7 +86,7 @@ public interface BranchesApi {
       value = {@ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
           @ApiResponse(code = 404, message = "Branch not found", response = Void.class)})
   @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
-      method = RequestMethod.DELETE)
+      produces = {"application/json"}, method = RequestMethod.DELETE)
   ResponseEntity<Object> deleteBranchById(HttpServletRequest request,
       @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
           required = false) final String commitUser,

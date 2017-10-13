@@ -42,8 +42,8 @@ public class UsersApiController extends BaseApiController implements UsersApi {
   }
 
   @Override
-  public ResponseEntity<Object> getUserById(@ApiParam(value = "user name for commit") @PathVariable(
-      value = "userId", required = true) final String userId) {
+  public ResponseEntity<Object> getUserById(@ApiParam(value = "user name for commit",
+      required = true) @PathVariable(value = "userId") final String userId) {
 
     final UserDto dto = facade.findById(userId);
 
@@ -53,10 +53,10 @@ public class UsersApiController extends BaseApiController implements UsersApi {
 
   @Override
   public ResponseEntity<Object> addUserWithId(
-      @ApiParam(value = "user name for commit") @PathVariable(value = "userId",
-          required = true) final String userId,
-      @ApiParam(value = "email address for commit") @RequestParam(value = "email",
-          required = true) final String email) {
+      @ApiParam(value = "user name for commit",
+          required = true) @PathVariable(value = "userId") final String userId,
+      @ApiParam(value = "email address for commit",
+          required = true) @RequestParam(value = "email") final String email) {
 
     final UserDto dto = facade.add(userId, email);
 
@@ -65,9 +65,8 @@ public class UsersApiController extends BaseApiController implements UsersApi {
   }
 
   @Override
-  public ResponseEntity<Object> deleteUserById(
-      @ApiParam(value = "user name for commit") @PathVariable(value = "userId",
-          required = true) final String userId) {
+  public ResponseEntity<Object> deleteUserById(@ApiParam(value = "user name for commit",
+      required = true) @PathVariable(value = "userId") final String userId) {
 
     final UserDto dto = facade.delete(userId);
 

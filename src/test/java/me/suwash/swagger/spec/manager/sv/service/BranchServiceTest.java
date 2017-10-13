@@ -134,8 +134,7 @@ public class BranchServiceTest {
       service.addBranch("master", "develop");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -217,8 +216,7 @@ public class BranchServiceTest {
       service.renameBranch("develop", "master");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
-      assertThat(e.getMessageArgs()[0], is("SubProcess"));
+      assertThat(e.getMessageId(), is("data.alreadyExist"));
     }
     // 削除済み
     service.deleteBranch("develop");
@@ -226,7 +224,7 @@ public class BranchServiceTest {
       service.renameBranch("develop", "feature/1");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -246,7 +244,7 @@ public class BranchServiceTest {
       service.deleteBranch("develop");
       fail();
     } catch (final SpecMgrException e) {
-      assertThat(e.getMessageId(), is(SpecMgrException.MSGCD_ERRORHANDLE));
+      assertThat(e.getMessageId(), is("data.notExist"));
     }
   }
 
@@ -308,6 +306,11 @@ public class BranchServiceTest {
     assertThat(addedFeature1, not(nullValue()));
     assertThat(addedFeature1.getId(), is("feature/1"));
 
+    // feature/1 に sample_spec_2 を追加
+    specService.addSpec(SPEC_ID + "_2", payload);
+    List<String> featureSpecList = specService.idList();
+    assertThat(featureSpecList, hasItem(SPEC_ID + "_2"));
+
     // -----------------------------------------------------------------------------------------
     // 更新
     // -----------------------------------------------------------------------------------------
@@ -322,6 +325,10 @@ public class BranchServiceTest {
     log.info("SWITCH");
     Branch switchedDevelop = service.switchBranch("develop");
     assertThat(switchedDevelop.getId(), is("develop"));
+
+    // develop に sample_spec_2 が存在しないこと
+    List<String> developSpecList = specService.idList();
+    assertThat(developSpecList, not(hasItem(SPEC_ID + "_2")));
 
     // -----------------------------------------------------------------------------------------
     // merge
