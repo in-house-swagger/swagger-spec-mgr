@@ -36,7 +36,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
 
   @Override
   public ResponseEntity<Object> getTags(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser) {
 
     final CommitInfo commitInfo = commitInfo(commitUser);
@@ -48,7 +48,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
 
   @Override
   public ResponseEntity<Object> getTagById(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of tag to return",
           required = true) @PathVariable("tag") final String tag) {
@@ -62,9 +62,9 @@ public class TagsApiController extends BaseApiController implements TagsApi {
 
   @Override
   public ResponseEntity<Object> addTagWithId(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
-      @ApiParam(value = "message for tag") @RequestHeader(value = "x-commit-message",
+      @ApiParam(value = "message for tag") @RequestHeader(value = "X-Commit-Message",
           required = false) final String commitMessage,
       @ApiParam(value = "ID of tag that needs to be add",
           required = true) @PathVariable("tag") final String tag,
@@ -80,7 +80,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
 
   @Override
   public ResponseEntity<Object> renameTagWithId(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "target ID of tag that needs to be update",
           required = true) @PathVariable("tag") final String fromTag,
@@ -96,7 +96,7 @@ public class TagsApiController extends BaseApiController implements TagsApi {
 
   @Override
   public ResponseEntity<Object> deleteTagById(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of tag to delete",
           required = true) @PathVariable("tag") final String tag) {

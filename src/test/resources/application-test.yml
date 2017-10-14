@@ -45,7 +45,8 @@ spec.mgr:
   cors:
     allowOrigin: "*"
     allowMethods: "GET, POST, PUT, DELETE"
-    allowHeaders: "Content-Type"
+    allowHeaders: "*"
+    allowMaxAge: 864000
 
   # スクリプト実行時環境変数
   scriptEnv:

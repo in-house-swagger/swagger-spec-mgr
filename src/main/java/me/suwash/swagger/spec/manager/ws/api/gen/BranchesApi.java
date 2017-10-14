@@ -33,7 +33,7 @@ public interface BranchesApi {
       @ApiResponse(code = 404, message = "Branch not found", response = Void.class)})
   @RequestMapping(value = "/branches", produces = {"application/json"}, method = RequestMethod.GET)
   ResponseEntity<Object> getBranches(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser);
 
   @ApiOperation(value = "/branches/{branch} GET", notes = "Returns a single branch",
@@ -46,7 +46,7 @@ public interface BranchesApi {
   @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
       produces = {"application/json"}, method = RequestMethod.GET)
   ResponseEntity<Object> getBranchById(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to return",
           required = true) @PathVariable("branch") final String branch);
@@ -58,7 +58,7 @@ public interface BranchesApi {
   @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
       produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Object> addBranchWithId(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch that needs to be add",
           required = true) @PathVariable("branch") final String branch,
@@ -74,7 +74,7 @@ public interface BranchesApi {
   @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
       produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
   ResponseEntity<Object> renameBranchWithId(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "target ID of branch that needs to be update",
           required = true) @PathVariable("branch") final String fromBranch,
@@ -88,7 +88,7 @@ public interface BranchesApi {
   @RequestMapping(value = {"/branches/{branch:.+}", "/branches/{branch:.+}/**"},
       produces = {"application/json"}, method = RequestMethod.DELETE)
   ResponseEntity<Object> deleteBranchById(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to delete",
           required = true) @PathVariable("branch") final String branch);
@@ -101,7 +101,7 @@ public interface BranchesApi {
   @RequestMapping(value = "/merges", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Object> mergeBranch(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "source ID of branch that needs to be merge",
           required = true) @RequestParam(value = "source",
@@ -118,7 +118,7 @@ public interface BranchesApi {
   @RequestMapping(value = {"/switch/{branch:.+}", "/switch/{branch:.+}/**"},
       method = RequestMethod.POST)
   ResponseEntity<Object> switchBranch(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to switch",
           required = true) @PathVariable("branch") final String branch);

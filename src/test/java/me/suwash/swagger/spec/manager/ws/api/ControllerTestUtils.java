@@ -25,9 +25,9 @@ public class ControllerTestUtils {
       return builder;
 
     } else {
-      return builder.header("x-commit-user", commitInfo.getUser())
+      return builder.header("X-Commit-User", commitInfo.getUser())
           .header("x-commit-email", commitInfo.getEmail())
-          .header("x-commit-message", commitInfo.getMessage());
+          .header("X-Commit-Message", commitInfo.getMessage());
     }
   }
 

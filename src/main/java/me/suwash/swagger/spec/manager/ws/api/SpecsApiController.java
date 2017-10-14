@@ -27,7 +27,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
   @Override
   public ResponseEntity<Object> getSpecs(@ApiParam(value = "user name for commit") @RequestHeader(
-      value = "x-commit-user", required = false) final String commitUser) {
+      value = "X-Commit-User", required = false) final String commitUser) {
 
     final CommitInfo commitInfo = commitInfo(commitUser);
     final IdListDto dto = facade.idList(commitInfo);
@@ -38,7 +38,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
   @Override
   public ResponseEntity<Object> getSpecById(
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of specification to return",
           required = true) @PathVariable("specId") final String specId) {
@@ -52,9 +52,9 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
   @Override
   public ResponseEntity<Object> addSpecWithId(
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
-      @ApiParam(value = "message for commit") @RequestHeader(value = "x-commit-message",
+      @ApiParam(value = "message for commit") @RequestHeader(value = "X-Commit-Message",
           required = false) final String commitMessage,
       @ApiParam(value = "ID of specification that needs to be add",
           required = true) @PathVariable("specId") final String specId,
@@ -70,7 +70,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
   @Override
   public ResponseEntity<Object> updateSpecWithId(
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of specification that needs to be update",
           required = true) @PathVariable("specId") final String specId,
@@ -86,7 +86,7 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
 
   @Override
   public ResponseEntity<Object> deleteSpecById(
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of specification to delete",
           required = true) @PathVariable("specId") final String specId) {

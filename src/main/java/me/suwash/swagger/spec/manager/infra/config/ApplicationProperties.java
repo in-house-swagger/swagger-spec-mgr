@@ -74,4 +74,9 @@ public class ApplicationProperties {
     if (cors == null) return null;
     return cors.get("allowHeaders");
   }
+
+  public String getAllowMaxAge() {
+    if (cors == null) return null;
+    return cors.get("allowMaxAge");
+  }
 }

@@ -20,6 +20,7 @@ public class CorsFilter implements javax.servlet.Filter {
   private String allowOrigin;
   private String allowMethods;
   private String allowHeaders;
+  private String getAllowMaxAge;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -33,6 +34,8 @@ public class CorsFilter implements javax.servlet.Filter {
     res.addHeader("Access-Control-Allow-Origin", allowOrigin);
     res.addHeader("Access-Control-Allow-Methods", allowMethods);
     res.addHeader("Access-Control-Allow-Headers", allowHeaders);
+    res.addHeader("Access-Control-Expose-Headers", allowHeaders);
+    res.addHeader("Access-Control-Max-Age", getAllowMaxAge);
     chain.doFilter(request, response);
   }
 
@@ -43,6 +46,7 @@ public class CorsFilter implements javax.servlet.Filter {
     allowOrigin = props.getAllowOrigin();
     allowMethods = props.getAllowMethods();
     allowHeaders = props.getAllowHeaders();
+    getAllowMaxAge = props.getAllowMaxAge();
   }
 
   @Override

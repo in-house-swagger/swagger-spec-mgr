@@ -36,7 +36,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> getBranches(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser) {
 
     final CommitInfo commitInfo = commitInfo(commitUser);
@@ -48,7 +48,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> getBranchById(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to return",
           required = true) @PathVariable("branch") final String branch) {
@@ -62,7 +62,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> addBranchWithId(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch that needs to be add",
           required = true) @PathVariable("branch") final String branch,
@@ -78,7 +78,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> renameBranchWithId(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "target ID of branch that needs to be update",
           required = true) @PathVariable("branch") final String fromBranch,
@@ -94,7 +94,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> deleteBranchById(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to delete",
           required = true) @PathVariable("branch") final String branch) {
@@ -108,7 +108,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> mergeBranch(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "source ID of branch that needs to be merge",
           required = true) @RequestParam(value = "source",
@@ -126,7 +126,7 @@ public class BranchesApiController extends BaseApiController implements Branches
 
   @Override
   public ResponseEntity<Object> switchBranch(final HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of branch to switch",
           required = true) @PathVariable("branch") final String branch) {

@@ -33,7 +33,7 @@ public interface TagsApi {
       @ApiResponse(code = 404, message = "Tag not found", response = Void.class)})
   @RequestMapping(value = "/tags", produces = {"application/json"}, method = RequestMethod.GET)
   ResponseEntity<Object> getTags(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser);
 
   @ApiOperation(value = "/tags/{tag} GET", notes = "Returns a single tag",
@@ -45,7 +45,7 @@ public interface TagsApi {
   @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, produces = {"application/json"},
       method = RequestMethod.GET)
   ResponseEntity<Object> getTagById(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of tag to return",
           required = true) @PathVariable("tag") final String tag);
@@ -56,9 +56,9 @@ public interface TagsApi {
   @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Object> addTagWithId(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
-      @ApiParam(value = "message for tag") @RequestHeader(value = "x-commit-message",
+      @ApiParam(value = "message for tag") @RequestHeader(value = "X-Commit-Message",
           required = false) final String commitMessage,
       @ApiParam(value = "ID of tag that needs to be add",
           required = true) @PathVariable("tag") final String tag,
@@ -73,7 +73,7 @@ public interface TagsApi {
   @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.PUT)
   ResponseEntity<Object> renameTagWithId(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "target ID of tag that needs to be update",
           required = true) @PathVariable("tag") final String fromTag,
@@ -87,7 +87,7 @@ public interface TagsApi {
   @RequestMapping(value = {"/tags/{tag:.+}", "/tags/{tag:.+}/**"}, produces = {"application/json"},
       method = RequestMethod.DELETE)
   ResponseEntity<Object> deleteTagById(HttpServletRequest request,
-      @ApiParam(value = "user name for commit") @RequestHeader(value = "x-commit-user",
+      @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
       @ApiParam(value = "ID of tag to delete",
           required = true) @PathVariable("tag") final String tag);
