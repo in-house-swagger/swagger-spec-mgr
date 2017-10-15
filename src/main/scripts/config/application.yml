@@ -45,7 +45,7 @@ spec.mgr:
   cors:
     allowOrigin: "*"
     allowMethods: "GET, POST, PUT, DELETE"
-    allowHeaders: "*"
+    allowHeaders: "Content-Type,X-Commit-User,X-Commit-Message"
     allowMaxAge: 864000
 
   # スクリプト実行時環境変数
