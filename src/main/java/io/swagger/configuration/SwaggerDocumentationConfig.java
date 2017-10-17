@@ -20,7 +20,7 @@ public class SwaggerDocumentationConfig {
   protected Docket customImplementation() {
     return new Docket(DocumentationType.SWAGGER_2).select()
         .paths(or(regex("/users.*"), regex("/specs.*"), regex("/branches.*"), regex("/switch.*"),
-            regex("/merge.*"), regex("/tags.*")))
+            regex("/merge.*"), regex("/tags.*"), regex("/env")))
         .build().directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
         .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
         .apiInfo(SwaggerDocumentationConfig.apiInfo());
