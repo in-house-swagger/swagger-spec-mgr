@@ -61,6 +61,12 @@ function local.init() {
     return ${EXITCODE_ERROR}
   fi
 
+  # first commit (empty)
+  git.commit "${_dir_repo}" "first commit" "--allow-empty"
+  if [ $? -ne ${EXITCODE_SUCCESS} ]; then
+    return ${EXITCODE_ERROR}
+  fi
+
   return ${EXITCODE_SUCCESS}
 }
 
