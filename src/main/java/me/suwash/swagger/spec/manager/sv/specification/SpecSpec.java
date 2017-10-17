@@ -68,7 +68,7 @@ public class SpecSpec extends BaseSpec {
 
     // 関連データチェック
     // ユーザディレクトリ
-    if (! mustExistUserDir())
+    if (!mustExistUserDir())
       throw new SpecMgrException(SPECIFICATION_ERROR);
 
     // 出力ディレクトリ
@@ -178,7 +178,7 @@ public class SpecSpec extends BaseSpec {
   }
 
   private boolean mustExist(final Spec spec) {
-    if (! new File(getSplitOutputDir(spec)).isDirectory()) {
+    if (!new File(getSplitOutputDir(spec)).isDirectory()) {
       try {
         ValidationUtils.mustExistData("Spec", "Spec.id", spec.getId(), null);
       } catch (SpecMgrException e) {

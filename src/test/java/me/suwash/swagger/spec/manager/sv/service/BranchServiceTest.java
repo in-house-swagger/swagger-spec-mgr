@@ -246,6 +246,80 @@ public class BranchServiceTest {
     } catch (final SpecMgrException e) {
       assertThat(e.getMessageId(), is("data.notExist"));
     }
+
+    // -----------------------------------------------------------------------------------------
+    // switch
+    // -----------------------------------------------------------------------------------------
+    // 未設定
+    try {
+      service.switchBranch(null);
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("specificationError"));
+      assertCheckErrors(context, new String[] {"BeanValidator.NotEmpty"});
+      context.clearErrors();
+    }
+
+    // 存在しないブランチ
+    try {
+      service.switchBranch("notExist");
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("data.notExist"));
+      context.clearErrors();
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // merge
+    // -----------------------------------------------------------------------------------------
+    // 未設定
+    try {
+      service.mergeBranch(null, null);
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("specificationError"));
+      assertCheckErrors(context, new String[] {"BeanValidator.NotEmpty", "BeanValidator.NotEmpty"});
+      context.clearErrors();
+    }
+    try {
+      service.mergeBranch(null, "to");
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("specificationError"));
+      assertCheckErrors(context, new String[] {"BeanValidator.NotEmpty"});
+      context.clearErrors();
+    }
+    try {
+      service.mergeBranch("from", null);
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("specificationError"));
+      assertCheckErrors(context, new String[] {"check.notNull"});
+      context.clearErrors();
+    }
+
+    // 存在しないブランチ
+    try {
+      service.mergeBranch("notExist", "notExist");
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("data.notExist"));
+      context.clearErrors();
+    }
+    try {
+      service.mergeBranch("notExist", "master");
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("data.notExist"));
+      context.clearErrors();
+    }
+    try {
+      service.mergeBranch("master", "notExist");
+      fail();
+    } catch (final SpecMgrException e) {
+      assertThat(e.getMessageId(), is("data.notExist"));
+      context.clearErrors();
+    }
   }
 
   @Test
@@ -323,12 +397,18 @@ public class BranchServiceTest {
     // switch
     // -----------------------------------------------------------------------------------------
     log.info("SWITCH");
+    String currentBranch = service.current();
+    assertThat(currentBranch, is("feature/2"));
+
     Branch switchedDevelop = service.switchBranch("develop");
     assertThat(switchedDevelop.getId(), is("develop"));
 
     // develop に sample_spec_2 が存在しないこと
     List<String> developSpecList = specService.idList();
     assertThat(developSpecList, not(hasItem(SPEC_ID + "_2")));
+
+    currentBranch = service.current();
+    assertThat(currentBranch, is("develop"));
 
     // -----------------------------------------------------------------------------------------
     // merge

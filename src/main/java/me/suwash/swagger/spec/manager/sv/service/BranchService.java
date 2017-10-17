@@ -21,6 +21,15 @@ public class BranchService {
   }
 
   /**
+   * カレントブランチ名を返します。
+   *
+   * @return カレントブランチ名
+   */
+  public String current() {
+    return repository.getCurrentBranch();
+  }
+
+  /**
    * ブランチ名の一覧を返します。
    *
    * @return ブランチ名一覧

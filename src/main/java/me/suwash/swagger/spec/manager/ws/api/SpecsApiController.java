@@ -72,12 +72,14 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
   public ResponseEntity<Object> updateSpecWithId(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
+      @ApiParam(value = "message for commit") @RequestHeader(value = "X-Commit-Message",
+          required = false) final String commitMessage,
       @ApiParam(value = "ID of specification that needs to be update",
           required = true) @PathVariable("specId") final String specId,
       @ApiParam(value = "Specification object that needs to be update",
           required = true) @RequestBody final Object payload) {
 
-    final CommitInfo commitInfo = commitInfo(commitUser);
+    final CommitInfo commitInfo = commitInfo(commitUser, commitMessage);
     final SpecDto dto = facade.update(commitInfo, specId, payload);
 
     final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.UPDATE);
@@ -88,10 +90,12 @@ public class SpecsApiController extends BaseApiController implements SpecsApi {
   public ResponseEntity<Object> deleteSpecById(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
+      @ApiParam(value = "message for commit") @RequestHeader(value = "X-Commit-Message",
+          required = false) final String commitMessage,
       @ApiParam(value = "ID of specification to delete",
           required = true) @PathVariable("specId") final String specId) {
 
-    final CommitInfo commitInfo = commitInfo(commitUser);
+    final CommitInfo commitInfo = commitInfo(commitUser, commitMessage);
     final SpecDto dto = facade.delete(commitInfo, specId);
 
     final SpecsApiModelMapper mapper = new SpecsApiModelMapper(dto, OperationType.DELETE);

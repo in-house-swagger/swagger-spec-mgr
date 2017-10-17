@@ -17,8 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import me.suwash.swagger.spec.manager.ws.model.gen.BranchListApiModelGen;
 import me.suwash.swagger.spec.manager.ws.model.gen.BranchesApiModelGen;
-import me.suwash.swagger.spec.manager.ws.model.gen.IdListApiModelGen;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen",
     date = "2017-08-08T21:14:16.911+09:00")
@@ -26,10 +26,10 @@ import me.suwash.swagger.spec.manager.ws.model.gen.IdListApiModelGen;
 public interface BranchesApi {
 
   @ApiOperation(value = "/branches GET", notes = "Returns all branches",
-      response = IdListApiModelGen.class, tags = {})
+      response = BranchListApiModelGen.class, tags = {})
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "successful operation",
-          response = IdListApiModelGen.class),
+          response = BranchListApiModelGen.class),
       @ApiResponse(code = 404, message = "Branch not found", response = Void.class)})
   @RequestMapping(value = "/branches", produces = {"application/json"}, method = RequestMethod.GET)
   ResponseEntity<Object> getBranches(HttpServletRequest request,

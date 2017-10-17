@@ -2,7 +2,10 @@ package me.suwash.swagger.spec.manager.ws.infra;
 
 import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.MSGCD_ERRORHANDLE;
 import static me.suwash.swagger.spec.manager.infra.error.SpecMgrException.array;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.HandlerMapping;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
+import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
 import me.suwash.swagger.spec.manager.infra.i18n.SpecMgrMessageSource;
 
 @lombok.extern.slf4j.Slf4j
@@ -45,7 +49,18 @@ public abstract class BaseApiController {
   }
 
   protected CommitInfo commitInfo(final String user, final String email, final String message) {
-    return new CommitInfo(user, email, message);
+    return new CommitInfo(urlDecode(user), urlDecode(email), urlDecode(message));
+  }
+
+  private String urlDecode(final String value) {
+    if (StringUtils.isEmpty(value))
+      return value;
+
+    try {
+      return URLDecoder.decode(value, "utf8");
+    } catch (UnsupportedEncodingException e) {
+      throw new SpecMgrException(MSGCD_ERRORHANDLE, array("URL Decode", e.getMessage()));
+    }
   }
 
   /**

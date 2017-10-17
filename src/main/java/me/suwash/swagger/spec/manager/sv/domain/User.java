@@ -36,11 +36,6 @@ public class User extends UserGen {
     userRepository.add(this);
   }
 
-  // public void update() {
-  // userSpec.canUpdate(this);
-  // userRepository.update(this);
-  // }
-
   /**
    * コミットユーザを削除します。
    */

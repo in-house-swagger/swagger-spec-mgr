@@ -61,22 +61,26 @@ public class ApplicationProperties {
   }
 
   public String getAllowOrigin() {
-    if (cors == null) return null;
+    if (cors == null)
+      return null;
     return cors.get("allowOrigin");
   }
 
   public String getAllowMethods() {
-    if (cors == null) return null;
+    if (cors == null)
+      return null;
     return cors.get("allowMethods");
   }
 
   public String getAllowHeaders() {
-    if (cors == null) return null;
+    if (cors == null)
+      return null;
     return cors.get("allowHeaders");
   }
 
   public String getAllowMaxAge() {
-    if (cors == null) return null;
+    if (cors == null)
+      return null;
     return cors.get("allowMaxAge");
   }
 }
