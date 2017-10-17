@@ -38,6 +38,7 @@
 #   ・git.commit_diff_file_details
 #   ・git.status_diff_file_details
 #   ・git.diff_file_details
+#   ・git.get_current_branch
 #   ・git.branch_list
 #   ・git.branch_is_exist
 #   ・git.branch_add
@@ -1006,22 +1007,17 @@ function git.pull() {
     return ${EXITCODE_ERROR}
   fi
 
-  # Git作業ディレクトリに移動
-  log.trace_console "cd ${_work_dir}"
-  cd "${_work_dir}"
-
   # ブランチ設定
-  log.trace_console "git rev-parse --abbrev-ref HEAD"
-  log.add_indent
-  local _branch=`git rev-parse --abbrev-ref HEAD`
+  local _branch=`git.get_current_branch ${_work_dir}`
   _ret_code=$?
-  log.trace_console "${_branch}"
-  log.remove_indent
   if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    log.error_console "カレントブランチの取得に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
   fi
+
+  # Git作業ディレクトリに移動
+  log.trace_console "cd ${_work_dir}"
+  cd "${_work_dir}"
 
   # pull
   log.trace_console "git pull origin ${_branch}"
@@ -1108,22 +1104,17 @@ function git.pull_rebase() {
     return ${EXITCODE_ERROR}
   fi
 
-  # Git作業ディレクトリに移動
-  log.trace_console "cd ${_work_dir}"
-  cd "${_work_dir}"
-
   # ブランチ設定
-  log.trace_console "git rev-parse --abbrev-ref HEAD"
-  log.add_indent
-  local _branch=`git rev-parse --abbrev-ref HEAD`
+  local _branch=`git.get_current_branch ${_work_dir}`
   _ret_code=$?
-  log.trace_console "${_branch}"
-  log.remove_indent
   if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    log.error_console "カレントブランチの取得に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
   fi
+
+  # Git作業ディレクトリに移動
+  log.trace_console "cd ${_work_dir}"
+  cd "${_work_dir}"
 
   # プル
   log.trace_console "git pull --rebase origin ${_branch}"
@@ -1203,7 +1194,7 @@ function git.status() {
 
   # ステータス表示
   log.info_console "Git作業ディレクトリ: `pwd`"
-  log.info_console "カレントブランチ   : `git rev-parse --abbrev-ref HEAD`"
+  log.info_console "カレントブランチ   : `git.get_current_branch ${_work_dir}`"
   log.trace_console "git status -s -uall"
   log.add_indent
   git status -s -uall                                                                         2>&1 | log.info_console
@@ -1451,6 +1442,7 @@ function git.staging_clear() {
 # 引数
 #   1  : git作業ディレクトリ
 #   2  : コミットコメント
+#   3  : git commitオプション
 #
 # 戻り値
 #   0: 正常終了の場合
@@ -1464,12 +1456,12 @@ function git.commit() {
   #------------------------------------------------------------------------------------------------
   # 事前処理
   #------------------------------------------------------------------------------------------------
-  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR COMMIT_COMMENT"
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR COMMIT_COMMENT [GIT_COMMIT_OPTION]"
   log.debug_console "${FUNCNAME[0]} $*"
   log.add_indent
 
   # 引数の数
-  if [ $# -ne 2 ]; then
+  if [ $# -gt 3 ]; then
     log.error_console "${_USAGE}"
     log.remove_indent
     return ${EXITCODE_ERROR}
@@ -1487,6 +1479,9 @@ function git.commit() {
   # コミットコメント
   local _commit_comment="$2"
 
+  # git commitオプション
+  local _options="$3"
+
   #------------------------------------------------------------------------------------------------
   # 本処理
   #------------------------------------------------------------------------------------------------
@@ -1497,9 +1492,9 @@ function git.commit() {
   cd "${_work_dir}"
 
   # コミット
-  log.trace_console "git commit -m \"${_commit_comment}\" "
+  log.trace_console "git commit ${_options} -m \"${_commit_comment}\" "
   log.add_indent
-  git commit -m "${_commit_comment}"                                                          2>&1 | log.trace_console
+  git commit ${_options} -m "${_commit_comment}"                                              2>&1 | log.trace_console
   _ret_code=${PIPESTATUS[0]}
   log.remove_indent
 
@@ -1812,20 +1807,15 @@ function git.push() {
 
   # ブランチ設定
   if [ "$2" = "" ]; then
-    # 引数でブランチが指定されてない場合 ※カレントブランチを設定
-    log.trace_console "git rev-parse --abbrev-ref HEAD"
-    log.add_indent
-    _branch=`git rev-parse --abbrev-ref HEAD`
+    # 引数でブランチが指定されていない場合 ※カレントブランチを設定
+    _branch=`git.get_current_branch ${_work_dir}`
     _ret_code=$?
-    log.trace_console "${_branch}"
-    log.remove_indent
-
-    # 実行結果チェック
     if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-      log.error_console "カレントブランチの取得に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
       log.remove_indent
       return ${EXITCODE_ERROR}
     fi
+    log.trace_console "${_branch}"
+    log.remove_indent
   else
     # 引数でブランチが指定されている場合 ※引数のブランチを設定
     _branch=$2
@@ -3252,7 +3242,7 @@ function git.log() {
   #------------------------------------------------------------------------------------------------
   # 作業ディレクトリ情報を表示
   log.info_console "Git作業ディレクトリ: `pwd`"
-  log.info_console "カレントブランチ   : `git rev-parse --abbrev-ref HEAD`"
+  log.info_console "カレントブランチ   : `git.get_current_branch $(pwd)`"
 
   # git log
 #  git log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
@@ -3559,6 +3549,80 @@ function git.archive_diff() {
   log.remove_indent
   return ${EXITCODE_SUCCESS}
 
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   カレントブランチを返します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   標準出力
+#     カレントブランチ名
+#
+#--------------------------------------------------------------------------------------------------
+function git.get_current_branch() {
+  #------------------------------------------------------------------------------------------------
+  # 事前処理
+  #------------------------------------------------------------------------------------------------
+  local _USAGE="Usage: ${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数の数
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 本処理
+  #------------------------------------------------------------------------------------------------
+  local _exit_code=${EXITCODE_SUCCESS}
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # Git作業ディレクトリに移動
+  log.trace_console "cd ${_work_dir}"
+  cd "${_work_dir}"
+
+  # カレントブランチを取得
+  local _branch=`git rev-parse --abbrev-ref HEAD`
+  _ret_code=$?
+  log.remove_indent
+  if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
+    # 取得できた場合、標準出力
+    echo "${_branch}"
+  else
+    log.error_console "カレントブランチの取得に失敗しました。Git作業ディレクトリ：${_work_dir}、リターンコード：${_ret_code}"
+    log.remove_indent
+    _exit_code=${EXITCODE_ERROR}
+  fi
+
+
+  #------------------------------------------------------------------------------------------------
+  # 事後処理
+  #------------------------------------------------------------------------------------------------
+  # 元ディレクトリに移動
+  log.trace_console "cd -"
+  cd - > /dev/null 2>&1
+
+  log.remove_indent
+  return ${_exit_code}
 }
 
 
@@ -4474,7 +4538,7 @@ function git.tag_add_local() {
   fi
 
   # タグ追加処理前のカレントブランチを取得
-  local _before_branch=`git rev-parse --abbrev-ref HEAD`
+  local _before_branch=`git.get_current_branch ${_work_dir}`
 
   # 作成元がブランチかチェック
   local _is_branch="false"

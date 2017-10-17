@@ -65,10 +65,6 @@ public class UserRepositoryImpl extends BaseSubProcessRepository implements User
     gitRepoRepository.init();
   }
 
-  // @Override
-  // public void update(User user) {
-  // }
-
   @Override
   public void delete(User user) {
     FileUtils.rmdirs(userSpec.getUserDir(user));

@@ -62,15 +62,6 @@ public class UserSpec extends BaseSpec {
       throw new SpecMgrException(SPECIFICATION_ERROR);
   }
 
-  /*
-   * public void canUpdate(final User user) { boolean isValid = true; // 単項目チェック if (!isValid(user,
-   * Update.class)) isValid = false; // 複数項目関連チェック // なし if (!isValid) throw new
-   * SpecMgrException(MessageConst.SPECIFICATION_ERROR); // 関連データチェック if (!isExistUserDir(user)) {
-   * addError(User.class, MessageConst.DATA_NOT_EXIST, User.class.getSimpleName(), "id",
-   * user.getId()); isValid = false; } if (!isValid) throw new
-   * SpecMgrException(MessageConst.SPECIFICATION_ERROR); }
-   */
-
   /**
    * 削除の妥当性をチェックします。
    *

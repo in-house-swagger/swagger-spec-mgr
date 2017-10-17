@@ -7,7 +7,7 @@ public interface UserRepository {
 
   /**
    * コミットユーザ名一覧を返します。
-   * 
+   *
    * @return コミットユーザ名一覧
    */
   List<String> idList();
@@ -26,8 +26,6 @@ public interface UserRepository {
    * @param user コミットユーザ
    */
   void add(User user);
-
-  // void update(User user);
 
   /**
    * コミットユーザを削除します。

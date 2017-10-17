@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import io.swagger.annotations.ApiParam;
 import me.suwash.swagger.spec.manager.ap.dto.BranchDto;
-import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
+import me.suwash.swagger.spec.manager.ap.dto.BranchListDto;
 import me.suwash.swagger.spec.manager.ap.facade.BranchFacade;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.ws.api.gen.BranchesApi;
 import me.suwash.swagger.spec.manager.ws.infra.BaseApiController;
 import me.suwash.swagger.spec.manager.ws.infra.BaseApiModelMapper.OperationType;
+import me.suwash.swagger.spec.manager.ws.mapper.BranchListApiModelMapper;
 import me.suwash.swagger.spec.manager.ws.mapper.BranchesApiModelMapper;
-import me.suwash.swagger.spec.manager.ws.mapper.IdListApiModelMapper;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen",
     date = "2017-08-08T09:16:20.502+09:00")
@@ -40,9 +40,9 @@ public class BranchesApiController extends BaseApiController implements Branches
           required = false) final String commitUser) {
 
     final CommitInfo commitInfo = commitInfo(commitUser);
-    final IdListDto dto = facade.idList(commitInfo);
+    final BranchListDto dto = facade.branchList(commitInfo);
 
-    final IdListApiModelMapper mapper = new IdListApiModelMapper(dto);
+    final BranchListApiModelMapper mapper = new BranchListApiModelMapper(dto);
     return new ResponseEntity<Object>(mapper.getBody(), mapper.getHttpStatus());
   }
 

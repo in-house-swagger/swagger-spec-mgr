@@ -22,7 +22,7 @@ import me.suwash.swagger.spec.manager.SpecMgrTestUtils;
 import me.suwash.swagger.spec.manager.TestCommandLineRunner;
 import me.suwash.swagger.spec.manager.TestConst;
 import me.suwash.swagger.spec.manager.ap.dto.BranchDto;
-import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
+import me.suwash.swagger.spec.manager.ap.dto.BranchListDto;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.util.FileUtils;
 
@@ -137,8 +137,9 @@ public class BranchFacadeTest {
     // -----------------------------------------------------------------------------------------
     // 検索
     // -----------------------------------------------------------------------------------------
-    IdListDto idListDto = facade.idList(commitInfo);
-    assertThat(idListDto.getList(), not(hasItem("develop")));
+    BranchListDto branchListDto = facade.branchList(commitInfo);
+    assertThat(branchListDto.getList(), not(hasItem("develop")));
+    assertThat(branchListDto.getCurrent(), is("master"));
 
     // -----------------------------------------------------------------------------------------
     // 追加
@@ -150,10 +151,11 @@ public class BranchFacadeTest {
     dto = facade.add(commitInfo, "develop", "feature/1");
     assertThat(dto.getBranch().getId(), is("feature/1"));
 
-    idListDto = facade.idList(commitInfo);
-    assertThat(idListDto.getList(), hasItem("develop"));
-    assertThat(idListDto.getList(), hasItem("feature/1"));
-    log.info("-- idList: " + idListDto.getList());
+    branchListDto = facade.branchList(commitInfo);
+    assertThat(branchListDto.getList(), hasItem("develop"));
+    assertThat(branchListDto.getList(), hasItem("feature/1"));
+    assertThat(branchListDto.getCurrent(), is("feature/1"));
+    log.info("-- idList: " + branchListDto.getList());
 
     dto = facade.findById(commitInfo, "develop");
     assertThat(dto.getBranch().getId(), is("develop"));
@@ -165,9 +167,10 @@ public class BranchFacadeTest {
     dto = facade.rename(commitInfo, "feature/1", "feature/2");
     assertThat(dto.getBranch().getId(), is("feature/2"));
 
-    idListDto = facade.idList(commitInfo);
-    assertThat(idListDto.getList(), hasItem("feature/2"));
-    log.info("-- idList: " + idListDto.getList());
+    branchListDto = facade.branchList(commitInfo);
+    assertThat(branchListDto.getList(), hasItem("feature/2"));
+    assertThat(branchListDto.getCurrent(), is("feature/2"));
+    log.info("-- idList: " + branchListDto.getList());
 
     // -----------------------------------------------------------------------------------------
     // マージ
@@ -187,6 +190,8 @@ public class BranchFacadeTest {
     log.info("SWITCH");
     dto = facade.switchBranch(commitInfo, "master");
     assertThat(dto.getBranch().getId(), is("master"));
+    branchListDto = facade.branchList(commitInfo);
+    assertThat(branchListDto.getCurrent(), is("master"));
 
     // -----------------------------------------------------------------------------------------
     // 削除
@@ -196,10 +201,10 @@ public class BranchFacadeTest {
 
     facade.delete(commitInfo, "develop");
 
-    idListDto = facade.idList(commitInfo);
-    assertThat(idListDto.getList(), not(hasItem("feature/2")));
-    assertThat(idListDto.getList(), not(hasItem("develop")));
-    log.info("-- idList: " + idListDto.getList());
+    branchListDto = facade.branchList(commitInfo);
+    assertThat(branchListDto.getList(), not(hasItem("feature/2")));
+    assertThat(branchListDto.getList(), not(hasItem("develop")));
+    log.info("-- idList: " + branchListDto.getList());
   }
 
 }

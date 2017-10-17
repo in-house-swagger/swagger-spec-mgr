@@ -71,6 +71,8 @@ public interface SpecsApi {
   ResponseEntity<Object> updateSpecWithId(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
+      @ApiParam(value = "message for commit") @RequestHeader(value = "X-Commit-Message",
+          required = false) final String commitMessage,
       @ApiParam(value = "ID of specification that needs to be update",
           required = true) @PathVariable("specId") final String specId,
       @ApiParam(value = "Specification object that needs to be update",
@@ -85,6 +87,8 @@ public interface SpecsApi {
   ResponseEntity<Object> deleteSpecById(
       @ApiParam(value = "user name for commit") @RequestHeader(value = "X-Commit-User",
           required = false) final String commitUser,
+      @ApiParam(value = "message for commit") @RequestHeader(value = "X-Commit-Message",
+          required = false) final String commitMessage,
       @ApiParam(value = "ID of specification to delete",
           required = true) @PathVariable("specId") final String specId);
 

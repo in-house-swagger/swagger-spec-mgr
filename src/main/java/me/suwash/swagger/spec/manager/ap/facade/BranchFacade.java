@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import me.suwash.swagger.spec.manager.ap.dto.BranchDto;
-import me.suwash.swagger.spec.manager.ap.dto.IdListDto;
+import me.suwash.swagger.spec.manager.ap.dto.BranchListDto;
 import me.suwash.swagger.spec.manager.ap.infra.BaseFacade;
 import me.suwash.swagger.spec.manager.infra.config.CommitInfo;
 import me.suwash.swagger.spec.manager.infra.error.SpecMgrException;
@@ -23,11 +23,12 @@ public class BranchFacade extends BaseFacade {
    * @param commitInfo コミット情報
    * @return ブランチ名一覧DTO
    */
-  public IdListDto idList(final CommitInfo commitInfo) {
+  public BranchListDto branchList(final CommitInfo commitInfo) {
     registerCommitInfo(commitInfo);
 
-    List<String> result = service.idList();
-    return new IdListDto(context, result);
+    List<String> list = service.idList();
+    String current = service.current();
+    return new BranchListDto(context, current, list);
   }
 
   /**

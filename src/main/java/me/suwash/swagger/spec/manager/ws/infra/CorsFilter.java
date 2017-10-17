@@ -41,7 +41,8 @@ public class CorsFilter implements javax.servlet.Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    if (StringUtils.isEmpty(props.getAllowOrigin())) return;
+    if (StringUtils.isEmpty(props.getAllowOrigin()))
+      return;
 
     allowOrigin = props.getAllowOrigin();
     allowMethods = props.getAllowMethods();

@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "Swagger Specification Management APIs. "
-  version: "0.4.1"
+  version: "0.5.0"
   title: "Swagger Specification Manager"
   contact:
     name: "suwa-sh"
@@ -17,6 +17,8 @@ tags:
   description: "Git Tag Management API"
 - name: "users-api-controller"
   description: "Commit User Management API"
+- name: "environment-mvc-endpoint"
+  description: "Environment Mvc Endpoint"
 - name: "specs-api-controller"
   description: "Swagger Specification Management API"
 - name: "branches-api-controller"
@@ -43,7 +45,7 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/IdListApiModelGen"
+            $ref: "#/definitions/BranchListApiModelGen"
         401:
           description: "Unauthorized"
         403:
@@ -202,6 +204,27 @@ paths:
           description: "Forbidden"
         404:
           description: "Branch not found"
+  /env:
+    get:
+      tags:
+      - "environment-mvc-endpoint"
+      summary: "invoke"
+      operationId: "invokeUsingGET_22"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
   /merges:
     post:
       tags:
@@ -375,6 +398,11 @@ paths:
         description: "user name for commit"
         required: false
         type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for commit"
+        required: false
+        type: "string"
       - name: "specId"
         in: "path"
         description: "ID of specification that needs to be update"
@@ -416,6 +444,11 @@ paths:
       - name: "X-Commit-User"
         in: "header"
         description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for commit"
         required: false
         type: "string"
       - name: "specId"
@@ -804,6 +837,15 @@ paths:
         404:
           description: "User not found"
 definitions:
+  BranchListApiModelGen:
+    type: "object"
+    properties:
+      current:
+        type: "string"
+      idList:
+        type: "array"
+        items:
+          type: "string"
   BranchesApiModelGen:
     type: "object"
     properties:

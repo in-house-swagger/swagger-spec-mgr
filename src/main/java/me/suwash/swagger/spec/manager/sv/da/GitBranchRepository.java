@@ -12,6 +12,13 @@ public interface GitBranchRepository {
   List<String> branchList();
 
   /**
+   * カレントブランチ名を返します。
+   *
+   * @return カレントブランチ名
+   */
+  String getCurrentBranch();
+
+  /**
    * ブランチの存在を確認します。
    *
    * @param name ブランチ名
