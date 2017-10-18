@@ -43,8 +43,10 @@
 #   ・git.branch_is_exist
 #   ・git.branch_add
 #   ・git.branch_rename
+#   ・git.branch_remove_local
 #   ・git.branch_remove
 #   ・git.branch_merge
+#   ・git.branch_list_remove_local_only
 #   ・git.tag_list
 #   ・git.tag_is_exist
 #   ・git.tag_add_local
@@ -53,6 +55,7 @@
 #   ・git.tag_rename
 #   ・git.tag_remove_local
 #   ・git.tag_remove
+#   ・git.tag_list_remove_local_only
 #   ・git.housekeep_by_tag
 #
 #==================================================================================================
@@ -298,9 +301,8 @@ function git.has_origin() {
 
   # リポジトリ設定を追加
   log.trace_console "git remote | grep 'origin'"
-  git remote | grep 'origin' >/dev/null 2>&1
-  _ret_code=$?
-  if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
+  local _result=$(git remote | grep 'origin')
+  if [ "${_result}" != "" ]; then
     echo "true"
   else
     echo "false"
@@ -834,9 +836,8 @@ function git.reset() {
   fi
 
   # リモートリポジトリ存在チェック
-  git remote | grep 'origin' > /dev/null 2>&1
-  _ret_code=$?
-  if [ ${_ret_code} -eq ${EXITCODE_SUCCESS} ]; then
+  local _has_origin=$(git.has_origin "${_work_dir}")
+  if [ "${_has_origin}" = "true" ]; then
     # リモートリポジトリが存在する場合、作業ディレクトリを最新化
     git.pull "${_work_dir}"
     _ret_code=$?
@@ -1987,7 +1988,7 @@ function git.diff_commit_list() {
     case $1 in
       --merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -1996,7 +1997,7 @@ function git.diff_commit_list() {
         ;;
       --no-merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -2235,7 +2236,7 @@ function git.diff_file_list() {
         ;;
       --merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -2244,7 +2245,7 @@ function git.diff_file_list() {
         ;;
       --no-merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -2683,7 +2684,7 @@ function git.diff_file_details() {
         ;;
       --merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -2692,7 +2693,7 @@ function git.diff_file_details() {
         ;;
       --no-merges)
         if [ "${_option_merges}" != "" ]; then
-          log.error_log "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
+          log.error_console "--merges | --no-merges が両方指定されています。どちらか一方のみ指定して下さい。"
           return ${EXITCODE_ERROR}
         fi
         _option_merges=$1
@@ -4069,25 +4070,9 @@ function git.branch_remove() {
   log.trace_console "cd ${_work_dir}"
   cd "${_work_dir}"
 
-  # Git作業ディレクトリの現在ブランチを確認
-  local _cur_branch=`git branch | grep "\*" | sed -e 's|^\* ||'`
-  if [ "${_cur_branch}" = "${_to}" ]; then
-    # 削除対象ブランチをcheckoutしている場合、masterブランチに切替え
-    log.trace_console "git checkout master"
-    log.add_indent
-    git checkout master                                                                       2>&1 | log.trace_console
-    log.remove_indent
-  fi
-
   # ローカルでのブランチ削除
-  log.trace_console "git branch -D ${_to}"
-  log.add_indent
-  git branch -D "${_to}"                                                                      2>&1 | log.trace_console
-  _ret_code=${PIPESTATUS[0]}
-  log.remove_indent
-
+  git.branch_remove_local "${_work_dir}" "${_to}"
   if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
-    log.error_console "ローカルブランチの削除に失敗しました。Git作業ディレクトリ：${_work_dir}、対象ブランチ：${_to}、リターンコード：${_ret_code}"
     log.remove_indent
     return ${EXITCODE_ERROR}
   fi
@@ -4331,6 +4316,213 @@ function git.branch_merge() {
 
 }
 
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ローカルリポジトリからブランチを削除します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#   2: ブランチ名
+#
+# 出力
+#   なし
+#
+#--------------------------------------------------------------------------------------------------
+function git.branch_remove_local() {
+  local _USAGE="${FUNCNAME[0]} GIT_WORK_DIR BRANCH"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数チェック
+  if [ $# -ne 2 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ブランチ
+  local _branch="$2"
+
+  # Git作業ディレクトリの現在ブランチを確認
+  cd "${_work_dir}"
+  local _cur_branch=$(git.get_current_branch "${_work_dir}")
+  if [ "${_cur_branch}" = "${_branch}" ]; then
+    # 削除対象ブランチをcheckoutしている場合、masterブランチに切替え
+    log.trace_console "git checkout master"
+    log.add_indent
+    git checkout master                                                                       2>&1 | log.trace_console
+    log.remove_indent
+  fi
+
+  # ローカルリポジトリのブランチ削除
+  log.trace_console "git branch -D \"${_branch}\""
+  git branch -D "${_branch}"                                                                  2>&1 | log.trace_console
+  _ret_code=${PIPESTATUS[0]}
+  cd - > /dev/null 2>&1
+
+  log.remove_indent
+  return ${_ret_code}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ローカルリポジトリのみのブランチリストを表示します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   標準出力
+#     ローカルリポジトリのみのブランチ名
+#
+#--------------------------------------------------------------------------------------------------
+function git.local.branch_list_local_only() {
+  local _USAGE="${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数チェック
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # git作業ディレクトリ
+  local _work_dir="$1"
+
+  # 一時ディレクトリ
+  local _dir_tmp="/tmp/${FUNCNAME[0]}_$$"
+  local _path_local_branches="${_dir_tmp}/branches_local.lst"
+  local _path_remote_branches="${_dir_tmp}/branches_remote.lst"
+
+  mkdir -p "${_dir_tmp}"
+
+  # ローカルリポジトリのタグリストを作成
+  cd "${_work_dir}"
+  git branch                                                                                       | # ローカルのブランチリスト
+  sed -e 's|\* ||'                                                                                 | # カレントブランチの強調を削除
+  _trim                                                                                            | # トリム
+  sort > "${_path_local_branches}"                                                                   # comm用にsort
+  _ret_code=${PIPESTATUS[0]}
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.error_console "ローカルリポジトリのブランチ取得に失敗しました。リターンコード：${_ret_code}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # リモートリポジトリのタグリストを作成
+  git branch -r                                                                                    | # リモートのブランチリスト
+  grep -v "origin/HEAD"                                                                            | # HEADを除外
+  sed -e 's|origin/||'                                                                             | # ブランチ名に置換
+  _trim                                                                                            | # トリム
+  sort > "${_path_remote_branches}"                                                                  # comm用にsort
+  _ret_code=${PIPESTATUS[0]}
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.error_console "リモートリポジトリのブランチ取得に失敗しました。リターンコード：${_ret_code}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ローカルリポジトリのみのブランチリスト (masterを除く)
+  comm -23 "${_path_local_branches}" "${_path_remote_branches}"                                    |
+  grep -v '^master$'
+  _ret_code=$?
+  cd - > /dev/null 2>&1
+
+  # 一時ディレクトリの削除
+  rm -fr "${_dir_tmp}"
+
+  log.remove_indent
+  return ${_ret_code}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ローカルリポジトリのみのブランチを削除します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   なし
+#
+#--------------------------------------------------------------------------------------------------
+function git.branch_list_remove_local_only() {
+  local _USAGE="${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数チェック
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # リモートリポジトリの存在確認
+  local _has_origin=$(git.has_origin "${_work_dir}")
+  if [ "${_has_origin}" != "true" ]; then
+    log.remove_indent
+    return ${EXITCODE_SUCCESS}
+  fi
+
+  # ローカルリポジトリのみのブランチリスト
+  local branch_list=( $(git.local.branch_list_local_only "${_work_dir}") )
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ローカルリポジトリのブランチ削除
+  for _cur_branch in "${branch_list[@]}"; do
+    log.trace_console "${_cur_branch}"
+    log.add_indent
+
+    git.branch_remove_local "${_work_dir}" "${_cur_branch}"
+    _ret_code=$?
+    if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+      log.remove_indent
+      return ${EXITCODE_ERROR}
+    fi
+
+    log.remove_indent
+  done
+
+  log.remove_indent
+  return ${_ret_code}
+}
 
 
 #--------------------------------------------------------------------------------------------------
@@ -5082,6 +5274,151 @@ function git.tag_remove() {
 
   log.remove_indent
   return ${EXITCODE_SUCCESS}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ローカルリポジトリのみのタグリストを表示します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   標準出力
+#     ローカルリポジトリのみのタグ名
+#
+#--------------------------------------------------------------------------------------------------
+function git.local.tag_list_local_only() {
+  local _USAGE="${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数チェック
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+
+  # 一時ディレクトリ
+  local _dir_tmp="/tmp/${FUNCNAME[0]}_$$"
+  local _path_local_tags="${_dir_tmp}/tags_local.lst"
+  local _path_remote_tags="${_dir_tmp}/tags_remote.lst"
+
+  mkdir -p "${_dir_tmp}"
+
+  # ローカルリポジトリのタグリストを作成
+  cd "${_work_dir}"
+  git tag                                                                                          | # ローカルのタグリスト
+  sort > "${_path_local_tags}"                                                                       # comm用にsort
+  _ret_code=${PIPESTATUS[0]}
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.error_console "ローカルリポジトリのタグ取得に失敗しました。リターンコード：${_ret_code}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # リモートリポジトリのタグリストを作成
+  git ls-remote --tags origin                                                          2>/dev/null | # リモートのタグ付きコミットリスト
+  grep -v '\^{}$'                                                                                  | # mergeコミットを除外
+  tr '\t' ' '                                                                                      | # cut用に区切り文字をスペースに置換
+  cut -d ' ' -f 2                                                                                  | # タグパスのカラムに絞り込み
+  sed -e 's|refs/tags/||'                                                                          | # タグ名に置換
+  sort > "${_path_remote_tags}"                                                                      # comm用にsort
+  _ret_code=${PIPESTATUS[0]}
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.error_console "リモートリポジトリのタグ取得に失敗しました。リターンコード：${_ret_code}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ローカルリポジトリのみのタグリスト
+  comm -23 "${_path_local_tags}" "${_path_remote_tags}"
+  _ret_code=$?
+  cd - > /dev/null 2>&1
+
+  # 一時ディレクトリの削除
+  rm -fr "${_dir_tmp}"
+
+  log.remove_indent
+  return ${_ret_code}
+}
+
+
+
+#--------------------------------------------------------------------------------------------------
+# 概要
+#   ローカルリポジトリのみのタグを削除します。
+#
+# 引数
+#   1: Git作業ディレクトリ
+#
+# 出力
+#   なし
+#
+#--------------------------------------------------------------------------------------------------
+function git.tag_list_remove_local_only() {
+  local _USAGE="${FUNCNAME[0]} GIT_WORK_DIR"
+  log.debug_console "${FUNCNAME[0]} $*"
+  log.add_indent
+
+  # 引数チェック
+  if [ $# -ne 1 ]; then
+    log.error_console "${_USAGE}"
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  local _ret_code=${EXITCODE_SUCCESS}
+
+  # Git作業ディレクトリ
+  local _work_dir="$1"
+  git.local.check_work_dir "${_work_dir}"
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # リモートリポジトリの存在確認
+  local _has_origin=$(git.has_origin "${_work_dir}")
+  if [ "${_has_origin}" != "true" ]; then
+    log.remove_indent
+    return ${EXITCODE_SUCCESS}
+  fi
+
+  # ローカルリポジトリのみのタグ一覧
+  local _tag_list=( $(git.local.tag_list_local_only "${_work_dir}") )
+  _ret_code=$?
+  if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    log.remove_indent
+    return ${EXITCODE_ERROR}
+  fi
+
+  # ローカルリポジトリのタグ削除
+  for _cur_tag in "${_tag_list[@]}"; do
+    log.trace_console "${_cur_tag}"
+    log.add_indent
+
+    git.tag_remove_local "${_work_dir}" "${_cur_tag}"
+    _ret_code=$?
+    if [ ${_ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+      log.remove_indent
+      return ${EXITCODE_ERROR}
+    fi
+
+    log.remove_indent
+  done
+
+  log.remove_indent
+  return ${_ret_code}
 }
 
 
