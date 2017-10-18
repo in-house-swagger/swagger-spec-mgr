@@ -29,7 +29,7 @@ spec.mgr:
     specs: "docs/design/swagger"
 
   # 分割除外パス正規表現リスト
-  splitIgnoreRegexs:
+  splitIgnoreRegexList:
   - "/info/.*"
   - "/tags/.*"
   - "/schemas/.*"
