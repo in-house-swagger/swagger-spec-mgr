@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "Swagger Specification Management APIs. "
-  version: "0.6.0"
+  version: "0.7.0"
   title: "Swagger Specification Manager"
   contact:
     name: "suwa-sh"
@@ -11,7 +11,7 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:8081"
-basePath: "/v1"
+basePath: "/"
 tags:
 - name: "tags-api-controller"
   description: "Git Tag Management API"

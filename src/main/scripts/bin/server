@@ -19,7 +19,11 @@ readonly PROGNAME="swagger-spec-mgr"
 readonly PATH_LOG="${DIR_LOG}/${PROGNAME}.log"
 . "${DIR_BIN_LIB}/logging_utils.sh"
 
-readonly local URL_HEALTHCHECK="http://localhost:${SERVER_PORT}/v1/users"
+if [ "${CONTEXTPATH}x" = "x" ]; then
+  readonly local URL_HEALTHCHECK="http://localhost:${SERVER_PORT}/users"
+else
+  readonly local URL_HEALTHCHECK="http://localhost:${SERVER_PORT}/${CONTEXTPATH}/users"
+fi
 
 
 #---------------------------------------------------------------------------------------------------
