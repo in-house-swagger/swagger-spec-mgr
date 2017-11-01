@@ -10,6 +10,10 @@
 #   1: コミットユーザ      ※任意
 #   2: コミットユーザemail ※任意
 #
+# オプション
+#   -f | --force: 強制初期化モード
+#     Git作業ディレクトリが既に存在する場合、削除してから初期化します。
+#
 #==================================================================================================
 #--------------------------------------------------------------------------------------------------
 # 環境設定
@@ -143,6 +147,8 @@ function local.set_config() {
 raw_args="$*"
 ret_code=${EXITCODE_SUCCESS}
 
+is_force="false"
+
 
 #--------------------------------------------------------------------------------
 # オプション解析
@@ -151,6 +157,11 @@ while :; do
   case $1 in
     -h|--help)
       usage
+      ;;
+    -f|--force)
+      is_force="true"
+      shift
+      break
       ;;
     --)
       shift
@@ -194,6 +205,11 @@ email="$2"
 dir_repo="$(git.common.get_repo_dir ${user})"
 if [ $? -ne ${EXITCODE_SUCCESS} ]; then
   return ${EXITCODE_ERROR}
+fi
+
+# 強制初期化モードの場合、Git作業ディレクトリを削除
+if [ "${is_force}" = "true" ] && [ -d "${dir_repo}" ]; then
+  rm -fr "${dir_repo}"
 fi
 
 

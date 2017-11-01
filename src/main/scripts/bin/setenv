@@ -95,7 +95,7 @@ SERVER_PORT=8081
 # scmデフォルトcommit user
 SCM_DEFAULT_USER="_default"
 # scmデフォルトcommit email
-SCM_DEFAULT_EMAIL="_default@dummy.com"
+SCM_DEFAULT_EMAIL="_default@domain.local"
 
 # swagger-spec管理ディレクトリ
 RELDIR_SPECS=""

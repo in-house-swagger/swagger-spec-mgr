@@ -50,8 +50,9 @@ spec.mgr:
 
   # スクリプト実行時環境変数
   scriptEnv:
-    SOME_VAR: "SOME_VALUE"
     TEST_DIR_DATA: "../../test/scripts/data"
+    LOG__RAW_OUTPUT: "true"
+    SOME_VAR: "SOME_VALUE"
 
 #---------------------------------------------------------------------------------------------------
 # swagger

@@ -21,7 +21,7 @@ readonly DIR_BASE="$(pwd)"
 readonly DIR_WORK="${DIR_BASE}/target"
 readonly DIR_DIST="${DIR_BASE}/dist"
 
-readonly URL_BASE="http://localhost:8081/v1"
+readonly URL_BASE="http://localhost:8081"
 
 # プロダクト名
 product_name="$(basename ${DIR_BASE})"

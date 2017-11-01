@@ -57,6 +57,7 @@
 # プロセス単位の環境変数 ※定数ですが、複数回sourceされることを考慮して変数として定義しています。
 #---------------------------------------------------------------------------------------------------
 # TODO フォーマットは、ここでの出力定義と、rotateでの正規表現の2箇所のメンテナンスが必要。
+LOG__RAW_OUTPUT=${LOG__RAW_OUTPUT:-false}
 LOG__FORMAT_DATE="+%Y-%m-%d"
 LOG__FORMAT_TIMESTAMP="${LOG__FORMAT_DATE} %T"
 LOG__INDENT_STR="--"
@@ -250,6 +251,13 @@ function log.local.format() {
   local _timestamp=$(date "${LOG__FORMAT_TIMESTAMP}")
   shift
   local _msg="$*"
+
+  if [ "${LOG__RAW_OUTPUT}" = "true" ]; then
+    # メッセージのみを出力
+    echo "${_msg}"                                                                                 |
+    log.local.mask
+    return ${EXITCODE_SUCCESS}
+  fi
 
   echo "${_msg}"                                                                                   |
   #--------------------------------------------------------------------------------------------------

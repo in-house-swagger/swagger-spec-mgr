@@ -9,7 +9,7 @@
 # server起動ポート
 server:
   port: ${SERVER_PORT}
-  contextPath: "/v1"
+  contextPath: "${CONTEXTPATH}"
 
 spec.mgr:
   # デフォルトコミット情報
@@ -50,6 +50,7 @@ spec.mgr:
 
   # スクリプト実行時環境変数
   scriptEnv:
+    LOG__RAW_OUTPUT: "true"
     SOME_VAR: "SOME_VALUE"
 
 
