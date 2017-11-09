@@ -74,10 +74,26 @@ fi
 # 配布アーカイブ作成
 #---------------------------------------------------------------------------------------------------
 echo "配布アーカイブの収集"
-mv "${DIR_WORK}/${product_name}_${version}_${BUILD_PROFILE}.tar.gz" "${DIR_DIST}/"
+filename_dist="${product_name}_${version}_${BUILD_PROFILE}.tar.gz"
+mv "${DIR_WORK}/${filename_dist}" "${DIR_DIST}/"
 retcode=$?
 if [[ ${retcode} -ne 0 ]]; then
   echo "配布アーカイブの収集でエラーが発生しました。" >&2
+  exit 6
+fi
+
+path_dist="${DIR_DIST}/${filename_dist}"
+md5sum  "${path_dist}" | cut -d ' ' -f 1 > "${path_dist}.md5"
+retcode=$?
+if [[ ${retcode} -ne 0 ]]; then
+  echo "md5ファイルの作成でエラーが発生しました。" >&2
+  exit 6
+fi
+
+sha1sum "${path_dist}" | cut -d ' ' -f 1 > "${path_dist}.sha1"
+retcode=$?
+if [[ ${retcode} -ne 0 ]]; then
+  echo "sha1ファイルの作成でエラーが発生しました。" >&2
   exit 6
 fi
 
