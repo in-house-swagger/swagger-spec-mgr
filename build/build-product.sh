@@ -14,7 +14,7 @@ cd "$(cd ${dir_script}; cd ..; pwd)" || exit 6
 readonly BUILD_PROFILE="product"
 
 readonly SONAR_URL="https://sonarcloud.io"
-readonly SONAR_ORGANIZATION="suwa-sh-github"
+readonly SONAR_ORGANIZATION="in-house-swagger"
 readonly SONAR_EXCLUDES="src/test/**,src/main/java/io/**,**/gen/**,**/*Exception.java,**/ws/infra/*Filter.java"
 
 readonly DIR_BASE="$(pwd)"
@@ -56,6 +56,7 @@ if [[ "${SONAR_TOKEN}x" = "x" ]]; then
     -P ${BUILD_PROFILE}                                                                            \
 
 else
+  echo "SONAR_TOKEN が定義されています。sonar解析を実施します。"
   mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar                       \
     -P ${BUILD_PROFILE}                                                                            \
     -Dsonar.host.url=${SONAR_URL}                                                                  \

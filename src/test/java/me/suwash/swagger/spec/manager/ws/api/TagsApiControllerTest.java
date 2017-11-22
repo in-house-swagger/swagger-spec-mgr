@@ -4,6 +4,7 @@ import static me.suwash.swagger.spec.manager.ws.api.ControllerTestUtils.withComm
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -77,7 +78,7 @@ public class TagsApiControllerTest {
     CommitInfo commitInfo =
         new CommitInfo(COMMIT_USER, COMMIT_USER + "@example.com", COMMIT_USER + " test tag.");
     RequestMediaType requestMediaType = RequestMediaType.json;
-    FileUtils.rmdirs(DIR_DATA);
+    if(!FileUtils.rmdirs(DIR_DATA)) fail(DIR_DATA + " を初期化できません。");
 
     // -----------------------------------------------------------------------------------------
     // 準備
