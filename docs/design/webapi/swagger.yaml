@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "Swagger Specification Management APIs. "
-  version: "0.7.0"
+  version: "0.7.1"
   title: "Swagger Specification Manager"
   contact:
     name: "suwa-sh"

@@ -65,12 +65,6 @@ function local.init() {
     return ${EXITCODE_ERROR}
   fi
 
-  # first commit (empty)
-  git.commit "${_dir_repo}" "first commit" "--allow-empty"
-  if [ $? -ne ${EXITCODE_SUCCESS} ]; then
-    return ${EXITCODE_ERROR}
-  fi
-
   return ${EXITCODE_SUCCESS}
 }
 
@@ -246,4 +240,13 @@ fi
 #--------------------------------------------------------------------------------------------------
 # 事後処理
 #--------------------------------------------------------------------------------------------------
+if [ "${GIT_REMOTE_REPOSITORY_URL}x" = "x" ]; then
+  # first commit (empty)
+  git.commit "${dir_repo}" "first commit" "--allow-empty"                                     2>&1 | log.tee
+  ret_code=${PIPESTATUS[0]}
+  if [ ${ret_code} -ne ${EXITCODE_SUCCESS} ]; then
+    git.common.exit_script ${EXITCODE_ERROR} "初期コミットの追加でエラーが発生しました。"
+  fi
+fi
+
 git.common.exit_script ${EXITCODE_SUCCESS} "${EXITMSG_SUCCESS}"

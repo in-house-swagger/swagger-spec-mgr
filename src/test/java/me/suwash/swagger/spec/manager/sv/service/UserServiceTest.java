@@ -107,6 +107,9 @@ public class UserServiceTest {
     }
 
     // 作成済み
+    if (service.idList().contains("error")) {
+      service.deleteUser("error");
+    }
     service.addUser("error", "error@test.com");
     try {
       service.addUser("error", "error@test.com");
