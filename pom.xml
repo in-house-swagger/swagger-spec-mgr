@@ -15,11 +15,11 @@
 
     <url>https://suwa-sh.github.io/swagger-spec-mgr</url>
     <scm>
-    	<url>https://github.com/suwa-sh/swagger-spec-mgr.git</url>
+        <url>https://github.com/suwa-sh/swagger-spec-mgr.git</url>
     </scm>
     <issueManagement>
-      	<system>GitHub</system>
-      	<url>https://github.com/suwa-sh/swagger-spec-mgr/issues</url>
+          <system>GitHub</system>
+          <url>https://github.com/suwa-sh/swagger-spec-mgr/issues</url>
     </issueManagement>
 
     <properties>
@@ -107,18 +107,6 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
         </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-
-        <!-- Bean Validation API support -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>io.swagger</groupId>
@@ -130,6 +118,36 @@
             <groupId>me.suwash.commons</groupId>
             <artifactId>util</artifactId>
             <version>[1.0.0,)</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.velocity</groupId>
+                    <artifactId>velocity</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orangesignal</groupId>
+                    <artifactId>orangesignal-csv</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.el</groupId>
+                    <artifactId>el-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -145,10 +163,6 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
