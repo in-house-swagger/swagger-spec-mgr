@@ -1,0 +1,58 @@
+language: ruby
+
+rvm:
+  - 2.2
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/2591c7ea2fd01f9e3132
+    # options: [always|never|change]
+    on_start: never
+    on_success: change
+    on_failure: always
+    on_cancel: always
+    on_error: always
+
+#before_install:
+#  - 'DIR_CACHE="${HOME}/custom_cache"'
+
+install:
+  # build/docs: asciidoctor
+  - 'gem install asciidoctor'
+
+before_script:
+  # CI Event判定
+  - EVENT="other"
+  - 'if [ "${TRAVIS_PULL_REQUEST}" != "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]        && [ "${TRAVIS_TAG}" == "" ]; then EVENT="pr_created";    fi'
+  - 'if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]        && [ "${TRAVIS_TAG}" == "" ]; then EVENT="master_pushed"; fi'
+  - 'if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "${TRAVIS_TAG}" ] && [ "${TRAVIS_TAG}" != "" ]; then EVENT="tag_pushed";    fi'
+  - 'echo "EVENT               = ${EVENT}"'
+  - 'echo "TRAVIS_BRANCH       = ${TRAVIS_BRANCH}"'
+  - 'echo "TRAVIS_PULL_REQUEST = ${TRAVIS_PULL_REQUEST}"'
+  - 'echo "TRAVIS_TAG          = ${TRAVIS_TAG}"'
+
+script:
+  - '"./build/ci_event/${EVENT}.sh"'
+
+cache:
+  directories:
+    - ${HOME}/.cache
+    - ${HOME}/.m2
+#    - ${DIR_CACHE}
+
+#after_success:
+#  - 'echo "after_success"'
+#  - 'echo "TRAVIS_TEST_RESULT  = ${TRAVIS_TEST_RESULT}"'
+
+#after_failure:
+#  - 'echo "after_failure"'
+#  - 'echo "TRAVIS_TEST_RESULT  = ${TRAVIS_TEST_RESULT}"'
+
+after_script:
+  - 'echo "after_script"'
+  - 'echo "EVENT               = ${EVENT}"'
+  - 'echo "TRAVIS_BRANCH       = ${TRAVIS_BRANCH}"'
+  - 'echo "TRAVIS_PULL_REQUEST = ${TRAVIS_PULL_REQUEST}"'
+  - 'echo "TRAVIS_TAG          = ${TRAVIS_TAG}"'
+  - 'echo "TRAVIS_TEST_RESULT  = ${TRAVIS_TEST_RESULT}"'
