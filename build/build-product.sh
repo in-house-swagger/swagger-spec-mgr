@@ -91,13 +91,6 @@ if [[ ${retcode} -ne 0 ]]; then
   exit 6
 fi
 
-sha1sum "${path_dist}" | cut -d ' ' -f 1 > "${path_dist}.sha1"
-retcode=$?
-if [[ ${retcode} -ne 0 ]]; then
-  echo "sha1ファイルの作成でエラーが発生しました。" >&2
-  exit 6
-fi
-
 
 #---------------------------------------------------------------------------------------------------
 # swagger.yamlの生成
