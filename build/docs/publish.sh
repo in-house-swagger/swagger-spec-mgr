@@ -2,7 +2,7 @@
 #set -eux
 #===================================================================================================
 #
-# Post Release
+# Publish Documents
 #
 # env
 #   GITHUB_TOKEN
@@ -18,6 +18,8 @@ readonly DIR_BASE="$(pwd)"
 . "${DIR_BASE}/build/env.properties"
 . "${DIR_BUILD_LIB}/common.sh"
 
+version=$(get_version)
+
 
 #---------------------------------------------------------------------------------------------------
 # check
@@ -32,23 +34,18 @@ fi
 # main
 #---------------------------------------------------------------------------------------------------
 echo "$(basename $0)"
+retcode=0
 
 echo "  clone"
-rm -rf version_work
-git clone -b "${BRANCH_MASTER}" "${GIT_URL}" version_work
+rm -rf gh_pages
+git clone -b "${BRANCH_GHPAGES}" "${GIT_URL}" gh_pages
 exit_on_fail "clone" $?
 
-echo "  update version file"
-released_version=$(get_version)
-# shellcheck disable=SC2034
-next_version=$(
-  echo ${released_version}                                                                         |
-  ( IFS=".$IFS" ; read major minor bugfix && echo ${major}.$(( minor + 1 )).0-SNAPSHOT )
-)
-
+echo "  update files"
 before_dir="$(pwd)"
-cd version_work
-update_version_file "${released_version}" "${next_version}"
+rm -rf gh_pages/*
+cp -a "${DIR_DOCS}"/* gh_pages/
+cd gh_pages
 
 add_git_config
 
@@ -57,20 +54,28 @@ git add --all .
 exit_on_fail "staging" $?
 
 echo "  commit"
-git commit -m "${MSG_PREFIX_RELEASE}start ${next_version}"
+git commit -m "${MSG_PREFIX_RELEASE}v${version}"
 exit_on_fail "commit" $?
 
 echo "  push"
-git push origin "${BRANCH_MASTER}"
+git push origin "${BRANCH_GHPAGES}"
 exit_on_fail "push" $?
 
 echo "  clear clone dir"
 cd "${before_dir}"
-rm -rf version_work/
+rm -rf gh_pages/
 
 
 #---------------------------------------------------------------------------------------------------
 # teardown
 #---------------------------------------------------------------------------------------------------
-echo "$(basename $0) success."
-exit 0
+if [[ ${retcode} -eq 0 ]]; then
+  echo "$(basename $0) success."
+  exitcode=0
+else
+  echo "$(basename $0) failed." >&2
+  exitcode=1
+fi
+
+remove_credential
+exit ${exitcode}

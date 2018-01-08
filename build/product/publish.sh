@@ -13,7 +13,7 @@
 # env
 #---------------------------------------------------------------------------------------------------
 dir_script="$(dirname $0)"
-cd "$(cd ${dir_script}; cd ..; pwd)" || exit 1
+cd "$(cd ${dir_script}; cd ../..; pwd)" || exit 1
 
 readonly DIR_BASE="$(pwd)"
 . "${DIR_BASE}/build/env.properties"
@@ -122,13 +122,6 @@ if [[ "${BINTRAY_TOKEN}x" = "x" ]]; then
   exit 1
 fi
 
-# releaseパッケージへの公開の場合
-if [[ "${package}" = "${BINTRAY_PKG_RELEASE}" ]] &&
-   [[ "${version}" != "${version//-SNAPSHOT/}" ]]; then
-  echo "SNAPSHOT version can not publish to the release package. version=${version}" >&2
-  exit 1
-fi
-
 
 #-------------------------------------------------------------------------------
 # オプション解析
@@ -155,6 +148,13 @@ while :; do
   esac
 done
 
+# releaseパッケージへの公開の場合
+if [[ "${package}" = "${BINTRAY_PKG_RELEASE}" ]] &&
+   [[ "${version}" != "${version//-SNAPSHOT/}" ]]; then
+  echo "SNAPSHOT version can not publish to the release package. version=${version}" >&2
+  exit 1
+fi
+
 
 #---------------------------------------------------------------------------------------------------
 # main
@@ -162,7 +162,7 @@ done
 echo "$(basename $0)"
 retcode=0
 
-find "${DIR_DIST}" -mindepth 1 -maxdepth 2 -type f | sort >"${_path_tmp_dist_list}"
+find "${DIR_DIST}" -mindepth 1 -maxdepth 1 -type f | sort >"${_path_tmp_dist_list}"
 for _cur_path in $(cat "${_path_tmp_dist_list}"); do
   (
     upload_bintray "${package}" "${version}" "${_cur_path}"

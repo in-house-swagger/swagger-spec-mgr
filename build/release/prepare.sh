@@ -20,63 +20,6 @@ readonly DIR_BASE="$(pwd)"
 
 
 #---------------------------------------------------------------------------------------------------
-# functions
-#---------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-# version更新
-#-------------------------------------------------------------------------------
-function update_version() {
-  echo "${FUNCNAME[0]}"
-
-  local _cur_version=$(get_version)
-  local _release_version="${_cur_version//-SNAPSHOT/}"
-
-  update_version_file "${_cur_version}" "${_release_version}"
-
-  echo "  generate changelog"
-  conventional-changelog -p angular -i CHANGELOG.md -s
-  exit_on_fail "generate changelog" $?
-
-  return 0
-}
-
-
-#-------------------------------------------------------------------------------
-# git更新
-#-------------------------------------------------------------------------------
-function update_git() {
-  echo "${FUNCNAME[0]}"
-
-  local _release_version=$(get_version)
-  local _release_tag="v${_release_version}"
-  local _commit_message="${MSG_PREFIX_RELEASE}${_release_tag}"
-
-  add_git_config
-
-  echo "  git add"
-  git add --all .
-
-  echo "  git commit"
-  git commit -m "${_commit_message}"
-  exit_on_fail "git commit" $?
-
-  echo "  git tag"
-  git tag -a "${_release_tag}" -m "${_commit_message}"
-  exit_on_fail "git tag" $?
-
-  echo "  git push branch ${BRANCH_MASTER}"
-  git push origin "${BRANCH_MASTER}"
-  exit_on_fail "git push branch ${BRANCH_MASTER}" $?
-
-  echo "  git push tag ${_release_tag}"
-  git push origin "${_release_tag}"
-  exit_on_fail "git push tag ${_release_tag}" $?
-
-  return 0
-}
-
-
-#---------------------------------------------------------------------------------------------------
 # check
 #---------------------------------------------------------------------------------------------------
 if [[ "${GITHUB_TOKEN}x" = "x" ]]; then
@@ -131,18 +74,54 @@ echo "$(basename $0)"
 
 echo ""
 ${DIR_BUILD}/product/build.sh
-exit_on_fail "build product" $?
+exit_on_fail "product/build" $?
+
+_cur_version=$(get_version)
+_release_version="${_cur_version//-SNAPSHOT/}"
+_release_tag="v${_release_version}"
+_commit_message="${MSG_PREFIX_RELEASE}${_release_tag}"
 
 echo ""
-${DIR_BUILD}/docs/build.sh
-exit_on_fail "build docs" $?
+update_version_file "${_cur_version}" "${_release_version}"
 
 echo ""
-update_version
+add_git_config
+
+echo "  git commit (before changelog)"
+git add --all .
+git commit -m "${_commit_message} (before changelog)"
+exit_on_fail "git commit" $?
+
+echo "  git tag (before changelog)"
+git tag -a "${_release_tag}" -m "${_commit_message} (before changelog)"
+exit_on_fail "git tag" $?
+
+
+echo ""
+echo "  generate changelog"
+conventional-changelog -p angular -i CHANGELOG.md -s -r 0
+exit_on_fail "generate changelog" $?
+
+echo "  git commit"
+git add --all .
+git commit -m "${_commit_message}"
+exit_on_fail "git commit" $?
+
+echo "  git tag"
+git tag -d "${_release_tag}"
+git tag -a "${_release_tag}" -m "${_commit_message}"
+exit_on_fail "git tag" $?
+
 
 if [[ "${is_dry_run}" != "true" ]]; then
   echo ""
-  update_git
+  echo "  git push branch ${BRANCH_MASTER}"
+  git push origin "${BRANCH_MASTER}"
+  exit_on_fail "git push branch ${BRANCH_MASTER}" $?
+
+  echo "  git push tag ${_release_tag}"
+  git push origin "${_release_tag}"
+  exit_on_fail "git push tag ${_release_tag}" $?
 fi
 
 

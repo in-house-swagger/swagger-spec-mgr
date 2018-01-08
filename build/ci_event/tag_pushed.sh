@@ -25,15 +25,18 @@ echo ""
 echo "--------------------------------------------------"
 echo "build stage"
 echo "--------------------------------------------------"
-${DIR_BUILD}/build-product.sh
-exit_on_fail "build-product" $?
+${DIR_BUILD}/product/build.sh
+exit_on_fail "product/build" $?
 
 echo ""
 echo "--------------------------------------------------"
 echo "publish stage"
 echo "--------------------------------------------------"
-${DIR_BUILD}/publish.sh
-exit_on_fail "publish" $?
+${DIR_BUILD}/product/publish.sh
+exit_on_fail "product/publish" $?
+
+${DIR_BUILD}/docs/publish.sh
+exit_on_fail "docs/publish" $?
 
 echo ""
 echo "--------------------------------------------------"

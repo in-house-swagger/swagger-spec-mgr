@@ -32,8 +32,8 @@ if [[ "${commit_message//${MSG_PREFIX_RELEASE}/}" != "${commit_message}" ]]; the
 fi
 
 echo ""
-${DIR_BUILD}/build-product.sh
-exit_on_fail "build-product" $?
+${DIR_BUILD}/product/build.sh
+exit_on_fail "product/build" $?
 
 
 #---------------------------------------------------------------------------------------------------

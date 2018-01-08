@@ -22,8 +22,8 @@ readonly DIR_BASE="$(pwd)"
 echo "$(basename $0)"
 
 echo ""
-${DIR_BUILD}/build-product.sh
-exit_on_fail "build-product" $?
+${DIR_BUILD}/product/build.sh
+exit_on_fail "product/build" $?
 
 
 #---------------------------------------------------------------------------------------------------

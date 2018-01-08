@@ -9,7 +9,7 @@
 # 設定
 #---------------------------------------------------------------------------------------------------
 dir_script="$(dirname $0)"
-cd "$(cd ${dir_script}; cd ..; pwd)" || exit 6
+cd "$(cd ${dir_script}; cd ../..; pwd)" || exit 6
 
 readonly BUILD_PROFILE="product"
 
