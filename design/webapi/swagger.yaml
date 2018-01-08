@@ -1,0 +1,870 @@
+swagger: "2.0"
+info:
+  description: "Swagger Specification Management APIs. "
+  version: "0.8.0"
+  title: "Swagger Specification Manager"
+  contact:
+    name: "suwa-sh"
+    url: "http://suwa-sh.github.io/profile"
+    email: "suwash01@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8081"
+basePath: "/"
+tags:
+- name: "tags-api-controller"
+  description: "Git Tag Management API"
+- name: "users-api-controller"
+  description: "Commit User Management API"
+- name: "environment-mvc-endpoint"
+  description: "Environment Mvc Endpoint"
+- name: "specs-api-controller"
+  description: "Swagger Specification Management API"
+- name: "branches-api-controller"
+  description: "Git Branch Management API"
+paths:
+  /branches:
+    get:
+      tags:
+      - "branches-api-controller"
+      summary: "/branches GET"
+      description: "Returns all branches"
+      operationId: "getBranchesUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BranchListApiModelGen"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Branch not found"
+  /branches/{branch}:
+    get:
+      tags:
+      - "branches-api-controller"
+      summary: "/branches/{branch} GET"
+      description: "Returns a single branch"
+      operationId: "getBranchByIdUsingGET_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "branch"
+        in: "path"
+        description: "ID of branch to return"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BranchesApiModelGen"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Branch not found"
+    post:
+      tags:
+      - "branches-api-controller"
+      summary: "/branches/{branch} POST"
+      operationId: "addBranchWithIdUsingPOST_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "branch"
+        in: "path"
+        description: "ID of branch that needs to be add"
+        required: true
+        type: "string"
+      - name: "object"
+        in: "query"
+        description: "the SHA of the git object this is branching"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BranchesApiModelGen"
+        201:
+          description: "Created"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+        405:
+          description: "Invalid input"
+    put:
+      tags:
+      - "branches-api-controller"
+      summary: "/branches/{branch} PUT"
+      operationId: "renameBranchWithIdUsingPUT_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "branch"
+        in: "path"
+        description: "target ID of branch that needs to be update"
+        required: true
+        type: "string"
+      - name: "to"
+        in: "query"
+        description: "new ID of branch that needs to be update"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BranchesApiModelGen"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "branch not found"
+        405:
+          description: "Validation exception"
+    delete:
+      tags:
+      - "branches-api-controller"
+      summary: "/branches/{branch} DELETE"
+      operationId: "deleteBranchByIdUsingDELETE_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "branch"
+        in: "path"
+        description: "ID of branch to delete"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        204:
+          description: "No Content"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Branch not found"
+  /env:
+    get:
+      tags:
+      - "environment-mvc-endpoint"
+      summary: "invoke"
+      operationId: "invokeUsingGET_22"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /merges:
+    post:
+      tags:
+      - "branches-api-controller"
+      summary: "/merges POST"
+      operationId: "mergeBranchUsingPOST_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "source"
+        in: "query"
+        description: "source ID of branch that needs to be merge"
+        required: true
+        type: "string"
+      - name: "target"
+        in: "query"
+        description: "target ID of branch that needs to be merge"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BranchesApiModelGen"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "branch not found"
+        405:
+          description: "Validation exception"
+  /specs:
+    get:
+      tags:
+      - "specs-api-controller"
+      summary: "/specs GET"
+      description: "Returns all specifications"
+      operationId: "getSpecsUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IdListApiModelGen"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Specification not found"
+  /specs/{specId}:
+    get:
+      tags:
+      - "specs-api-controller"
+      summary: "/specs/{specId} GET"
+      description: "Returns a single specification"
+      operationId: "getSpecByIdUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/x-yaml"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "specId"
+        in: "path"
+        description: "ID of specification to return"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+        400:
+          description: "Invalid input"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Specification not found"
+    post:
+      tags:
+      - "specs-api-controller"
+      summary: "/specs/{specId} POST"
+      operationId: "addSpecWithIdUsingPOST_1"
+      consumes:
+      - "application/json"
+      - "application/x-yaml"
+      produces:
+      - "application/x-yaml"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for commit"
+        required: false
+        type: "string"
+      - name: "specId"
+        in: "path"
+        description: "ID of specification that needs to be add"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "payload"
+        description: "Specification object that needs to be add"
+        required: true
+        schema:
+          type: "object"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid input"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    put:
+      tags:
+      - "specs-api-controller"
+      summary: "/specs/{specId} PUT"
+      operationId: "updateSpecWithIdUsingPUT_1"
+      consumes:
+      - "application/json"
+      - "application/x-yaml"
+      produces:
+      - "application/x-yaml"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for commit"
+        required: false
+        type: "string"
+      - name: "specId"
+        in: "path"
+        description: "ID of specification that needs to be update"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "payload"
+        description: "Specification object that needs to be update"
+        required: true
+        schema:
+          type: "object"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid input"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Specification not found"
+    delete:
+      tags:
+      - "specs-api-controller"
+      summary: "/specs/{specId} DELETE"
+      operationId: "deleteSpecByIdUsingDELETE_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/x-yaml"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for commit"
+        required: false
+        type: "string"
+      - name: "specId"
+        in: "path"
+        description: "ID of specification to delete"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        204:
+          description: "No Content"
+        400:
+          description: "Invalid input"
+          schema:
+            type: "object"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Specification not found"
+  /switch/{branch}:
+    post:
+      tags:
+      - "branches-api-controller"
+      summary: "/switch/{branch} POST"
+      operationId: "switchBranchUsingPOST_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "branch"
+        in: "path"
+        description: "ID of branch to switch"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BranchesApiModelGen"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Branch not found"
+  /tags:
+    get:
+      tags:
+      - "tags-api-controller"
+      summary: "/tags GET"
+      description: "Returns all tags"
+      operationId: "getTagsUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IdListApiModelGen"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Tag not found"
+  /tags/{tag}:
+    get:
+      tags:
+      - "tags-api-controller"
+      summary: "/tags/{tag} GET"
+      description: "Returns a single tag"
+      operationId: "getTagByIdUsingGET_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "tag"
+        in: "path"
+        description: "ID of tag to return"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/TagsApiModelGen"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Tag not found"
+    post:
+      tags:
+      - "tags-api-controller"
+      summary: "/tags/{tag} POST"
+      operationId: "addTagWithIdUsingPOST_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "X-Commit-Message"
+        in: "header"
+        description: "message for tag"
+        required: false
+        type: "string"
+      - name: "tag"
+        in: "path"
+        description: "ID of tag that needs to be add"
+        required: true
+        type: "string"
+      - name: "object"
+        in: "query"
+        description: "the SHA of the git object this is tagging"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/TagsApiModelGen"
+        201:
+          description: "Created"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+        405:
+          description: "Invalid input"
+    put:
+      tags:
+      - "tags-api-controller"
+      summary: "/tags/{tag} PUT"
+      operationId: "renameTagWithIdUsingPUT_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "tag"
+        in: "path"
+        description: "target ID of tag that needs to be update"
+        required: true
+        type: "string"
+      - name: "to"
+        in: "query"
+        description: "new ID of tag that needs to be update"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/TagsApiModelGen"
+        201:
+          description: "Created"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Tag not found"
+        405:
+          description: "Validation exception"
+    delete:
+      tags:
+      - "tags-api-controller"
+      summary: "/tags/{tag} DELETE"
+      operationId: "deleteTagByIdUsingDELETE_2"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "X-Commit-User"
+        in: "header"
+        description: "user name for commit"
+        required: false
+        type: "string"
+      - name: "tag"
+        in: "path"
+        description: "ID of tag to delete"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        204:
+          description: "No Content"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Tag not found"
+  /users:
+    get:
+      tags:
+      - "users-api-controller"
+      summary: "/users GET"
+      description: "Returns all users"
+      operationId: "getUsersUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IdListApiModelGen"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Tag not found"
+    post:
+      tags:
+      - "users-api-controller"
+      summary: "/users POST"
+      description: "Add a default user"
+      operationId: "addDefaultUserUsingPOST_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UsersApiModelGen"
+        201:
+          description: "Created"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+        405:
+          description: "Invalid input"
+  /users/{userId}:
+    get:
+      tags:
+      - "users-api-controller"
+      summary: "/users{userId} GET"
+      description: "Returns a single user"
+      operationId: "getUserByIdUsingGET_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "user name for commit"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/UsersApiModelGen"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "User not found"
+    post:
+      tags:
+      - "users-api-controller"
+      summary: "/users{userId} POST"
+      operationId: "addUserWithIdUsingPOST_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "user name for commit"
+        required: true
+        type: "string"
+      - name: "email"
+        in: "query"
+        description: "email address for commit"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UsersApiModelGen"
+        201:
+          description: "Created"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+        405:
+          description: "Invalid input"
+    delete:
+      tags:
+      - "users-api-controller"
+      summary: "/users{userId} DELETE"
+      operationId: "deleteUserByIdUsingDELETE_1"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "user name for commit"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+        204:
+          description: "No Content"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "User not found"
+definitions:
+  BranchListApiModelGen:
+    type: "object"
+    properties:
+      current:
+        type: "string"
+      idList:
+        type: "array"
+        items:
+          type: "string"
+  BranchesApiModelGen:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+  IdListApiModelGen:
+    type: "object"
+    properties:
+      idList:
+        type: "array"
+        items:
+          type: "string"
+  TagsApiModelGen:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+  UsersApiModelGen:
+    type: "object"
+    properties:
+      id:
+        type: "string"
